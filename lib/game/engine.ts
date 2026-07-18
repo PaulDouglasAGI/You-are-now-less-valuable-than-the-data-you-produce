@@ -79,6 +79,94 @@ export function cmd(opts: {
   };
 }
 
+function currentUser(prompt: string): string {
+  const m = prompt.match(/^([a-zA-Z0-9_.-]+)@/);
+  return m ? m[1] : "op";
+}
+
+function currentHost(prompt: string): string {
+  const m = prompt.match(/@([a-zA-Z0-9_.-]+):/);
+  return m ? m[1] : "breachline";
+}
+
+function uidFor(user: string): number {
+  if (user === "root") return 0;
+  if (user === "www-data") return 33;
+  if (user.startsWith("svc")) return 999;
+  return 1000;
+}
+
+function homeFor(user: string): string {
+  if (user === "root") return "/root";
+  if (user === "www-data") return "/var/www/html";
+  return `/home/${user}`;
+}
+
+/**
+ * Realistic-but-generic responses for common real tools that aren't specific to any
+ * objective in the current node. Without this, trying `ssh` on a box that shows port 22
+ * open in nmap (very natural, and realistic — plenty of real targets have SSH open
+ * without it being your way in) hits a bare "command not recognized," which breaks the
+ * whole premise that this is a real shell. A real terminal recognizes the command and
+ * fails with a real error; it doesn't pretend the tool doesn't exist.
+ */
+interface GenericFallback {
+  output: string[];
+  tone: "error" | "output";
+}
+
+function genericToolFallback(firstToken: string, trimmed: string, state: NodeRunState): GenericFallback | null {
+  const user = currentUser(state.prompt);
+  const host = currentHost(state.prompt);
+  const targetMatch = trimmed.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
+  const target = targetMatch ? targetMatch[1] : "the target";
+
+  switch (firstToken) {
+    case "ssh":
+      return { tone: "error", output: ["Permission denied (publickey,password)."] };
+    case "telnet":
+      return { tone: "error", output: [`telnet: Unable to connect to remote host: Connection refused`] };
+    case "ftp":
+    case "sftp":
+      return { tone: "error", output: [`ftp: connect: Connection refused`] };
+    case "nc":
+    case "netcat":
+      return { tone: "error", output: [`(UNKNOWN) [${target}] connect failed: Connection refused`] };
+    case "whoami":
+      return { tone: "output", output: [user] };
+    case "id":
+      return {
+        tone: "output",
+        output: [`uid=${uidFor(user)}(${user}) gid=${uidFor(user)}(${user}) groups=${uidFor(user)}(${user})`],
+      };
+    case "pwd":
+      return { tone: "output", output: [homeFor(user)] };
+    case "hostname":
+      return { tone: "output", output: [host] };
+    case "uname":
+      return {
+        tone: "output",
+        output: trimmed.includes("-a")
+          ? [`Linux ${host} 5.15.0-91-generic #101-Ubuntu SMP x86_64 GNU/Linux`]
+          : ["Linux"],
+      };
+    case "ping":
+      return {
+        tone: "output",
+        output: [
+          `PING ${target} 56(84) bytes of data.`,
+          `64 bytes from ${target}: icmp_seq=1 ttl=57 time=28.4 ms`,
+          `--- ${target} ping statistics ---`,
+          `1 packets transmitted, 1 received, 0% packet loss`,
+        ],
+      };
+    case "ls":
+      return { tone: "output", output: ["total 0"] };
+    default:
+      return null;
+  }
+}
+
 export interface ResolveResult {
   lines: TerminalLine[];
   nextState: NodeRunState;
@@ -149,11 +237,14 @@ export function resolveCommand(node: NodeDef, state: NodeRunState, rawInput: str
   if (!matched) {
     const firstToken = n.split(" ")[0];
     const toolKnown = node.commands.some((c) => c.tool === firstToken);
+    const genericOutput = toolKnown ? null : genericToolFallback(firstToken, trimmed, state);
     if (toolKnown) {
       lines.push({
         kind: "error",
         text: `${firstToken}: nothing useful there yet — wrong target, or you're missing a piece from an earlier step. try 'hint'.`,
       });
+    } else if (genericOutput) {
+      for (const l of genericOutput.output) lines.push({ kind: genericOutput.tone, text: l });
     } else {
       lines.push({ kind: "error", text: `command not recognized: ${firstToken}. try 'help'.` });
     }
