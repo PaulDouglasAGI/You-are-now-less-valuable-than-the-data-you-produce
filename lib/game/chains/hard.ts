@@ -203,6 +203,7 @@ export const hardChain: ChainDef = {
             completesObjective: "lateral-intel",
             tone: "success",
             setsFlags: ["have_vantage_key"],
+            note: `Vantage Rail jumpbox SSH key recovered — admin@${IP_VANTAGE} (use: ssh -i vantage_jumpbox_key admin@${IP_VANTAGE})`,
             output: [
               "-----BEGIN OPENSSH PRIVATE KEY-----",
               "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gt...",
@@ -330,6 +331,7 @@ export const hardChain: ChainDef = {
             completesObjective: "internal-enum",
             tone: "success",
             setsFlags: ["know_ops_host"],
+            note: "Vantage internal host: ops-dispatch.internal = 10.20.4.15",
             output: [
               "127.0.0.1       localhost",
               "10.20.4.15      ops-dispatch.internal ops-dispatch",
@@ -369,6 +371,7 @@ export const hardChain: ChainDef = {
             completesObjective: "loot-grid-cred",
             tone: "success",
             setsFlags: ["have_grid_cred"],
+            note: "Continental Grid Interconnect cred — vantage-rail-reporting : cgi_rpt_3d91ffa02b6c (scope: load-report:write — looks over-scoped)",
             output: [
               "# Continental Grid Interconnect — load reporting integration",
               `endpoint = https://${IP_CONTINENTAL}/api/reporting`,
@@ -501,6 +504,7 @@ export const hardChain: ChainDef = {
             completesObjective: "confirm-impact",
             tone: "warn",
             setsFlags: ["proved_write_scope"],
+            note: "Continental Grid gateway: vantage-rail-reporting credential is over-scoped (Allow: GET, PUT, DELETE on /api/setpoints) — flagged for revocation, never exercised.",
             output: [
               "HTTP/1.1 204 No Content",
               "Allow: GET, PUT, DELETE",

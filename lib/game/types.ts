@@ -16,6 +16,8 @@ export interface CommandOutcome {
   tone?: "output" | "success" | "warn" | "error";
   /** if set, the shell prompt changes for the rest of this node run (e.g. after a pivot) */
   promptAfter?: string;
+  /** if set, a one-line finding worth carrying forward — logged to the player's notebook (creds, keys, endpoints, IDs) */
+  note?: string;
 }
 
 export interface CommandDef {
@@ -88,3 +90,15 @@ export interface ChainProgress {
 }
 
 export type SaveData = Partial<Record<Difficulty, ChainProgress>>;
+
+export interface NotebookEntry {
+  id: string;
+  source: string;
+  text: string;
+  ts: number;
+}
+
+export interface NotebookData {
+  entries: NotebookEntry[];
+  text: string;
+}

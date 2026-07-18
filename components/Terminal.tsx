@@ -19,11 +19,13 @@ export default function Terminal({
   carryFlags,
   onSecured,
   onExit,
+  onNote,
 }: {
   node: NodeDef;
   carryFlags: string[];
   onSecured: (finalState: NodeRunState) => void;
   onExit: () => void;
+  onNote: (text: string, source: string) => void;
 }) {
   const [runState, setRunState] = useState<NodeRunState>(() => initNodeRunState(node, carryFlags));
   const [input, setInput] = useState("");
@@ -32,6 +34,10 @@ export default function Terminal({
   const [justSecured, setJustSecured] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const onNoteRef = useRef(onNote);
+  useEffect(() => {
+    onNoteRef.current = onNote;
+  });
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -40,6 +46,10 @@ export default function Terminal({
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    onNoteRef.current(`${node.org} — ${node.ip}`, node.org);
+  }, [node.org, node.ip]);
 
   function submit() {
     if (justSecured) return;
@@ -54,6 +64,10 @@ export default function Terminal({
     }
     setHistoryIdx(null);
     setInput("");
+
+    if (result.note) {
+      onNoteRef.current(result.note, node.org);
+    }
 
     if (result.allObjectivesComplete && !runState.secured) {
       setJustSecured(true);

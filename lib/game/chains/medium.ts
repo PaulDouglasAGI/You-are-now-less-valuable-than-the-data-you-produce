@@ -136,6 +136,7 @@ export const mediumChain: ChainDef = {
           run: () => ({
             tone: "success",
             setsFlags: ["tenant_id_known"],
+            note: "NorthPeak tenant_id for Swift Transit Logistics: 1091",
             output: [
               '[{"tenant_id":1091,"name":"Swift Transit Logistics","plan":"business"}]',
               "",
@@ -172,6 +173,7 @@ export const mediumChain: ChainDef = {
             completesObjective: "leak",
             tone: "success",
             setsFlags: ["have_swift_api_key"],
+            note: `Swift Transit dispatch API key — st_live_8f2b9c1e4a77d0 (https://${IP2}/api/dispatch)`,
             output: [
               "{",
               `  "dispatch_base_url": "https://${IP2}/api/dispatch",`,
@@ -296,6 +298,7 @@ export const mediumChain: ChainDef = {
             completesObjective: "loot",
             tone: "success",
             setsFlags: ["saw_integrations"],
+            note: "Swift Transit dispatch host also integrates with: metrolink-transit-authority, continental-grid-interconnect",
             output: [
               "integrations:",
               "  - name: metrolink-transit-authority",

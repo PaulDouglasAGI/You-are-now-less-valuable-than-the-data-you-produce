@@ -193,6 +193,7 @@ export const easyChain: ChainDef = {
             completesObjective: "creds",
             tone: "success",
             setsFlags: ["have_creds"],
+            note: "Meridian Grid Co-op admin console — mgrid_admin : Cinder2019!",
             output: [
               "HTTP/1.1 200 OK",
               "Content-Type: application/octet-stream",

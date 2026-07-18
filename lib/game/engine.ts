@@ -172,6 +172,8 @@ export interface ResolveResult {
   nextState: NodeRunState;
   justCompletedObjective?: string;
   allObjectivesComplete: boolean;
+  /** a finding worth logging to the player's notebook, if this command surfaced one */
+  note?: string;
 }
 
 function findCommand(node: NodeDef, input: string): CommandDef | undefined {
@@ -285,7 +287,7 @@ export function resolveCommand(node: NodeDef, state: NodeRunState, rawInput: str
 
   const allObjectivesComplete = node.objectives.every((o) => nextState.completedObjectives.includes(o.id));
 
-  return { lines, nextState, justCompletedObjective, allObjectivesComplete };
+  return { lines, nextState, justCompletedObjective, allObjectivesComplete, note: outcome.note };
 }
 
 function requirementsMet(cmd: CommandDef, state: NodeRunState): boolean {

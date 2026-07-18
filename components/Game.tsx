@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { Difficulty, NodeRunState, SaveData } from "@/lib/game/types";
+import { useEffect, useMemo, useState } from "react";
+import type { Difficulty, NodeRunState, NotebookEntry, SaveData } from "@/lib/game/types";
 import { chains } from "@/lib/game/chains";
-import { loadSave, saveProgress, resetSave } from "@/lib/game/storage";
+import { loadSave, saveProgress, resetSave, loadNotebook, saveNotebook } from "@/lib/game/storage";
 import type { NodeStatus } from "./UsMap";
 
 import BootSequence from "./BootSequence";
@@ -14,6 +14,8 @@ import NodeBriefing from "./NodeBriefing";
 import Terminal from "./Terminal";
 import NodeComplete from "./NodeComplete";
 import ChainComplete from "./ChainComplete";
+import Notebook from "./Notebook";
+import NotebookToggle from "./NotebookToggle";
 
 type Screen = "boot" | "menu" | "briefing" | "map" | "nodeBriefing" | "terminal" | "nodeComplete" | "chainComplete";
 
@@ -26,6 +28,46 @@ export default function Game() {
   const [save, setSave] = useState<SaveData>(() => loadSave());
   const [chainFlags, setChainFlags] = useState<string[]>([]);
   const [chainJustCompleted, setChainJustCompleted] = useState(false);
+
+  const [notebook, setNotebook] = useState(() => loadNotebook());
+  const [notebookOpen, setNotebookOpen] = useState(false);
+
+  useEffect(() => {
+    function handler(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        setNotebookOpen((open) => !open);
+      } else if (e.key === "Escape") {
+        setNotebookOpen(false);
+      }
+    }
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  function addNote(text: string, source: string) {
+    setNotebook((prev) => {
+      if (prev.entries.some((e) => e.text === text && e.source === source)) return prev;
+      const entry: NotebookEntry = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, source, text, ts: Date.now() };
+      const next = { ...prev, entries: [...prev.entries, entry] };
+      saveNotebook(next);
+      return next;
+    });
+  }
+
+  function setNotebookText(text: string) {
+    setNotebook((prev) => {
+      const next = { ...prev, text };
+      saveNotebook(next);
+      return next;
+    });
+  }
+
+  function clearNotebook() {
+    const next = { entries: [], text: "" };
+    setNotebook(next);
+    saveNotebook(next);
+  }
 
   const chain = difficulty ? chains[difficulty] : null;
   const activeNode = useMemo(
@@ -90,28 +132,20 @@ export default function Game() {
     setSave({});
   }
 
+  let content: React.ReactNode = null;
+
   if (screen === "boot") {
-    return <BootSequence onDone={() => setScreen("menu")} />;
-  }
-
-  if (screen === "menu") {
-    return <MainMenu progressFor={progressFor} onSelect={handleSelectDifficulty} onReset={handleReset} />;
-  }
-
-  if (!chain) return null;
-
-  if (screen === "briefing") {
-    return <ChainBriefing chain={chain} onBegin={handleBegin} onBack={handleBackToMenu} />;
-  }
-
-  if (screen === "map") {
-    return (
-      <OperationMap chain={chain} statusFor={statusFor} onSelectNode={handleSelectNode} onBack={handleBackToMenu} />
-    );
-  }
-
-  if (screen === "nodeBriefing" && activeNode) {
-    return (
+    content = <BootSequence onDone={() => setScreen("menu")} />;
+  } else if (screen === "menu") {
+    content = <MainMenu progressFor={progressFor} onSelect={handleSelectDifficulty} onReset={handleReset} />;
+  } else if (!chain) {
+    content = null;
+  } else if (screen === "briefing") {
+    content = <ChainBriefing chain={chain} onBegin={handleBegin} onBack={handleBackToMenu} />;
+  } else if (screen === "map") {
+    content = <OperationMap chain={chain} statusFor={statusFor} onSelectNode={handleSelectNode} onBack={handleBackToMenu} />;
+  } else if (screen === "nodeBriefing" && activeNode) {
+    content = (
       <NodeBriefing
         node={activeNode}
         secured={securedIds.includes(activeNode.id)}
@@ -119,27 +153,34 @@ export default function Game() {
         onBack={() => setScreen("map")}
       />
     );
-  }
-
-  if (screen === "terminal" && activeNode) {
-    return (
+  } else if (screen === "terminal" && activeNode) {
+    content = (
       <Terminal
         node={activeNode}
         carryFlags={chainFlags}
         onSecured={handleSecured}
         onExit={() => setScreen("map")}
+        onNote={addNote}
       />
     );
-  }
-
-  if (screen === "nodeComplete" && activeNode) {
+  } else if (screen === "nodeComplete" && activeNode) {
     const isLastNode = chain.nodes[chain.nodes.length - 1].id === activeNode.id;
-    return <NodeComplete node={activeNode} isLastNode={isLastNode} onContinue={handleNodeCompleteContinue} />;
+    content = <NodeComplete node={activeNode} isLastNode={isLastNode} onContinue={handleNodeCompleteContinue} />;
+  } else if (screen === "chainComplete") {
+    content = <ChainComplete chain={chain} onMenu={handleBackToMenu} />;
   }
 
-  if (screen === "chainComplete") {
-    return <ChainComplete chain={chain} onMenu={handleBackToMenu} />;
-  }
-
-  return null;
+  return (
+    <>
+      {content}
+      {screen !== "boot" && <NotebookToggle onClick={() => setNotebookOpen(true)} />}
+      <Notebook
+        open={notebookOpen}
+        notebook={notebook}
+        onClose={() => setNotebookOpen(false)}
+        onTextChange={setNotebookText}
+        onClear={clearNotebook}
+      />
+    </>
+  );
 }
