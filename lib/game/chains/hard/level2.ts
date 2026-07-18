@@ -149,6 +149,7 @@ export const hardLevel2: ChainDef = {
         }),
         {
           id: "path-hijack",
+          tool: "echo",
           match: (input) => {
             const n = normalize(input);
             return n.includes("path") && n.includes("ping") && n.includes("netcheck");

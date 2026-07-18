@@ -136,6 +136,7 @@ export const hardLevel3: ChainDef = {
         }),
         {
           id: "cron-privesc",
+          tool: "echo",
           match: (input) => {
             const n = normalize(input);
             return n.includes("cleanup.sh") && n.includes("rootbash");

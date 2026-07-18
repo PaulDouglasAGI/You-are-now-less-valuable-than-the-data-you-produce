@@ -176,6 +176,7 @@ export const hardChain: ChainDef = {
         }),
         {
           id: "privesc",
+          tool: "echo",
           match: (input) => {
             const n = normalize(input);
             return n.includes("backup.env") && n.includes("backup.sh");

@@ -180,6 +180,7 @@ export const hardLevel4: ChainDef = {
         }),
         {
           id: "cap-privesc",
+          tool: "python3",
           match: (input) => {
             const n = normalize(input);
             return n.includes("python3") && n.includes("setuid(0)");

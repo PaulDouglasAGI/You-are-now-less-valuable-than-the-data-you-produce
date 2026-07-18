@@ -112,7 +112,7 @@ function homeFor(user: string): string {
  */
 interface GenericFallback {
   output: string[];
-  tone: "error" | "output";
+  tone: "error" | "output" | "warn";
 }
 
 function genericToolFallback(firstToken: string, trimmed: string, state: NodeRunState): GenericFallback | null {
@@ -120,6 +120,9 @@ function genericToolFallback(firstToken: string, trimmed: string, state: NodeRun
   const host = currentHost(state.prompt);
   const targetMatch = trimmed.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
   const target = targetMatch ? targetMatch[1] : "the target";
+  const lower = trimmed.toLowerCase();
+  const args = trimmed.trim().split(/\s+/).slice(1);
+  const lastArg = args[args.length - 1];
 
   switch (firstToken) {
     case "ssh":
@@ -146,7 +149,7 @@ function genericToolFallback(firstToken: string, trimmed: string, state: NodeRun
     case "uname":
       return {
         tone: "output",
-        output: trimmed.includes("-a")
+        output: lower.includes("-a")
           ? [`Linux ${host} 5.15.0-91-generic #101-Ubuntu SMP x86_64 GNU/Linux`]
           : ["Linux"],
       };
@@ -162,6 +165,237 @@ function genericToolFallback(firstToken: string, trimmed: string, state: NodeRun
       };
     case "ls":
       return { tone: "output", output: ["total 0"] };
+
+    case "wget":
+      return {
+        tone: "error",
+        output: [
+          `Resolving ${target} (${target})... ${target}`,
+          `Connecting to ${target}:80... connected.`,
+          "HTTP request sent, awaiting response... 403 Forbidden",
+          "ERROR 403: Forbidden.",
+        ],
+      };
+    case "dig":
+      return {
+        tone: "error",
+        output: [
+          "; <<>> DiG 9.18.24 <<>>",
+          ";; global options: +cmd",
+          ";; connection timed out; no servers could be reached",
+        ],
+      };
+    case "nslookup":
+    case "host":
+      return { tone: "error", output: [";; connection timed out; no servers could be reached"] };
+    case "traceroute":
+    case "tracert":
+      return {
+        tone: "output",
+        output: [
+          `traceroute to ${target} (${target}), 30 hops max, 60 byte packets`,
+          " 1  * * *",
+          " 2  * * *",
+          " 3  * * *",
+        ],
+      };
+    case "netstat":
+    case "ss":
+      return {
+        tone: "output",
+        output: [
+          "Active Internet connections (only servers)",
+          "Proto Recv-Q Send-Q Local Address           Foreign Address         State",
+        ],
+      };
+    case "ip":
+    case "ifconfig":
+      return {
+        tone: "output",
+        output: [
+          "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500",
+          "        inet 10.10.14.7  netmask 255.255.255.0  broadcast 10.10.14.255",
+          "lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536",
+          "        inet 127.0.0.1  netmask 255.0.0.0",
+        ],
+      };
+    case "arp":
+      return {
+        tone: "output",
+        output: [
+          "Address       HWtype  HWaddress           Flags Mask   Iface",
+          "10.10.14.1    ether   02:42:ac:11:00:01   C            eth0",
+        ],
+      };
+
+    case "nikto":
+      return {
+        tone: "output",
+        output: [
+          "- Nikto v2.5.0",
+          "---------------------------------------------------------------------------",
+          `+ Target IP:          ${target}`,
+          `+ Target Hostname:    ${target}`,
+          "+ Target Port:        80",
+          "---------------------------------------------------------------------------",
+          "+ Server may leak inodes via ETags.",
+          "+ The X-Content-Type-Options header is not set.",
+          "+ 0 host(s) tested",
+        ],
+      };
+    case "dirb":
+    case "dirbuster":
+      return {
+        tone: "output",
+        output: [
+          "DIRB v2.22",
+          "By The Dark Raver",
+          "---------------------------",
+          `URL_BASE: http://${target}/`,
+          "---------------------------",
+          `+ http://${target}/index.html (CODE:200|SIZE:612)`,
+          "---------------------------",
+          "DOWNLOADED: 4612 - FOUND: 1",
+        ],
+      };
+    case "whatweb":
+      return { tone: "output", output: [`http://${target} [200 OK] Country[RESERVED][ZZ], IP[${target}]`] };
+    case "wpscan":
+      return {
+        tone: "output",
+        output: [`[+] URL: http://${target}/`, "[!] The remote website is up, but does not seem to be running WordPress."],
+      };
+
+    case "enum4linux":
+    case "enum4linux-ng":
+      return {
+        tone: "error",
+        output: ["Starting enum4linux v0.9.5", `[-] Could not connect to ${target} on 445/tcp — no SMB service detected.`],
+      };
+    case "smbclient":
+      return { tone: "error", output: ["protocol negotiation failed: NT_STATUS_CONNECTION_REFUSED"] };
+
+    case "hydra":
+      return {
+        tone: "output",
+        output: [
+          "Hydra v9.5 (c) 2023 by van Hauser/THC - for legal purposes only",
+          "[DATA] max 16 tasks per 1 server, overall 16 tasks, 100 login tries",
+          `[STATUS] attack finished for ${target} (waiting for children to complete tests)`,
+          "1 of 1 target completed, 0 valid passwords found",
+        ],
+      };
+    case "john":
+      return { tone: "error", output: ["Using default input encoding: UTF-8", "No password hashes loaded (see FAQ)"] };
+    case "hashcat":
+      return { tone: "error", output: ["No hashes loaded."] };
+
+    case "msfconsole":
+      return {
+        tone: "warn",
+        output: [
+          "[*] Starting the Metasploit Framework console...",
+          "note: this environment models exploitation as discrete recon/exploit commands, not an",
+          "interactive multi-stage console — there's no msf6 session to attach to here. work the",
+          "chain one command at a time instead.",
+        ],
+      };
+
+    case "sudo":
+      return lower.includes("-l")
+        ? { tone: "error", output: [`Sorry, user ${user} may not run sudo on ${host}.`] }
+        : { tone: "error", output: [`${user} is not in the sudoers file.  This incident will be reported.`] };
+    case "crontab":
+      return { tone: "output", output: [`no crontab for ${user}`] };
+    case "ps":
+      return {
+        tone: "output",
+        output: ["  PID TTY          TIME CMD", "    1 pts/0    00:00:00 bash", "   42 pts/0    00:00:00 ps"],
+      };
+    case "env":
+      return {
+        tone: "output",
+        output: [
+          "SHELL=/bin/bash",
+          `USER=${user}`,
+          `HOME=${homeFor(user)}`,
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "LANG=en_US.UTF-8",
+        ],
+      };
+    case "which": {
+      const known = ["bash", "python3", "curl", "nc", "ssh", "nmap", "cat", "ls", "grep", "find", "vi", "vim", "nano", "gcc", "perl"];
+      const wanted = lastArg?.toLowerCase();
+      if (wanted && known.includes(wanted)) return { tone: "output", output: [`/usr/bin/${wanted}`] };
+      return {
+        tone: "error",
+        output: [`which: no ${wanted ?? ""} in (/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin)`],
+      };
+    }
+    case "man":
+      return lastArg
+        ? { tone: "error", output: [`No manual entry for ${lastArg}`] }
+        : { tone: "output", output: ["What manual page do you want?", "For example, try 'man man'."] };
+    case "tcpdump":
+      return {
+        tone: "error",
+        output: ["tcpdump: eth0: You don't have permission to capture on that device", "(socket: Operation not permitted)"],
+      };
+
+    case "history": {
+      const inputs = state.history
+        .filter((l) => l.kind === "input")
+        .map((l) => l.text.replace(/^.*?[$#]\s?/, ""));
+      return { tone: "output", output: inputs.map((t, i) => `  ${i + 1}  ${t}`) };
+    }
+
+    case "cd":
+      return { tone: "output", output: [] };
+    case "mkdir":
+    case "touch":
+    case "rm":
+      return args.length > 0
+        ? { tone: "output", output: [] }
+        : { tone: "error", output: [`${firstToken}: missing operand`, `Try '${firstToken} --help' for more information.`] };
+    case "cp":
+    case "mv":
+      return args.length >= 2
+        ? { tone: "output", output: [] }
+        : { tone: "error", output: [`${firstToken}: missing file operand`, `Try '${firstToken} --help' for more information.`] };
+    case "echo":
+      return { tone: "output", output: [args.join(" ").replace(/^["']|["']$/g, "")] };
+    case "grep":
+      return lastArg
+        ? { tone: "error", output: [`grep: ${lastArg}: No such file or directory`] }
+        : { tone: "output", output: [] };
+    case "strings":
+      return lastArg
+        ? { tone: "error", output: [`strings: '${lastArg}': No such file or directory`] }
+        : { tone: "error", output: ["strings: no input files"] };
+    case "file":
+      return lastArg
+        ? { tone: "error", output: [`${lastArg}: cannot open (No such file or directory)`] }
+        : { tone: "error", output: ["file: missing operand"] };
+
+    case "python3":
+    case "python":
+      return args.length > 0
+        ? { tone: "output", output: [] }
+        : {
+            tone: "warn",
+            output: [
+              "Python 3.10.12 (main, Nov  6 2024, 20:22:13)",
+              "[GCC 11.4.0] on linux",
+              'Type "help", "copyright", "credits" or "license" for more information.',
+              ">>>",
+              "note: nested interactive interpreters aren't modeled here — try a specific one-liner instead.",
+            ],
+          };
+    case "perl":
+      return args.length > 0
+        ? { tone: "output", output: [] }
+        : { tone: "warn", output: ["note: an interactive perl session isn't modeled here — try a specific one-liner instead."] };
+
     default:
       return null;
   }
