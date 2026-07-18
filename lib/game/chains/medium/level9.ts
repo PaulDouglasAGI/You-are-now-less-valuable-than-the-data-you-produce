@@ -1,13 +1,13 @@
-import type { ChainDef } from "../types";
-import { match, cmd } from "../engine";
+import type { ChainDef } from "../../types";
+import { match, cmd } from "../../engine";
 
 const IP1 = "198.51.100.22";
 const IP2 = "198.51.100.87";
 
-export const mediumChain: ChainDef = {
-  id: "medium-1",
+export const mediumLevel9: ChainDef = {
+  id: "medium-9",
   difficulty: "medium",
-  order: 1,
+  order: 9,
   points: 200,
   title: "Shared Infrastructure",
   codename: "OPERATION LOOSE MANIFEST",

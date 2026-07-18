@@ -1,11 +1,11 @@
 import type { ChainDef, Difficulty } from "../types";
 import { easyMissions } from "./easy";
-import { mediumChain } from "./medium";
+import { mediumMissions } from "./medium";
 import { hardMissions } from "./hard";
 
 export const missionsByDifficulty: Record<Difficulty, ChainDef[]> = {
   easy: easyMissions,
-  medium: [mediumChain],
+  medium: mediumMissions,
   hard: hardMissions,
 };
 
@@ -26,7 +26,7 @@ export const difficultyMeta: Record<Difficulty, { label: string; color: string; 
   medium: {
     label: "MEDIUM",
     color: "var(--color-amber)",
-    blurb: "Two organizations, one shared cloud provider. Trust boundaries start to matter.",
+    blurb: "Ten single-org web and cloud vulns — SSRF, deserialization, exposed container APIs — building up to two chains across a shared cloud marketplace. Trust boundaries start to matter.",
   },
   hard: {
     label: "HARD",
