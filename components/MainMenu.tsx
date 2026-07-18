@@ -3,6 +3,7 @@
 import type { Difficulty } from "@/lib/game/types";
 import { chains, difficultyOrder, difficultyMeta } from "@/lib/game/chains";
 import GlitchText from "./GlitchText";
+import CornerFrame from "./CornerFrame";
 
 export default function MainMenu({
   progressFor,
@@ -19,7 +20,7 @@ export default function MainMenu({
         <GlitchText
           as="h1"
           text="BREACHLINE"
-          className="font-display text-4xl md:text-6xl font-bold tracking-[0.2em] text-[color:var(--color-cyan)] text-glow"
+          className="font-statement text-5xl md:text-7xl font-black uppercase tracking-[0.08em] text-[color:var(--color-cyan)] text-glow"
         />
         <p className="mt-3 text-[color:var(--color-text-dim)] text-sm tracking-widest">
           SELECT OPERATION DIFFICULTY
@@ -36,9 +37,10 @@ export default function MainMenu({
             <button
               key={d}
               onClick={() => onSelect(d)}
-              className="group text-left border border-[color:var(--color-line)] bg-[color:var(--color-panel)]/60 p-6 flex flex-col gap-4 hover:border-[color:var(--color-cyan)] transition-colors"
+              className="group relative text-left hud-panel p-6 flex flex-col gap-4 hover:border-[color:var(--color-cyan)] transition-colors"
               style={{ boxShadow: complete ? `0 0 24px -6px ${meta.color}` : undefined }}
             >
+              <CornerFrame />
               <div className="flex items-center justify-between">
                 <span
                   className="font-display font-bold tracking-[0.25em] text-sm"

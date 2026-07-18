@@ -22,6 +22,8 @@ export interface CommandDef {
   id: string;
   /** matched against the trimmed, lowercased, whitespace-collapsed input */
   match: (input: string) => boolean;
+  /** the base tool name this command represents (curl, nmap, ssh, ...), used only to produce a smarter "wrong target" message when the tool is recognized but the specific command doesn't match */
+  tool?: string;
   /** shown in `help` when the command is currently reachable */
   help: string;
   /** objective ids that must already be complete for this command to work */

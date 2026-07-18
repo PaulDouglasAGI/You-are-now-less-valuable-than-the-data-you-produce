@@ -3,6 +3,7 @@
 import type { ChainDef } from "@/lib/game/types";
 import { difficultyMeta } from "@/lib/game/chains";
 import GlitchText from "./GlitchText";
+import CornerFrame from "./CornerFrame";
 
 export default function ChainComplete({
   chain,
@@ -14,14 +15,15 @@ export default function ChainComplete({
   const meta = difficultyMeta[chain.id];
   return (
     <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
-      <div className="max-w-3xl w-full border border-[color:var(--color-cyan)]/50 bg-[color:var(--color-panel)]/70 p-8 md:p-10 fade-in text-center">
+      <div className="relative max-w-3xl w-full border border-[color:var(--color-cyan)]/50 bg-[color:var(--color-panel)]/70 p-8 md:p-10 fade-in text-center">
+        <CornerFrame color={meta.color} />
         <span className="text-[11px] tracking-[0.3em]" style={{ color: meta.color }}>
           {meta.label} OPERATION COMPLETE
         </span>
         <GlitchText
           as="h1"
           text={chain.title}
-          className="block font-display text-3xl md:text-5xl font-bold text-[color:var(--color-cyan)] text-glow mt-2"
+          className="block font-statement text-4xl md:text-6xl font-black uppercase text-[color:var(--color-cyan)] text-glow mt-2"
         />
         <p className="mt-1 text-xs tracking-widest text-[color:var(--color-text-dim)]">{chain.codename}</p>
 

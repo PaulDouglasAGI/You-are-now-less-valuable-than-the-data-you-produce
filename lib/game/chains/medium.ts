@@ -1,5 +1,8 @@
 import type { ChainDef } from "../types";
-import { match, normalize } from "../engine";
+import { match, cmd } from "../engine";
+
+const IP1 = "198.51.100.22";
+const IP2 = "198.51.100.87";
 
 export const mediumChain: ChainDef = {
   id: "medium",
@@ -32,11 +35,11 @@ export const mediumChain: ChainDef = {
       city: "Rapid Falls",
       state: "SD",
       coords: { x: 42, y: 20 },
-      ip: "198.51.100.22",
+      ip: IP1,
       tagline: "Regional VPS + object storage provider",
       briefing: [
         "TARGET: NorthPeak Cloud Hosting customer API",
-        "IP: 198.51.100.22",
+        `IP: ${IP1}`,
         "YOU HAVE: a free-trial tenant account (tenant id 1044) — legitimate, low-privilege access.",
         "",
         "Find out whether tenant isolation on their storage API actually holds.",
@@ -69,9 +72,10 @@ export const mediumChain: ChainDef = {
         "fix applied: bucket API now validates tenant_id against the session, ticket NP-482 closed.",
       ],
       commands: [
-        {
+        cmd({
           id: "nmap",
-          match: match.startsWith("nmap -sv 198.51.100.22", "nmap -sv", "nmap 198.51.100.22", "nmap"),
+          tool: "nmap",
+          requires: [IP1],
           help: "nmap -sV <ip>         — service/version scan",
           run: () => ({
             completesObjective: "recon",
@@ -87,10 +91,12 @@ export const mediumChain: ChainDef = {
               "Nmap done: 1 IP address (1 host up) scanned in 5.62 seconds",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "api-root",
-          match: (input) => /curl/.test(normalize(input)) && /198\.51\.100\.22:8080\/?\s*$/.test(normalize(input)),
+          tool: "curl",
+          requires: ["8080"],
+          forbids: ["buckets", "tenants"],
           help: "curl http://<ip>:8080/     — probe the undocumented API",
           requiresObjectives: ["recon"],
           run: () => ({
@@ -104,10 +110,11 @@ export const mediumChain: ChainDef = {
               "note: no OpenAPI spec published, but /api/v1/buckets/<tenant_id> responds to GET",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "own-bucket",
-          match: match.includesAll("curl", "buckets/1044"),
+          tool: "curl",
+          requires: ["buckets/1044"],
           help: "curl http://<ip>:8080/api/v1/buckets/1044    — list your own tenant bucket",
           requiresFlags: ["api_known"],
           run: () => ({
@@ -119,10 +126,11 @@ export const mediumChain: ChainDef = {
               "from the URL — worth checking whether it actually verifies you own that id.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "tenant-search",
-          match: match.includesAll("curl", "tenants", "swift"),
+          tool: "curl",
+          requires: ["tenants", "swift"],
           help: "curl http://<ip>:8080/api/v1/tenants?q=swift   — search the tenant directory",
           requiresFlags: ["api_known"],
           run: () => ({
@@ -134,10 +142,12 @@ export const mediumChain: ChainDef = {
               "[+] tenant id for Swift Transit Logistics: 1091",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "idor-pull",
-          match: (input) => /curl/.test(normalize(input)) && /buckets\/1091\/?\s*$/.test(normalize(input)),
+          tool: "curl",
+          requires: ["buckets/1091"],
+          forbids: ["dispatch-config"],
           help: "curl http://<ip>:8080/api/v1/buckets/1091    — request another tenant's bucket",
           requiresFlags: ["tenant_id_known"],
           deniedOutput: ["you don't have a tenant id to try yet — search the tenant directory first."],
@@ -151,10 +161,11 @@ export const mediumChain: ChainDef = {
               "[!] no ownership check performed — the API returned another customer's private bucket.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "cat-config",
-          match: match.includesAll("curl", "dispatch-config"),
+          tool: "curl",
+          requires: ["dispatch-config"],
           help: "curl http://<ip>:8080/api/v1/buckets/1091/swift-transit-dispatch-config.json",
           requiresFlags: ["found_swift_bucket"],
           run: () => ({
@@ -163,7 +174,7 @@ export const mediumChain: ChainDef = {
             setsFlags: ["have_swift_api_key"],
             output: [
               "{",
-              '  "dispatch_base_url": "https://198.51.100.87/api/dispatch",',
+              `  "dispatch_base_url": "https://${IP2}/api/dispatch",`,
               '  "api_key": "st_live_8f2b9c1e4a77d0",',
               '  "environment": "production"',
               "}",
@@ -171,9 +182,10 @@ export const mediumChain: ChainDef = {
               "[+] production API key for Swift Transit Logistics recovered.",
             ],
           }),
-        },
+        }),
         {
           id: "secure",
+          tool: "secure",
           match: match.startsWith("secure system", "secure", "remediate"),
           help: "secure system         — patch the authorization gap",
           requiresObjectives: ["leak"],
@@ -198,11 +210,11 @@ export const mediumChain: ChainDef = {
       city: "Danville Junction",
       state: "IL",
       coords: { x: 57, y: 30 },
-      ip: "198.51.100.87",
+      ip: IP2,
       tagline: "Regional freight dispatch & last-mile routing",
       briefing: [
         "TARGET: Swift Transit Logistics dispatch platform",
-        "IP: 198.51.100.87",
+        `IP: ${IP2}`,
         "YOU HAVE: a production API key, leaked from NorthPeak's storage bucket.",
         "",
         "Find out what that key actually reaches, and how far.",
@@ -235,9 +247,10 @@ export const mediumChain: ChainDef = {
         "fix applied: debug endpoint removed from production build, API key rotated, integration credentials rotated.",
       ],
       commands: [
-        {
+        cmd({
           id: "nmap",
-          match: match.startsWith("nmap -sv 198.51.100.87", "nmap -sv", "nmap 198.51.100.87", "nmap"),
+          tool: "nmap",
+          requires: [IP2],
           help: "nmap -sV <ip>         — service/version scan",
           run: () => ({
             completesObjective: "recon",
@@ -251,10 +264,12 @@ export const mediumChain: ChainDef = {
               "Nmap done: 1 IP address (1 host up) scanned in 4.10 seconds",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "auth-status",
-          match: match.includesAll("curl", "authorization", "dispatch/status"),
+          tool: "curl",
+          requires: ["authorization", "dispatch/status"],
+          forbids: ["debug"],
           help: 'curl -H "Authorization: Bearer <key>" https://<ip>/api/dispatch/status',
           requiresObjectives: ["recon"],
           requiresFlags: ["have_swift_api_key"],
@@ -270,10 +285,11 @@ export const mediumChain: ChainDef = {
               "note: 'debug available' isn't something a production API should ever advertise.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "loot-integrations",
-          match: match.includesAll("integrations.yaml"),
+          tool: "curl",
+          requires: ["integrations.yaml"],
           help: 'curl ... "https://<ip>/api/dispatch/debug/exec?cmd=cat /etc/dispatch/integrations.yaml"',
           requiresFlags: ["shell_access"],
           run: () => ({
@@ -293,10 +309,12 @@ export const mediumChain: ChainDef = {
               "    reporting systems. a compromise here doesn't stay contained to shipping.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "debug-probe",
-          match: match.includesAll("curl", "debug/exec"),
+          tool: "curl",
+          requires: ["debug/exec"],
+          forbids: ["integrations.yaml"],
           help: 'curl -H "Authorization: Bearer <key>" https://<ip>/api/dispatch/debug/exec?cmd=whoami',
           requiresObjectives: ["auth"],
           requiresFlags: ["authed"],
@@ -323,9 +341,10 @@ export const mediumChain: ChainDef = {
               ],
             };
           },
-        },
+        }),
         {
           id: "secure",
+          tool: "secure",
           match: match.startsWith("secure system", "secure", "remediate"),
           help: "secure system         — remove the debug endpoint and rotate keys",
           requiresObjectives: ["loot"],

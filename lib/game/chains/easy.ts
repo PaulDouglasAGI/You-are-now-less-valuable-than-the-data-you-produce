@@ -1,5 +1,7 @@
 import type { ChainDef } from "../types";
-import { match, normalize } from "../engine";
+import { match, cmd } from "../engine";
+
+const IP = "203.0.113.14";
 
 export const easyChain: ChainDef = {
   id: "easy",
@@ -35,11 +37,11 @@ export const easyChain: ChainDef = {
       city: "Cinder Hollow",
       state: "KS",
       coords: { x: 48, y: 33 },
-      ip: "203.0.113.14",
+      ip: IP,
       tagline: "Rural electric co-op — customer self-service portal",
       briefing: [
         "TARGET: Meridian Grid Co-op customer portal",
-        "IP: 203.0.113.14",
+        `IP: ${IP}`,
         "KNOWN: public-facing web app, last redesigned 2021, no WAF observed",
         "",
         "Standard external web app assessment. Recon, enumerate, find your foothold, remediate.",
@@ -76,9 +78,10 @@ export const easyChain: ChainDef = {
         "fix applied: backup removed, directory listing disabled, admin + DB credentials rotated.",
       ],
       commands: [
-        {
+        cmd({
           id: "nmap",
-          match: match.startsWith("nmap -sv 203.0.113.14", "nmap -sv", "nmap 203.0.113.14", "nmap"),
+          tool: "nmap",
+          requires: [IP],
           help: "nmap -sV <ip>         — service/version scan",
           run: () => ({
             completesObjective: "recon",
@@ -86,7 +89,7 @@ export const easyChain: ChainDef = {
             setsFlags: ["scanned"],
             output: [
               "Starting Nmap 7.94 ( https://nmap.org )",
-              "Nmap scan report for portal.meridiangrid.example (203.0.113.14)",
+              `Nmap scan report for portal.meridiangrid.example (${IP})`,
               "Host is up (0.031s latency).",
               "",
               "PORT    STATE SERVICE VERSION",
@@ -98,10 +101,12 @@ export const easyChain: ChainDef = {
               "Nmap done: 1 IP address (1 host up) scanned in 4.81 seconds",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "curl-root",
-          match: match.exact("curl 203.0.113.14", "curl http://203.0.113.14", "curl -i http://203.0.113.14"),
+          tool: "curl",
+          requires: [IP],
+          forbids: ["robots.txt", "/backup", "/admin"],
           help: "curl http://<ip>      — fetch the web root",
           requiresObjectives: ["recon"],
           deniedOutput: ["curl: (7) Failed to connect — you haven't confirmed the service is up yet. Try nmap first."],
@@ -118,25 +123,22 @@ export const easyChain: ChainDef = {
               "tip: check /robots.txt",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "robots",
-          match: match.includesAll("curl", "robots.txt"),
+          tool: "curl",
+          requires: ["robots.txt"],
           help: "curl http://<ip>/robots.txt",
           requiresObjectives: ["recon"],
           run: () => ({
             tone: "output",
-            output: [
-              "User-agent: *",
-              "Disallow: /admin/",
-              "Disallow: /backup/",
-              "Disallow: /old-site/",
-            ],
+            output: ["User-agent: *", "Disallow: /admin/", "Disallow: /backup/", "Disallow: /old-site/"],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "gobuster",
-          match: match.startsWith("gobuster dir -u 203.0.113.14", "gobuster dir -u http://203.0.113.14", "gobuster"),
+          tool: "gobuster",
+          requires: [IP],
           help: "gobuster dir -u http://<ip> -w common.txt   — brute-force hidden directories",
           requiresObjectives: ["recon"],
           run: () => ({
@@ -147,7 +149,7 @@ export const easyChain: ChainDef = {
               "===============================================================",
               "Gobuster v3.6",
               "===============================================================",
-              "[+] Url: http://203.0.113.14",
+              `[+] Url: http://${IP}`,
               "[+] Method: GET",
               "[+] Wordlist: common.txt",
               "===============================================================",
@@ -159,10 +161,12 @@ export const easyChain: ChainDef = {
               "===============================================================",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "list-backup",
-          match: (input) => /curl/.test(normalize(input)) && /203\.0\.113\.14\/backup\/?\s*$/.test(normalize(input)),
+          tool: "curl",
+          requires: ["/backup"],
+          forbids: [".bak", ".gz", ".sql"],
           help: "curl http://<ip>/backup/",
           requiresFlags: ["found_backup_dir"],
           run: () => ({
@@ -178,10 +182,11 @@ export const easyChain: ChainDef = {
               "tip: try fetching portal_config.php.bak directly",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "cat-backup",
-          match: match.includesAll("curl", "portal_config.php.bak"),
+          tool: "curl",
+          requires: ["portal_config.php.bak"],
           help: "curl http://<ip>/backup/portal_config.php.bak",
           requiresFlags: ["found_backup_dir"],
           run: () => ({
@@ -205,17 +210,18 @@ export const easyChain: ChainDef = {
               "[+] plaintext admin credentials recovered: mgrid_admin : Cinder2019!",
             ],
           }),
-        },
+        }),
         {
           id: "login",
+          tool: "login",
           match: (input) => /^login\s+\S+\s+\S+$/.test(input.trim().toLowerCase()),
           help: "login <username> <password>   — authenticate to /admin",
           requiresFlags: ["have_creds"],
           deniedOutput: ["/admin redirects to a login form — you don't have credentials to try yet."],
           run: (input) => {
             const parts = input.trim().split(/\s+/);
-            const user = parts[1]?.toLowerCase();
-            const pass = parts[2];
+            const user = parts[1]?.toLowerCase().replace(/^["']|["']$/g, "");
+            const pass = parts[2]?.replace(/^["']|["']$/g, "");
             if (user === "mgrid_admin" && pass === "Cinder2019!") {
               return {
                 completesObjective: "access",
@@ -240,6 +246,7 @@ export const easyChain: ChainDef = {
         },
         {
           id: "secure",
+          tool: "secure",
           match: match.startsWith("secure system", "secure", "remediate"),
           help: "secure system         — remove the exposure and rotate credentials",
           requiresObjectives: ["access"],

@@ -1,4 +1,4 @@
-import type { CommandDef, NodeDef, NodeRunState, TerminalLine } from "./types";
+import type { CommandDef, CommandOutcome, NodeDef, NodeRunState, TerminalLine } from "./types";
 
 export function initNodeRunState(node: NodeDef, carryFlags: string[] = []): NodeRunState {
   return {
@@ -20,7 +20,7 @@ export function normalize(input: string): string {
   return input.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
-/** convenience matcher builders for command defs */
+/** convenience matcher builders for command defs (used for the handful of pseudo-commands that aren't real CLI tools, e.g. `login`, `secure`) */
 export const match = {
   exact: (...phrases: string[]) => (input: string) => {
     const n = normalize(input);
@@ -35,6 +35,49 @@ export const match = {
     return tokens.every((t) => n.includes(normalize(t)));
   },
 };
+
+/**
+ * Declarative command builder for real CLI-tool invocations (curl, nmap, ssh, cat, ...).
+ *
+ * A command matches when the input's first word equals `tool` (so flag order, quoting,
+ * extra flags like -s/-v/-L, http vs https, trailing slashes etc. never break a match),
+ * every string in `requires` appears somewhere in the input, and no string in `forbids`
+ * does. `forbids` is what keeps two commands against the same tool from both matching a
+ * more specific one's input (e.g. a directory listing vs a specific file inside it) —
+ * order in the commands array never matters.
+ */
+export function cmd(opts: {
+  id: string;
+  tool: string;
+  requires?: string[];
+  forbids?: string[];
+  help: string;
+  requiresObjectives?: string[];
+  requiresFlags?: string[];
+  deniedOutput?: string[];
+  run: (input: string) => CommandOutcome;
+}): CommandDef {
+  const requires = (opts.requires ?? []).map(normalize);
+  const forbids = (opts.forbids ?? []).map(normalize);
+  const tool = normalize(opts.tool);
+  return {
+    id: opts.id,
+    tool,
+    help: opts.help,
+    requiresObjectives: opts.requiresObjectives,
+    requiresFlags: opts.requiresFlags,
+    deniedOutput: opts.deniedOutput,
+    run: opts.run,
+    match: (input) => {
+      const n = normalize(input);
+      const firstToken = n.split(" ")[0];
+      if (firstToken !== tool) return false;
+      if (!requires.every((r) => n.includes(r))) return false;
+      if (forbids.some((f) => n.includes(f))) return false;
+      return true;
+    },
+  };
+}
 
 export interface ResolveResult {
   lines: TerminalLine[];
@@ -101,12 +144,22 @@ export function resolveCommand(node: NodeDef, state: NodeRunState, rawInput: str
     };
   }
 
-  const cmd = findCommand(node, trimmed);
+  const matched = findCommand(node, trimmed);
 
-  if (!cmd) {
-    lines.push({ kind: "error", text: `command not recognized: ${trimmed.split(" ")[0]}. try 'help'.` });
+  if (!matched) {
+    const firstToken = n.split(" ")[0];
+    const toolKnown = node.commands.some((c) => c.tool === firstToken);
+    if (toolKnown) {
+      lines.push({
+        kind: "error",
+        text: `${firstToken}: nothing useful there yet — wrong target, or you're missing a piece from an earlier step. try 'hint'.`,
+      });
+    } else {
+      lines.push({ kind: "error", text: `command not recognized: ${firstToken}. try 'help'.` });
+    }
     return { lines, nextState: state, allObjectivesComplete: false };
   }
+  const cmd = matched;
 
   if (!requirementsMet(cmd, state)) {
     const denied = cmd.deniedOutput ?? ["access denied or target unreachable at this stage."];

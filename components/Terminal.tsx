@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { NodeDef, NodeRunState, TerminalLine } from "@/lib/game/types";
 import { initNodeRunState, resolveCommand } from "@/lib/game/engine";
+import CornerFrame from "./CornerFrame";
 
 const TONE_CLASS: Record<TerminalLine["kind"], string> = {
   input: "text-[color:var(--color-text)]",
@@ -91,7 +92,8 @@ export default function Terminal({
     <div className="h-screen w-screen flex flex-col md:flex-row gap-0 md:gap-4 p-3 md:p-5" onClick={() => inputRef.current?.focus()}>
       {/* sidebar */}
       <div className="md:w-72 flex-shrink-0 flex flex-col gap-3 mb-3 md:mb-0">
-        <div className="border border-[color:var(--color-line)] bg-[color:var(--color-panel)]/70 p-3">
+        <div className="relative hud-panel p-3">
+          <CornerFrame />
           <div className="flex items-center justify-between">
             <span className="font-display font-semibold text-sm text-[color:var(--color-cyan)]">{node.org}</span>
             <button
@@ -115,7 +117,7 @@ export default function Terminal({
           </span>
         </div>
 
-        <div className="border border-[color:var(--color-line)] bg-[color:var(--color-panel)]/70 p-3 flex-1 overflow-y-auto">
+        <div className="hud-panel p-3 flex-1 overflow-y-auto">
           <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">OBJECTIVES</span>
           <ul className="mt-2 space-y-2 text-xs">
             {node.objectives.map((o) => {
@@ -131,11 +133,11 @@ export default function Terminal({
           </ul>
         </div>
 
-        <div className="border border-[color:var(--color-line)] bg-[color:var(--color-panel)]/70 p-3 text-[11px] text-[color:var(--color-text-dim)] leading-relaxed">
+        <div className="hud-panel p-3 text-[11px] text-[color:var(--color-text-dim)] leading-relaxed">
           <span className="text-[10px] tracking-widest">SHELL</span>
           <p className="mt-1">
             type <span className="text-[color:var(--color-cyan)]">help</span> for available commands,{" "}
-            <span className="text-[color:var(--color-cyan)]">hint</span> if you're stuck,{" "}
+            <span className="text-[color:var(--color-cyan)]">hint</span> if you&apos;re stuck,{" "}
             <span className="text-[color:var(--color-cyan)]">objectives</span> to see the checklist.
           </p>
           <p className="mt-1">
@@ -145,7 +147,8 @@ export default function Terminal({
       </div>
 
       {/* terminal */}
-      <div className="flex-1 flex flex-col border border-[color:var(--color-line)] bg-black/60 min-h-0">
+      <div className="relative flex-1 flex flex-col border border-[color:var(--color-line)] bg-black/60 min-h-0">
+        <CornerFrame />
         <div className="flex-shrink-0 flex items-center gap-2 border-b border-[color:var(--color-line)] px-3 py-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[color:var(--color-red)]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[color:var(--color-amber)]" />

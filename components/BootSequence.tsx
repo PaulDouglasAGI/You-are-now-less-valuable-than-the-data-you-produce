@@ -1,52 +1,114 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import GlitchText from "./GlitchText";
+import RadialHud from "./RadialHud";
+import { US_SILHOUETTE } from "@/lib/us-silhouette";
 
-const LINES: { text: string; big?: boolean }[] = [
-  { text: "everything is connected now." },
-  { text: "traffic signals. water treatment. payroll. hospitals. freight." },
-  { text: "a few thousand lines of code hold more control than anyone admits out loud." },
-  { text: "most of it was never secured. it just shipped on time." },
-  { text: "someone has to find the holes before the wrong person does." },
+const LINES = [
+  "everything is connected now.",
+  "traffic signals. water treatment. payroll. hospitals. freight.",
+  "a few thousand lines of code hold more control than anyone admits out loud.",
+  "most of it was never secured. it just shipped on time.",
+  "someone has to find the holes before the wrong person does.",
 ];
 
+type Stage = "burst" | "line" | "authorizing" | "title";
+
+function wait(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
 export default function BootSequence({ onDone }: { onDone: () => void }) {
-  const [step, setStep] = useState(0);
-  const [showTitle, setShowTitle] = useState(false);
+  const [stage, setStage] = useState<Stage>("burst");
+  const [lineIdx, setLineIdx] = useState(0);
+  const [lineOpacity, setLineOpacity] = useState(0);
+  const [burstKey, setBurstKey] = useState(0);
+  const [authProgress, setAuthProgress] = useState(0);
+  const abortedRef = useRef(false);
 
   useEffect(() => {
-    if (step < LINES.length) {
-      const t = setTimeout(() => setStep((s) => s + 1), 1500);
-      return () => clearTimeout(t);
-    } else if (!showTitle) {
-      const t = setTimeout(() => setShowTitle(true), 600);
-      return () => clearTimeout(t);
+    const aborted = abortedRef;
+    async function run() {
+      for (let i = 0; i < LINES.length; i++) {
+        if (aborted.current) return;
+        setLineIdx(i);
+        setStage("burst");
+        setBurstKey((k) => k + 1);
+        await wait(260);
+        if (aborted.current) return;
+        setStage("line");
+        setLineOpacity(1);
+        await wait(1500);
+        if (aborted.current) return;
+        setLineOpacity(0);
+        await wait(260);
+      }
+      if (aborted.current) return;
+      setStage("authorizing");
+      setBurstKey((k) => k + 1);
+
+      const start = Date.now();
+      const duration = 1800;
+      while (Date.now() - start < duration) {
+        if (aborted.current) return;
+        setAuthProgress(Math.min(1, (Date.now() - start) / duration));
+        await wait(40);
+      }
+      if (aborted.current) return;
+      setAuthProgress(1);
+      await wait(400);
+      if (aborted.current) return;
+      setStage("title");
     }
-  }, [step, showTitle]);
+    run();
+    return () => {
+      aborted.current = true;
+    };
+  }, []);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (showTitle && (e.key === "Enter" || e.key === " ")) onDone();
+      if (stage === "title" && (e.key === "Enter" || e.key === " ")) onDone();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [showTitle, onDone]);
+  }, [stage, onDone]);
 
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center px-6 text-center select-none">
-      {!showTitle && (
-        <div className="max-w-2xl space-y-5">
-          {LINES.slice(0, step).map((l, i) => (
-            <p key={i} className="fade-in font-display text-lg md:text-2xl tracking-wide text-[color:var(--color-text)]">
-              {l.text}
-            </p>
-          ))}
+    <div className="h-screen w-screen flex flex-col items-center justify-center px-6 text-center select-none relative overflow-hidden">
+      {burstKey > 0 && stage !== "title" && <div key={burstKey} className="noise-burst" />}
+
+      {(stage === "authorizing" || stage === "title") && (
+        <svg
+          viewBox="0 0 100 60"
+          className="absolute inset-0 w-full h-full opacity-20 pointer-events-none fade-in"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <path d={US_SILHOUETTE} fill="none" stroke="var(--color-cyan)" strokeWidth="0.2" />
+        </svg>
+      )}
+
+      {(stage === "line" || stage === "burst") && (
+        <div className="max-w-3xl relative z-10">
+          <p
+            className="font-statement text-3xl md:text-5xl font-black uppercase tracking-tight text-[color:var(--color-text)] transition-opacity duration-300"
+            style={{ opacity: lineOpacity }}
+          >
+            {LINES[lineIdx]}
+          </p>
         </div>
       )}
 
-      {showTitle && (
-        <div className="fade-in flex flex-col items-center gap-6">
+      {stage === "authorizing" && (
+        <div className="flex flex-col items-center gap-4 fade-in relative z-10">
+          <RadialHud progress={authProgress} label="ESTABLISHING UPLINK" size={140} />
+          <p className="text-xs tracking-[0.3em] text-[color:var(--color-cyan-dim)]">AUTHORIZING ACCESS...</p>
+        </div>
+      )}
+
+      {stage === "title" && (
+        <div className="fade-in flex flex-col items-center gap-6 relative z-10">
           <GlitchText
             as="h1"
             text="BREACHLINE"

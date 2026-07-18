@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Difficulty, NodeRunState, SaveData } from "@/lib/game/types";
 import { chains } from "@/lib/game/chains";
 import { loadSave, saveProgress, resetSave } from "@/lib/game/storage";
@@ -21,13 +21,11 @@ export default function Game() {
   const [screen, setScreen] = useState<Screen>("boot");
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
-  const [save, setSave] = useState<SaveData>({});
+  // safe as a lazy initializer: the save-dependent UI (MainMenu) only ever renders after
+  // the boot screen, well past hydration, so there's no server/client mismatch to worry about
+  const [save, setSave] = useState<SaveData>(() => loadSave());
   const [chainFlags, setChainFlags] = useState<string[]>([]);
   const [chainJustCompleted, setChainJustCompleted] = useState(false);
-
-  useEffect(() => {
-    setSave(loadSave());
-  }, []);
 
   const chain = difficulty ? chains[difficulty] : null;
   const activeNode = useMemo(

@@ -1,17 +1,20 @@
 "use client";
 
 import type { NodeDef } from "@/lib/game/types";
-
-/** stylized, simplified continental-US silhouette — not cartographically precise, built for the HUD aesthetic */
-const US_SILHOUETTE =
-  "M66,4 L69,7 L67.5,9.5 L70,11 L68,13 L70.5,14 L69,15 L71.5,17 L70,18.5 L70.5,20.5 L69.5,22.5 L70.5,23.5 " +
-  "L70,25.5 L71.5,26.5 L71,28.5 L72.5,29 L70,31 L69,33.5 L70.5,36 L69.5,40 L70.5,44 L69,47 L67,45.5 L65.5,43 " +
-  "L64,40 L62,38.5 L59,39 L56,39.5 L52,40 L49,38.5 L46,39.5 L43,41 L40.5,43 L37,41.5 L34,40 L32,38.5 L30,37 " +
-  "L27,36.5 L23,35.5 L19.5,34.5 L17.5,33 L16.5,30 L15,27 L14,23.5 L14.5,20 L14,17 L15,14 L16.5,12 L15.5,10 " +
-  "L17.5,9 L22,8.5 L27,8.5 L33,8 L39,7.8 L44,8 L47,7.5 L46,9.5 L49,11 L52,10 L54.5,9 L56,11.5 L54.5,14 L57,15 " +
-  "L58,17.5 L60,16.5 L61.5,14 L62.5,15 L61.5,18 L64,19 L63,16 L64.5,13 L66,11 L65,8 Z";
+import { US_SILHOUETTE } from "@/lib/us-silhouette";
 
 export type NodeStatus = "locked" | "unlocked" | "secured";
+
+const CENTER = { x: 43, y: 25 };
+
+function statusColor(status: NodeStatus) {
+  return status === "secured" ? "var(--color-green)" : status === "unlocked" ? "var(--color-cyan)" : "var(--color-text-dim)";
+}
+
+/** approximate SVG-unit width of a label string at the given font size, for sizing the tag box */
+function labelWidth(text: string, fontSize: number) {
+  return text.length * fontSize * 0.62 + fontSize * 1.4;
+}
 
 export default function UsMap({
   nodes,
@@ -40,13 +43,14 @@ export default function UsMap({
           </filter>
         </defs>
 
-        <path
-          d={US_SILHOUETTE}
-          fill="url(#mapgrid)"
-          stroke="var(--color-cyan-dim)"
-          strokeWidth="0.25"
-          opacity="0.85"
-        />
+        {/* radar ping, centered roughly over the continental landmass */}
+        <g opacity="0.5" pointerEvents="none">
+          <circle cx={CENTER.x} cy={CENTER.y} r="1" fill="none" stroke="var(--color-cyan)" strokeWidth="0.25" className="ping-ring" style={{ animationDelay: "0s" }} />
+          <circle cx={CENTER.x} cy={CENTER.y} r="1" fill="none" stroke="var(--color-cyan)" strokeWidth="0.25" className="ping-ring" style={{ animationDelay: "1.2s" }} />
+          <circle cx={CENTER.x} cy={CENTER.y} r="1" fill="none" stroke="var(--color-cyan)" strokeWidth="0.25" className="ping-ring" style={{ animationDelay: "2.4s" }} />
+        </g>
+
+        <path d={US_SILHOUETTE} fill="url(#mapgrid)" stroke="var(--color-cyan-dim)" strokeWidth="0.25" opacity="0.85" />
         <path d={US_SILHOUETTE} fill="rgba(41,241,227,0.04)" />
 
         {/* chain connective lines between nodes in order */}
@@ -70,39 +74,66 @@ export default function UsMap({
           );
         })}
 
-        {ordered.map((node) => {
+        {ordered.map((node, i) => {
           const status = statusFor(node.id);
-          const color =
-            status === "secured" ? "var(--color-green)" : status === "unlocked" ? "var(--color-cyan)" : "var(--color-text-dim)";
+          const color = statusColor(status);
+          const dirRight = i % 2 === 0;
+          const dx = dirRight ? 5 : -5;
+          const elbowX = node.coords.x + dx;
+          // stagger the leader height per node so nearby nodes' tags land on different rows,
+          // otherwise long org names on closely-spaced nodes overlap regardless of left/right side
+          const tier = i % 3;
+          const elbowY = node.coords.y - 6 - tier * 5.5;
+          const nameSize = 1.7;
+          const nameW = labelWidth(node.org.toUpperCase(), nameSize);
+          const tagX = dirRight ? elbowX : elbowX - nameW;
+          const tagY = elbowY - nameSize - 1.2;
+          const cut = 1.2;
+
+          const clickable = status !== "locked";
+
           return (
+            // the whole node — leader line, label tag, and dot — is one clickable unit,
+            // since a player will naturally try clicking the readable label, not just the tiny dot
             <g
               key={node.id}
-              transform={`translate(${node.coords.x}, ${node.coords.y})`}
-              className={status !== "locked" ? "cursor-pointer" : "cursor-not-allowed"}
-              onClick={() => status !== "locked" && onSelect(node.id)}
+              className={clickable ? "cursor-pointer" : "cursor-not-allowed"}
+              onClick={() => clickable && onSelect(node.id)}
             >
-              {status === "unlocked" && (
-                <circle r="2.2" fill="none" stroke={color} strokeWidth="0.15" className="pulse-dot" opacity="0.7" pointerEvents="none" />
-              )}
-              <circle r="0.9" fill={status === "locked" ? "var(--color-bg-raised)" : color} stroke={color} strokeWidth="0.25" filter="url(#glow)" pointerEvents="none" />
-              {/* generous invisible hit target, independent of label overlap between nearby nodes */}
-              <circle r="3.2" fill="transparent" pointerEvents="all" />
-              <text
-                x="0"
-                y="-2.4"
-                textAnchor="middle"
-                fontSize="2.1"
-                fill={color}
-                fontFamily="var(--font-display)"
-                fontWeight={600}
-                opacity={status === "locked" ? 0.5 : 1}
-                pointerEvents="none"
-              >
-                {node.org.toUpperCase()}
-              </text>
-              <text x="0" y="4" textAnchor="middle" fontSize="1.5" fill="var(--color-text-dim)" pointerEvents="none">
-                {node.city}, {node.state}
-              </text>
+              <g opacity={status === "locked" ? 0.45 : 0.9}>
+                <polyline
+                  points={`${node.coords.x},${node.coords.y} ${elbowX},${elbowY} ${dirRight ? elbowX + nameW : elbowX - nameW},${elbowY}`}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth="0.18"
+                  pointerEvents="none"
+                />
+                <polygon
+                  points={
+                    dirRight
+                      ? `${tagX},${tagY} ${tagX + nameW - cut},${tagY} ${tagX + nameW},${tagY + cut} ${tagX + nameW},${tagY + nameSize + 2.6} ${tagX},${tagY + nameSize + 2.6}`
+                      : `${tagX + cut},${tagY} ${tagX + nameW},${tagY} ${tagX + nameW},${tagY + nameSize + 2.6} ${tagX},${tagY + nameSize + 2.6} ${tagX},${tagY + cut}`
+                  }
+                  fill="rgba(5,8,10,0.82)"
+                  stroke={color}
+                  strokeWidth="0.15"
+                />
+                <text x={tagX + nameW / 2} y={tagY + nameSize + 0.3} textAnchor="middle" fontSize={nameSize} fill={color} fontFamily="var(--font-display)" fontWeight={600}>
+                  {node.org.toUpperCase()}
+                </text>
+                <text x={tagX + nameW / 2} y={tagY + nameSize + 2.1} textAnchor="middle" fontSize="1.4" fill="var(--color-text-dim)" fontFamily="var(--font-mono)">
+                  {node.city}, {node.state}
+                </text>
+              </g>
+
+              <g transform={`translate(${node.coords.x}, ${node.coords.y})`}>
+                {status === "unlocked" && (
+                  <circle r="2.2" fill="none" stroke={color} strokeWidth="0.15" className="pulse-dot" opacity="0.7" pointerEvents="none" />
+                )}
+                <circle r="0.9" fill={status === "locked" ? "var(--color-bg-raised)" : color} stroke={color} strokeWidth="0.25" filter="url(#glow)" pointerEvents="none" />
+                {/* generous invisible hit target around the dot itself */}
+                <circle r="3.2" fill="transparent" />
+              </g>
             </g>
           );
         })}

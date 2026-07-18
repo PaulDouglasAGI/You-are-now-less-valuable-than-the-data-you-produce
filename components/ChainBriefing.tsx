@@ -3,6 +3,7 @@
 import type { ChainDef } from "@/lib/game/types";
 import { difficultyMeta } from "@/lib/game/chains";
 import GlitchText from "./GlitchText";
+import CornerFrame from "./CornerFrame";
 
 export default function ChainBriefing({
   chain,
@@ -16,14 +17,15 @@ export default function ChainBriefing({
   const meta = difficultyMeta[chain.id];
   return (
     <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
-      <div className="max-w-3xl w-full border border-[color:var(--color-line)] bg-[color:var(--color-panel)]/70 p-8 md:p-10 fade-in">
+      <div className="relative max-w-3xl w-full hud-panel p-8 md:p-10 fade-in">
+        <CornerFrame />
         <div className="flex items-center justify-between mb-2">
           <span className="font-display font-bold tracking-[0.25em] text-sm" style={{ color: meta.color }}>
             {meta.label} OPERATION
           </span>
           <span className="text-xs text-[color:var(--color-text-dim)] tracking-widest">{chain.codename}</span>
         </div>
-        <GlitchText as="h1" text={chain.title} className="font-display text-3xl md:text-4xl font-bold text-[color:var(--color-cyan)] text-glow" />
+        <GlitchText as="h1" text={chain.title} className="font-statement text-4xl md:text-5xl font-black uppercase text-[color:var(--color-cyan)] text-glow" />
 
         <div className="mt-6 space-y-3 text-sm md:text-base leading-relaxed text-[color:var(--color-text)]">
           {chain.briefing.map((line, i) =>

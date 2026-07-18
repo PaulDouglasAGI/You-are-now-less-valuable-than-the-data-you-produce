@@ -3,6 +3,7 @@
 import type { NodeDef } from "@/lib/game/types";
 import RadialHud from "./RadialHud";
 import GlitchText from "./GlitchText";
+import CornerFrame from "./CornerFrame";
 
 export default function NodeBriefing({
   node,
@@ -17,7 +18,8 @@ export default function NodeBriefing({
 }) {
   return (
     <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
-      <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-center border border-[color:var(--color-line)] bg-[color:var(--color-panel)]/70 p-8 md:p-10 fade-in">
+      <div className="relative max-w-4xl w-full grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-center hud-panel p-8 md:p-10 fade-in">
+        <CornerFrame />
         <div className="flex flex-col items-center gap-3">
           <RadialHud progress={secured ? 1 : 0} label={secured ? "SECURED" : "PENDING"} size={140} />
           <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">TARGET STATUS</span>
