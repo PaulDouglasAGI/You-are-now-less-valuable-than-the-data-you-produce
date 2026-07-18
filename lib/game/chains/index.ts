@@ -38,6 +38,6 @@ export const difficultyMeta: Record<Difficulty, { label: string; color: string; 
   ghost: {
     label: "GHOST",
     color: "var(--color-violet)",
-    blurb: "No clean signal. Recon has real noise, obvious payloads get blocked, and the syntax has to be exact — no `help` or `hint` here is ever going to hand you the working command. This is the only tier that actually tests unguided discovery.",
+    blurb: "No clean signal. Recon has real noise, obvious payloads get blocked, and the syntax has to be exact — no `help` or `hint` here is ever going to hand you the working command. Levels 3-4 add memory corruption and a full Active Directory kill chain, unguided the whole way. This is the only tier that actually tests unguided discovery.",
   },
 };
