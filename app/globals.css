@@ -1,6 +1,8 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
+:root {
   --font-mono: var(--font-jbmono), ui-monospace, "SF Mono", Menlo, monospace;
   --font-display: var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
   --font-statement: var(--font-bigshoulders), var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
