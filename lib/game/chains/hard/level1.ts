@@ -1,5 +1,5 @@
-import type { ChainDef } from "../types";
-import { match, cmd, normalize } from "../engine";
+import type { ChainDef } from "../../types";
+import { match, cmd, normalize } from "../../engine";
 
 const IP_ATLAS = "192.0.2.10";
 const IP_VANTAGE = "192.0.2.55";

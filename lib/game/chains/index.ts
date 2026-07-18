@@ -1,12 +1,12 @@
 import type { ChainDef, Difficulty } from "../types";
 import { easyMissions } from "./easy";
 import { mediumChain } from "./medium";
-import { hardChain } from "./hard";
+import { hardMissions } from "./hard";
 
 export const missionsByDifficulty: Record<Difficulty, ChainDef[]> = {
   easy: easyMissions,
   medium: [mediumChain],
-  hard: [hardChain],
+  hard: hardMissions,
 };
 
 export const missionsById: Record<string, ChainDef> = Object.fromEntries(
@@ -31,6 +31,6 @@ export const difficultyMeta: Record<Difficulty, { label: string; color: string; 
   hard: {
     label: "HARD",
     color: "var(--color-red)",
-    blurb: "Three organizations, full methodology: foothold, privesc, lateral movement, pivot. If you can finish this clean, you're basically OSCP-ready.",
+    blurb: "Level 1 chains three organizations through full methodology. Levels 2+ drop the story — standalone boxes, next to no hints, get root and prove it. About as close to the real exam as a browser tab gets.",
   },
 };
