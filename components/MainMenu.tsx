@@ -42,7 +42,7 @@ export default function MainMenu({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-full max-w-6xl">
         {difficultyOrder.map((d, i) => {
           const missions = missionsByDifficulty[d];
           const meta = difficultyMeta[d];

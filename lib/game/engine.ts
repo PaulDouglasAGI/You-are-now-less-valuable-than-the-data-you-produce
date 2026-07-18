@@ -79,6 +79,47 @@ export function cmd(opts: {
   };
 }
 
+/**
+ * Stricter sibling to cmd(), used only by the "ghost" tier. Matching is case-sensitive —
+ * real shells are too, `NMAP` doesn't run when the binary is `nmap` — so a wrong-case flag
+ * or tool name genuinely fails instead of being silently tolerated. Whitespace is still
+ * collapsed for basic usability (accidental double-spacing isn't a skill test), but nothing
+ * else about the input is normalized. This intentionally makes real syntax mistakes fail,
+ * the way actual tools do — cmd()'s tolerance is a feature for tiers meant to teach the
+ * methodology loop, not for the tier meant to test unguided precision.
+ */
+export function strictCmd(opts: {
+  id: string;
+  tool: string;
+  requires?: string[];
+  forbids?: string[];
+  help: string;
+  requiresObjectives?: string[];
+  requiresFlags?: string[];
+  deniedOutput?: string[];
+  run: (input: string) => CommandOutcome;
+}): CommandDef {
+  const requires = opts.requires ?? [];
+  const forbids = opts.forbids ?? [];
+  return {
+    id: opts.id,
+    tool: opts.tool.toLowerCase(),
+    help: opts.help,
+    requiresObjectives: opts.requiresObjectives,
+    requiresFlags: opts.requiresFlags,
+    deniedOutput: opts.deniedOutput,
+    run: opts.run,
+    match: (input) => {
+      const trimmed = input.trim().replace(/\s+/g, " ");
+      const firstToken = trimmed.split(" ")[0];
+      if (firstToken !== opts.tool) return false;
+      if (!requires.every((r) => trimmed.includes(r))) return false;
+      if (forbids.some((f) => trimmed.includes(f))) return false;
+      return true;
+    },
+  };
+}
+
 function currentUser(prompt: string): string {
   const m = prompt.match(/^([a-zA-Z0-9_.-]+)@/);
   return m ? m[1] : "op";

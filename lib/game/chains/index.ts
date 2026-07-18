@@ -2,11 +2,13 @@ import type { ChainDef, Difficulty } from "../types";
 import { easyMissions } from "./easy";
 import { mediumMissions } from "./medium";
 import { hardMissions } from "./hard";
+import { ghostMissions } from "./ghost";
 
 export const missionsByDifficulty: Record<Difficulty, ChainDef[]> = {
   easy: easyMissions,
   medium: mediumMissions,
   hard: hardMissions,
+  ghost: ghostMissions,
 };
 
 export const missionsById: Record<string, ChainDef> = Object.fromEntries(
@@ -15,7 +17,7 @@ export const missionsById: Record<string, ChainDef> = Object.fromEntries(
     .map((m) => [m.id, m]),
 );
 
-export const difficultyOrder: Difficulty[] = ["easy", "medium", "hard"];
+export const difficultyOrder: Difficulty[] = ["easy", "medium", "hard", "ghost"];
 
 export const difficultyMeta: Record<Difficulty, { label: string; color: string; blurb: string }> = {
   easy: {
@@ -32,5 +34,10 @@ export const difficultyMeta: Record<Difficulty, { label: string; color: string; 
     label: "HARD",
     color: "var(--color-red)",
     blurb: "Level 1 chains three organizations through full methodology. Levels 2+ drop the story — standalone boxes, next to no hints, get root and prove it. About as close to the real exam as a browser tab gets.",
+  },
+  ghost: {
+    label: "GHOST",
+    color: "var(--color-violet)",
+    blurb: "No clean signal. Recon has real noise, obvious payloads get blocked, and the syntax has to be exact — no `help` or `hint` here is ever going to hand you the working command. This is the only tier that actually tests unguided discovery.",
   },
 };
