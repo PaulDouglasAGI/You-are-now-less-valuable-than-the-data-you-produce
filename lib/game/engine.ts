@@ -10,6 +10,7 @@ export function initNodeRunState(node: NodeDef, carryFlags: string[] = []): Node
       ...node.motd.map((line): TerminalLine => ({ kind: "output", text: line })),
     ],
     hintsUsed: 0,
+    scopeViolations: 0,
     prompt: node.initialPrompt,
     secured: false,
   };
@@ -507,6 +508,12 @@ export function resolveCommand(node: NodeDef, state: NodeRunState, rawInput: str
       nextState: { ...state, history: [] },
       allObjectivesComplete: false,
     };
+  }
+
+  if (node.outOfScope?.match(trimmed)) {
+    for (const l of node.outOfScope.response) lines.push({ kind: "error", text: l });
+    const nextState: NodeRunState = { ...state, scopeViolations: state.scopeViolations + 1 };
+    return { lines, nextState, allObjectivesComplete: false };
   }
 
   const matched = findCommand(node, trimmed);

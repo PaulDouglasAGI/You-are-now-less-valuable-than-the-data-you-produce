@@ -3,5 +3,6 @@ import { ghostLevel1 } from "./level1";
 import { ghostLevel2 } from "./level2";
 import { ghostLevel3 } from "./level3";
 import { ghostLevel4 } from "./level4";
+import { ghostLevel5 } from "./level5";
 
-export const ghostMissions: ChainDef[] = [ghostLevel1, ghostLevel2, ghostLevel3, ghostLevel4];
+export const ghostMissions: ChainDef[] = [ghostLevel1, ghostLevel2, ghostLevel3, ghostLevel4, ghostLevel5];

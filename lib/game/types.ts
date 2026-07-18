@@ -62,6 +62,8 @@ export interface NodeDef {
   /** progressive hints, shown in order regardless of which objective is stuck */
   hints: string[];
   debrief: string[];
+  /** if set, any command referencing a host outside the engagement's rules of engagement is flagged as a scope violation instead of being resolved normally — fires regardless of tool, doesn't block progress, costs score */
+  outOfScope?: { match: (input: string) => boolean; response: string[] };
 }
 
 export interface ChainDef {
@@ -85,6 +87,8 @@ export interface NodeRunState {
   discoveredFlags: string[];
   history: TerminalLine[];
   hintsUsed: number;
+  /** count of commands touching a host outside the engagement's rules of engagement — separate from hintsUsed, never merged into it */
+  scopeViolations: number;
   prompt: string;
   secured: boolean;
 }
@@ -94,6 +98,8 @@ export interface ChainProgress {
   flags: string[];
   /** total hints used across every node in this mission's run — feeds the scoring model */
   hintsUsed: number;
+  /** total scope violations across every node in this mission's run — a separate scoring penalty, distinct from hints */
+  scopeViolations: number;
   completedAt?: number;
 }
 

@@ -157,6 +157,11 @@ export default function Terminal({
           <p className="mt-1">
             hints used: {runState.hintsUsed}/{node.hints.length}
           </p>
+          {runState.scopeViolations > 0 && (
+            <p className="mt-1 text-[color:var(--color-red)]">
+              scope violation{runState.scopeViolations > 1 ? "s" : ""}: {runState.scopeViolations}
+            </p>
+          )}
         </div>
       </div>
 

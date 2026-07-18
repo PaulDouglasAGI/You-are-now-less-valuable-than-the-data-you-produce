@@ -20,11 +20,12 @@ export function saveProgress(
   securedNodeIds: string[],
   flags: string[],
   hintsUsed: number,
+  scopeViolations: number,
   completedAt?: number,
 ) {
   if (typeof window === "undefined") return;
   const data = loadSave();
-  data[missionId] = { securedNodeIds, flags, hintsUsed, completedAt };
+  data[missionId] = { securedNodeIds, flags, hintsUsed, scopeViolations, completedAt };
   window.localStorage.setItem(KEY, JSON.stringify(data));
 }
 

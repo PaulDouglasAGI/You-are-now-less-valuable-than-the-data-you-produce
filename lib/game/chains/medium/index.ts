@@ -9,6 +9,7 @@ import { mediumLevel7 } from "./level7";
 import { mediumLevel8 } from "./level8";
 import { mediumLevel9 } from "./level9";
 import { mediumLevel10 } from "./level10";
+import { mediumLevel11 } from "./level11";
 
 export const mediumMissions: ChainDef[] = [
   mediumLevel1,
@@ -21,4 +22,5 @@ export const mediumMissions: ChainDef[] = [
   mediumLevel8,
   mediumLevel9,
   mediumLevel10,
+  mediumLevel11,
 ];

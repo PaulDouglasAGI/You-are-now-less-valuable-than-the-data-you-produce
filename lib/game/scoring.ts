@@ -2,6 +2,7 @@ import type { ChainDef, ChainProgress, SaveData } from "./types";
 import { missionsById } from "./chains";
 
 export const HINT_PENALTY = 0.15;
+export const SCOPE_VIOLATION_PENALTY = 0.15;
 export const MIN_SCORE_FLOOR = 0.4;
 
 export type Rank =
@@ -25,6 +26,7 @@ export interface MissionScore {
   points: number;
   earnedPoints: number;
   hintsUsed: number;
+  scopeViolations: number;
   secured: boolean;
   completedAt?: number;
 }
@@ -38,10 +40,13 @@ export interface CareerScore {
   perMission: MissionScore[];
 }
 
-/** hints cost 15% of a mission's value each, floored at 40% so using a hint never zeroes it out */
+/** hints and scope violations each cost 15% of a mission's value, floored at 40% so neither ever zeroes it out — tracked separately, since a scope violation is a rules-of-engagement breach, not an assisted step */
 export function missionEarnedPoints(mission: ChainDef, progress: ChainProgress | undefined): number {
   if (!progress?.completedAt) return 0;
-  const multiplier = Math.max(MIN_SCORE_FLOOR, 1 - HINT_PENALTY * progress.hintsUsed);
+  const multiplier = Math.max(
+    MIN_SCORE_FLOOR,
+    1 - HINT_PENALTY * progress.hintsUsed - SCOPE_VIOLATION_PENALTY * (progress.scopeViolations ?? 0),
+  );
   return mission.points * multiplier;
 }
 
@@ -75,6 +80,7 @@ export function computeCareerScore(save: SaveData): CareerScore {
       points: mission.points,
       earnedPoints: earned,
       hintsUsed: progress?.hintsUsed ?? 0,
+      scopeViolations: progress?.scopeViolations ?? 0,
       secured: Boolean(progress?.completedAt),
       completedAt: progress?.completedAt,
     });

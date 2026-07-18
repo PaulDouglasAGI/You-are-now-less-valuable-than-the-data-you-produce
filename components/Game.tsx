@@ -42,6 +42,7 @@ export default function Game() {
   const [save, setSave] = useState<SaveData>(() => loadSave());
   const [chainFlags, setChainFlags] = useState<string[]>([]);
   const [chainHintsUsed, setChainHintsUsed] = useState(0);
+  const [chainScopeViolations, setChainScopeViolations] = useState(0);
   const [chainJustCompleted, setChainJustCompleted] = useState(false);
 
   const [notebook, setNotebook] = useState(() => loadNotebook());
@@ -129,6 +130,7 @@ export default function Game() {
     if (!missionId) return;
     setChainFlags(save[missionId]?.flags ?? []);
     setChainHintsUsed(save[missionId]?.hintsUsed ?? 0);
+    setChainScopeViolations(save[missionId]?.scopeViolations ?? 0);
     setScreen("map");
   }
 
@@ -143,14 +145,22 @@ export default function Game() {
     const newSecured = Array.from(new Set([...(save[missionId]?.securedNodeIds ?? []), activeNodeId]));
     const isLast = newSecured.length === chain.nodes.length;
     const totalHints = chainHintsUsed + finalState.hintsUsed;
+    const totalScopeViolations = chainScopeViolations + finalState.scopeViolations;
 
-    saveProgress(missionId, newSecured, mergedFlags, totalHints, isLast ? Date.now() : undefined);
+    saveProgress(missionId, newSecured, mergedFlags, totalHints, totalScopeViolations, isLast ? Date.now() : undefined);
     setSave((prev) => ({
       ...prev,
-      [missionId]: { securedNodeIds: newSecured, flags: mergedFlags, hintsUsed: totalHints, completedAt: isLast ? Date.now() : undefined },
+      [missionId]: {
+        securedNodeIds: newSecured,
+        flags: mergedFlags,
+        hintsUsed: totalHints,
+        scopeViolations: totalScopeViolations,
+        completedAt: isLast ? Date.now() : undefined,
+      },
     }));
     setChainFlags(mergedFlags);
     setChainHintsUsed(totalHints);
+    setChainScopeViolations(totalScopeViolations);
     setChainJustCompleted(isLast);
     setScreen("nodeComplete");
   }

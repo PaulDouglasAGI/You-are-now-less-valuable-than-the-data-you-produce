@@ -96,6 +96,11 @@ export default function FieldReport({ save, onBack }: { save: SaveData; onBack: 
                           {m.hintsUsed} hint{m.hintsUsed > 1 ? "s" : ""}
                         </span>
                       )}
+                      {m.scopeViolations > 0 && (
+                        <span className="text-[color:var(--color-red)] tracking-widest">
+                          {m.scopeViolations} scope violation{m.scopeViolations > 1 ? "s" : ""}
+                        </span>
+                      )}
                       <span className="text-[color:var(--color-green)] tracking-widest w-20 text-right">
                         {Math.round(m.earnedPoints)}/{m.points}
                       </span>
