@@ -6,7 +6,9 @@ const IP_VANTAGE = "192.0.2.55";
 const IP_CONTINENTAL = "192.0.2.201";
 
 export const hardChain: ChainDef = {
-  id: "hard",
+  id: "hard-1",
+  difficulty: "hard",
+  order: 1,
   title: "The Long Way In",
   codename: "OPERATION LOOSE MANIFEST // FOLLOW-UP",
   summary: "Three organizations. One real network foothold. Everything after that is patience.",

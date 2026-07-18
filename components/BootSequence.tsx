@@ -121,7 +121,7 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
           </p>
           <button
             onClick={onDone}
-            className="mt-4 border border-[color:var(--color-cyan-dim)] px-8 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black transition-colors"
+            className="mt-4 border border-[color:var(--color-cyan-dim)] px-8 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black active:scale-[0.97] transition-all duration-150"
           >
             PRESS ENTER
           </button>

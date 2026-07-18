@@ -17,7 +17,7 @@ export default function NodeComplete({
     <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
       <div className="relative max-w-2xl w-full border border-[color:var(--color-green)]/50 bg-[color:var(--color-panel)]/70 p-8 md:p-10 fade-in text-center">
         <CornerFrame color="var(--color-green)" />
-        <span className="text-[11px] tracking-[0.3em] text-[color:var(--color-green)]">TARGET SECURED</span>
+        <span className="block text-[11px] tracking-[0.3em] text-[color:var(--color-green)]">TARGET SECURED</span>
         <GlitchText
           as="h1"
           text={node.org}
@@ -31,7 +31,7 @@ export default function NodeComplete({
         </div>
         <button
           onClick={onContinue}
-          className="mt-8 border border-[color:var(--color-cyan-dim)] px-8 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black transition-colors"
+          className="mt-8 border border-[color:var(--color-cyan-dim)] px-8 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black active:scale-[0.97] transition-all duration-150"
         >
           {isLastNode ? "VIEW CHAIN SUMMARY" : "RETURN TO MAP"}
         </button>

@@ -1,13 +1,19 @@
 import type { ChainDef, Difficulty } from "../types";
-import { easyChain } from "./easy";
+import { easyMissions } from "./easy";
 import { mediumChain } from "./medium";
 import { hardChain } from "./hard";
 
-export const chains: Record<Difficulty, ChainDef> = {
-  easy: easyChain,
-  medium: mediumChain,
-  hard: hardChain,
+export const missionsByDifficulty: Record<Difficulty, ChainDef[]> = {
+  easy: easyMissions,
+  medium: [mediumChain],
+  hard: [hardChain],
 };
+
+export const missionsById: Record<string, ChainDef> = Object.fromEntries(
+  Object.values(missionsByDifficulty)
+    .flat()
+    .map((m) => [m.id, m]),
+);
 
 export const difficultyOrder: Difficulty[] = ["easy", "medium", "hard"];
 
@@ -15,7 +21,7 @@ export const difficultyMeta: Record<Difficulty, { label: string; color: string; 
   easy: {
     label: "EASY",
     color: "var(--color-green)",
-    blurb: "One target, one chain of mistakes. Good place to learn the loop.",
+    blurb: "Short, single-technique levels. Good place to learn the loop before the chains get longer.",
   },
   medium: {
     label: "MEDIUM",

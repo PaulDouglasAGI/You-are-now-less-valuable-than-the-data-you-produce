@@ -5,7 +5,9 @@ const IP1 = "198.51.100.22";
 const IP2 = "198.51.100.87";
 
 export const mediumChain: ChainDef = {
-  id: "medium",
+  id: "medium-1",
+  difficulty: "medium",
+  order: 1,
   title: "Shared Infrastructure",
   codename: "OPERATION LOOSE MANIFEST",
   summary: "Two companies. One cloud provider between them. Trust doesn't stop at the tenant boundary.",

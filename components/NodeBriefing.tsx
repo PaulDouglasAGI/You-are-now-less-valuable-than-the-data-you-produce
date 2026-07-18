@@ -26,7 +26,7 @@ export default function NodeBriefing({
         </div>
 
         <div>
-          <span className="text-[11px] tracking-[0.3em] text-[color:var(--color-cyan-dim)]">TARGET LOCKED</span>
+          <span className="block text-[11px] tracking-[0.3em] text-[color:var(--color-cyan-dim)]">TARGET LOCKED</span>
           <GlitchText
             as="h1"
             text={node.org}
@@ -59,13 +59,13 @@ export default function NodeBriefing({
           <div className="mt-8 flex gap-4">
             <button
               onClick={onBack}
-              className="border border-[color:var(--color-line)] px-6 py-3 font-display tracking-widest text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)] hover:border-[color:var(--color-text-dim)] transition-colors"
+              className="border border-[color:var(--color-line)] px-6 py-3 font-display tracking-widest text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)] hover:border-[color:var(--color-text-dim)] active:scale-[0.97] transition-all duration-150"
             >
               BACK
             </button>
             <button
               onClick={onConnect}
-              className="flex-1 border border-[color:var(--color-cyan-dim)] px-6 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black transition-colors"
+              className="flex-1 border border-[color:var(--color-cyan-dim)] px-6 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black active:scale-[0.97] transition-all duration-150"
             >
               {secured ? "RECONNECT" : "CONNECT"}
             </button>

@@ -14,7 +14,7 @@ export default function ChainBriefing({
   onBegin: () => void;
   onBack: () => void;
 }) {
-  const meta = difficultyMeta[chain.id];
+  const meta = difficultyMeta[chain.difficulty];
   return (
     <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
       <div className="relative max-w-3xl w-full hud-panel p-8 md:p-10 fade-in">
@@ -43,13 +43,13 @@ export default function ChainBriefing({
         <div className="mt-8 flex gap-4">
           <button
             onClick={onBack}
-            className="border border-[color:var(--color-line)] px-6 py-3 font-display tracking-widest text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)] hover:border-[color:var(--color-text-dim)] transition-colors"
+            className="border border-[color:var(--color-line)] px-6 py-3 font-display tracking-widest text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)] hover:border-[color:var(--color-text-dim)] active:scale-[0.97] transition-all duration-150"
           >
             BACK
           </button>
           <button
             onClick={onBegin}
-            className="flex-1 border border-[color:var(--color-cyan-dim)] px-6 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black transition-colors"
+            className="flex-1 border border-[color:var(--color-cyan-dim)] px-6 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black active:scale-[0.97] transition-all duration-150"
           >
             BEGIN OPERATION
           </button>

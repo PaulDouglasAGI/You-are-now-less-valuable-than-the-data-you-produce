@@ -1,13 +1,15 @@
-import type { ChainDef } from "../types";
-import { match, cmd } from "../engine";
+import type { ChainDef } from "../../types";
+import { match, cmd } from "../../engine";
 
 const IP = "203.0.113.14";
 
-export const easyChain: ChainDef = {
-  id: "easy",
+export const easyLevel4: ChainDef = {
+  id: "easy-4",
+  difficulty: "easy",
+  order: 4,
   title: "Grid Exposure",
   codename: "OPERATION COLD RELAY",
-  summary: "One target. One careless backup file. Find it before someone else does.",
+  summary: "One target. Everything you've learned so far, chained together. Find it before someone else does.",
   briefing: [
     "Cinder Hollow, Kansas — population 4,100. One electric co-op keeps the lights, the water pumps,",
     "and the regional hospital's cold-storage fridges running.",
@@ -15,13 +17,14 @@ export const easyChain: ChainDef = {
     "Their customer portal has been sitting on an unpatched Apache box for three years.",
     "Nobody's looked at it since it was built. That's the problem.",
     "",
-    "You're not here to take anything. You're here to get in the same way a real attacker would,",
-    "prove the hole exists, and close it before it becomes somebody's bad week.",
+    "This one doesn't hand you a single vulnerability — it hands you a whole web app and asks you",
+    "to work the full loop yourself: recon, enumerate, find the foothold, recover what you can,",
+    "get in, and close the door behind you.",
     "",
     "Objective: find the way in. Recover what an attacker would recover. Lock the door behind you.",
   ],
   debrief: [
-    "That's the whole game in miniature: a public web app, a directory an admin forgot was indexable,",
+    "That's the easy tier in miniature: a public web app, a directory an admin forgot was indexable,",
     "and a backup file with plaintext credentials sitting inside it.",
     "",
     "In the real world this is CWE-530 (exposure of backup file) chained into credential reuse —",

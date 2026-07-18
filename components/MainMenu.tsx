@@ -1,7 +1,7 @@
 "use client";
 
 import type { Difficulty } from "@/lib/game/types";
-import { chains, difficultyOrder, difficultyMeta } from "@/lib/game/chains";
+import { missionsByDifficulty, difficultyOrder, difficultyMeta } from "@/lib/game/chains";
 import GlitchText from "./GlitchText";
 import CornerFrame from "./CornerFrame";
 
@@ -28,8 +28,8 @@ export default function MainMenu({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
-        {difficultyOrder.map((d) => {
-          const chain = chains[d];
+        {difficultyOrder.map((d, i) => {
+          const missions = missionsByDifficulty[d];
           const meta = difficultyMeta[d];
           const p = progressFor(d);
           const complete = p.secured === p.total && p.total > 0;
@@ -37,8 +37,8 @@ export default function MainMenu({
             <button
               key={d}
               onClick={() => onSelect(d)}
-              className="group relative text-left hud-panel p-6 flex flex-col gap-4 hover:border-[color:var(--color-cyan)] transition-colors"
-              style={{ boxShadow: complete ? `0 0 24px -6px ${meta.color}` : undefined }}
+              className="group relative text-left hud-panel p-6 flex flex-col gap-4 hover:border-[color:var(--color-cyan)] hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 transition-all duration-200 fade-in"
+              style={{ boxShadow: complete ? `0 0 24px -6px ${meta.color}` : undefined, animationDelay: `${i * 90}ms` }}
             >
               <CornerFrame />
               <div className="flex items-center justify-between">
@@ -52,11 +52,15 @@ export default function MainMenu({
                   <span className="text-[10px] tracking-widest text-[color:var(--color-green)]">SECURED</span>
                 )}
               </div>
-              <h2 className="font-display text-xl font-semibold text-[color:var(--color-text)]">{chain.title}</h2>
-              <p className="text-xs text-[color:var(--color-cyan-dim)] tracking-widest">{chain.codename}</p>
+              <h2 className="font-display text-xl font-semibold text-[color:var(--color-text)]">
+                {missions.length > 1 ? `${missions.length} levels` : missions[0].title}
+              </h2>
+              <p className="text-xs text-[color:var(--color-cyan-dim)] tracking-widest">
+                {missions.length > 1 ? `${missions[0].title} → ${missions[missions.length - 1].title}` : missions[0].codename}
+              </p>
               <p className="text-sm text-[color:var(--color-text-dim)] leading-relaxed flex-1">{meta.blurb}</p>
               <div className="flex items-center gap-2 text-xs text-[color:var(--color-text-dim)]">
-                <span>{chain.nodes.length} target{chain.nodes.length > 1 ? "s" : ""}</span>
+                <span>{missions.length} mission{missions.length > 1 ? "s" : ""}</span>
                 <span className="flex-1 h-px bg-[color:var(--color-line)]" />
                 <span>
                   {p.secured}/{p.total} secured

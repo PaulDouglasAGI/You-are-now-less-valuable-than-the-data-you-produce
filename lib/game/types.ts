@@ -65,7 +65,11 @@ export interface NodeDef {
 }
 
 export interface ChainDef {
-  id: Difficulty;
+  /** unique mission id, e.g. "easy-1" — stable, used as the save-data key */
+  id: string;
+  difficulty: Difficulty;
+  /** 1-based position within its difficulty tier; missions unlock in this order */
+  order: number;
   title: string;
   codename: string;
   summary: string;
@@ -89,7 +93,8 @@ export interface ChainProgress {
   completedAt?: number;
 }
 
-export type SaveData = Partial<Record<Difficulty, ChainProgress>>;
+/** keyed by mission id (ChainDef.id), not by difficulty — each mission tracks its own progress */
+export type SaveData = Partial<Record<string, ChainProgress>>;
 
 export interface NotebookEntry {
   id: string;

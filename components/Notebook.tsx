@@ -62,7 +62,7 @@ export default function Notebook({
     <div className="fixed inset-0 z-[100] flex justify-end">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div
-        className="relative w-full sm:w-[440px] h-full border-l border-[color:var(--color-line)] flex flex-col fade-in"
+        className="relative w-full sm:w-[440px] h-full border-l border-[color:var(--color-line)] flex flex-col slide-in-right"
         style={{ background: "var(--color-bg-raised)" }}
       >
         <CornerFrame />

@@ -12,12 +12,12 @@ export default function ChainComplete({
   chain: ChainDef;
   onMenu: () => void;
 }) {
-  const meta = difficultyMeta[chain.id];
+  const meta = difficultyMeta[chain.difficulty];
   return (
     <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
       <div className="relative max-w-3xl w-full border border-[color:var(--color-cyan)]/50 bg-[color:var(--color-panel)]/70 p-8 md:p-10 fade-in text-center">
         <CornerFrame color={meta.color} />
-        <span className="text-[11px] tracking-[0.3em]" style={{ color: meta.color }}>
+        <span className="block text-[11px] tracking-[0.3em]" style={{ color: meta.color }}>
           {meta.label} OPERATION COMPLETE
         </span>
         <GlitchText
@@ -41,9 +41,9 @@ export default function ChainComplete({
 
         <button
           onClick={onMenu}
-          className="mt-8 border border-[color:var(--color-cyan-dim)] px-8 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black transition-colors"
+          className="mt-8 border border-[color:var(--color-cyan-dim)] px-8 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black active:scale-[0.97] transition-all duration-150"
         >
-          BACK TO OPERATIONS
+          BACK TO LEVEL SELECT
         </button>
       </div>
     </div>

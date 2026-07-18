@@ -15,7 +15,7 @@ export default function OperationMap({
   onSelectNode: (nodeId: string) => void;
   onBack: () => void;
 }) {
-  const meta = difficultyMeta[chain.id];
+  const meta = difficultyMeta[chain.difficulty];
   const securedCount = chain.nodes.filter((n) => statusFor(n.id) === "secured").length;
 
   return (
