@@ -7,6 +7,7 @@ export const hardLevel3: ChainDef = {
   id: "hard-3",
   difficulty: "hard",
   order: 3,
+  points: 150,
   title: "Target PG02",
   codename: "STANDALONE ASSESSMENT — PG02",
   summary: "A form field that shells out to a system utility on your behalf. See where that goes.",

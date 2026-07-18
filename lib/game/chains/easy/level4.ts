@@ -7,6 +7,7 @@ export const easyLevel4: ChainDef = {
   id: "easy-4",
   difficulty: "easy",
   order: 4,
+  points: 100,
   title: "Grid Exposure",
   codename: "OPERATION COLD RELAY",
   summary: "One target. Everything you've learned so far, chained together. Find it before someone else does.",

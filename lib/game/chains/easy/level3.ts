@@ -7,6 +7,7 @@ export const easyLevel3: ChainDef = {
   id: "easy-3",
   difficulty: "easy",
   order: 3,
+  points: 50,
   title: "Open Book",
   codename: "OPERATION OPEN BOOK",
   summary: "The vulnerability isn't hidden behind a login. It's sitting in a file the browser already downloaded.",

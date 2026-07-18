@@ -7,6 +7,7 @@ export const easyLevel1: ChainDef = {
   id: "easy-1",
   difficulty: "easy",
   order: 1,
+  points: 50,
   title: "Quiet Pantry",
   codename: "OPERATION QUIET PANTRY",
   summary: "One login page. One documented default password. See how fast 'nobody would guess that' falls apart.",

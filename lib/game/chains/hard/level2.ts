@@ -7,6 +7,7 @@ export const hardLevel2: ChainDef = {
   id: "hard-2",
   difficulty: "hard",
   order: 2,
+  points: 150,
   title: "Target DS01",
   codename: "STANDALONE ASSESSMENT — DS01",
   summary: "No story. No chain. Just an IP, a shell to find, and root to prove.",

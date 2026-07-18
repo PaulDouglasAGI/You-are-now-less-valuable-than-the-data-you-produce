@@ -70,6 +70,8 @@ export interface ChainDef {
   difficulty: Difficulty;
   /** 1-based position within its difficulty tier; missions unlock in this order */
   order: number;
+  /** base score value for the career scoring model, scaled by effort/difficulty */
+  points: number;
   title: string;
   codename: string;
   summary: string;
@@ -90,6 +92,8 @@ export interface NodeRunState {
 export interface ChainProgress {
   securedNodeIds: string[];
   flags: string[];
+  /** total hints used across every node in this mission's run — feeds the scoring model */
+  hintsUsed: number;
   completedAt?: number;
 }
 

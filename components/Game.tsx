@@ -16,6 +16,7 @@ import NodeBriefing from "./NodeBriefing";
 import Terminal from "./Terminal";
 import NodeComplete from "./NodeComplete";
 import ChainComplete from "./ChainComplete";
+import FieldReport from "./FieldReport";
 import Notebook from "./Notebook";
 import NotebookToggle from "./NotebookToggle";
 
@@ -28,7 +29,8 @@ type Screen =
   | "nodeBriefing"
   | "terminal"
   | "nodeComplete"
-  | "chainComplete";
+  | "chainComplete"
+  | "report";
 
 export default function Game() {
   const [screen, setScreen] = useState<Screen>("boot");
@@ -39,6 +41,7 @@ export default function Game() {
   // the boot screen, well past hydration, so there's no server/client mismatch to worry about
   const [save, setSave] = useState<SaveData>(() => loadSave());
   const [chainFlags, setChainFlags] = useState<string[]>([]);
+  const [chainHintsUsed, setChainHintsUsed] = useState(0);
   const [chainJustCompleted, setChainJustCompleted] = useState(false);
 
   const [notebook, setNotebook] = useState(() => loadNotebook());
@@ -125,6 +128,7 @@ export default function Game() {
   function handleBegin() {
     if (!missionId) return;
     setChainFlags(save[missionId]?.flags ?? []);
+    setChainHintsUsed(save[missionId]?.hintsUsed ?? 0);
     setScreen("map");
   }
 
@@ -138,10 +142,15 @@ export default function Game() {
     const mergedFlags = Array.from(new Set([...chainFlags, ...finalState.discoveredFlags]));
     const newSecured = Array.from(new Set([...(save[missionId]?.securedNodeIds ?? []), activeNodeId]));
     const isLast = newSecured.length === chain.nodes.length;
+    const totalHints = chainHintsUsed + finalState.hintsUsed;
 
-    saveProgress(missionId, newSecured, mergedFlags, isLast ? Date.now() : undefined);
-    setSave((prev) => ({ ...prev, [missionId]: { securedNodeIds: newSecured, flags: mergedFlags, completedAt: isLast ? Date.now() : undefined } }));
+    saveProgress(missionId, newSecured, mergedFlags, totalHints, isLast ? Date.now() : undefined);
+    setSave((prev) => ({
+      ...prev,
+      [missionId]: { securedNodeIds: newSecured, flags: mergedFlags, hintsUsed: totalHints, completedAt: isLast ? Date.now() : undefined },
+    }));
     setChainFlags(mergedFlags);
+    setChainHintsUsed(totalHints);
     setChainJustCompleted(isLast);
     setScreen("nodeComplete");
   }
@@ -163,6 +172,10 @@ export default function Game() {
     setScreen("menu");
   }
 
+  function handleOpenReport() {
+    setScreen("report");
+  }
+
   function handleReset() {
     resetSave();
     setSave({});
@@ -173,7 +186,11 @@ export default function Game() {
   if (screen === "boot") {
     content = <BootSequence onDone={() => setScreen("menu")} />;
   } else if (screen === "menu") {
-    content = <MainMenu progressFor={progressFor} onSelect={handleSelectDifficulty} onReset={handleReset} />;
+    content = (
+      <MainMenu progressFor={progressFor} onSelect={handleSelectDifficulty} onReset={handleReset} onOpenReport={handleOpenReport} save={save} />
+    );
+  } else if (screen === "report") {
+    content = <FieldReport save={save} onBack={handleBackToMenu} />;
   } else if (screen === "missionSelect" && difficulty) {
     content = (
       <MissionSelect

@@ -7,6 +7,7 @@ export const easyLevel2: ChainDef = {
   id: "easy-2",
   difficulty: "easy",
   order: 2,
+  points: 50,
   title: "Open Kennel",
   codename: "OPERATION OPEN KENNEL",
   summary: "No password to guess. No backup file to find. Just a door nobody locked.",

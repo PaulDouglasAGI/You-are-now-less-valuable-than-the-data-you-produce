@@ -7,6 +7,7 @@ export const hardLevel4: ChainDef = {
   id: "hard-4",
   difficulty: "hard",
   order: 4,
+  points: 150,
   title: "Target RB03",
   codename: "STANDALONE ASSESSMENT — RB03",
   summary: "A page parameter that loads different content by filename. See how far that goes.",

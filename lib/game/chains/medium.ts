@@ -8,6 +8,7 @@ export const mediumChain: ChainDef = {
   id: "medium-1",
   difficulty: "medium",
   order: 1,
+  points: 200,
   title: "Shared Infrastructure",
   codename: "OPERATION LOOSE MANIFEST",
   summary: "Two companies. One cloud provider between them. Trust doesn't stop at the tenant boundary.",

@@ -1,7 +1,7 @@
 import type { SaveData, NotebookData } from "./types";
 
-// v2: keyed by mission id instead of difficulty, now that each tier holds multiple levels
-const KEY = "breachline.save.v2";
+// v3: added hintsUsed for the scoring model (v2 saves lack it, which would break score math)
+const KEY = "breachline.save.v3";
 const NOTEBOOK_KEY = "breachline.notebook.v1";
 
 export function loadSave(): SaveData {
@@ -19,11 +19,12 @@ export function saveProgress(
   missionId: string,
   securedNodeIds: string[],
   flags: string[],
+  hintsUsed: number,
   completedAt?: number,
 ) {
   if (typeof window === "undefined") return;
   const data = loadSave();
-  data[missionId] = { securedNodeIds, flags, completedAt };
+  data[missionId] = { securedNodeIds, flags, hintsUsed, completedAt };
   window.localStorage.setItem(KEY, JSON.stringify(data));
 }
 

@@ -1,7 +1,8 @@
 "use client";
 
-import type { Difficulty } from "@/lib/game/types";
+import type { Difficulty, SaveData } from "@/lib/game/types";
 import { missionsByDifficulty, difficultyOrder, difficultyMeta } from "@/lib/game/chains";
+import { computeCareerScore } from "@/lib/game/scoring";
 import GlitchText from "./GlitchText";
 import CornerFrame from "./CornerFrame";
 
@@ -9,11 +10,16 @@ export default function MainMenu({
   progressFor,
   onSelect,
   onReset,
+  onOpenReport,
+  save,
 }: {
   progressFor: (d: Difficulty) => { secured: number; total: number };
   onSelect: (d: Difficulty) => void;
   onReset: () => void;
+  onOpenReport: () => void;
+  save: SaveData;
 }) {
+  const score = computeCareerScore(save);
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-center px-6 py-10 gap-10">
       <div className="text-center">
@@ -25,6 +31,15 @@ export default function MainMenu({
         <p className="mt-3 text-[color:var(--color-text-dim)] text-sm tracking-widest">
           SELECT OPERATION DIFFICULTY
         </p>
+        <button
+          onClick={onOpenReport}
+          className="mt-4 inline-flex items-center gap-3 border border-[color:var(--color-cyan-dim)] px-4 py-2 hover:border-[color:var(--color-cyan)] transition-colors"
+        >
+          <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">FIELD REPORT</span>
+          <span className="text-xs font-display font-bold text-[color:var(--color-cyan)]">
+            {score.rank.toUpperCase()} · {score.percent}%
+          </span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">

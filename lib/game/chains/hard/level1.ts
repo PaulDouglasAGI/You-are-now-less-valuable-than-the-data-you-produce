@@ -9,6 +9,7 @@ export const hardChain: ChainDef = {
   id: "hard-1",
   difficulty: "hard",
   order: 1,
+  points: 300,
   title: "The Long Way In",
   codename: "OPERATION LOOSE MANIFEST // FOLLOW-UP",
   summary: "Three organizations. One real network foothold. Everything after that is patience.",
