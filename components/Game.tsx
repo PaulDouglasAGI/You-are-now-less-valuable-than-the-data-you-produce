@@ -19,6 +19,8 @@ import ChainComplete from "./ChainComplete";
 import FieldReport from "./FieldReport";
 import Notebook from "./Notebook";
 import NotebookToggle from "./NotebookToggle";
+import Methodology from "./Methodology";
+import MethodologyToggle from "./MethodologyToggle";
 
 type Screen =
   | "boot"
@@ -47,14 +49,21 @@ export default function Game() {
 
   const [notebook, setNotebook] = useState(() => loadNotebook());
   const [notebookOpen, setNotebookOpen] = useState(false);
+  const [methodologyOpen, setMethodologyOpen] = useState(false);
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
         e.preventDefault();
+        setMethodologyOpen(false);
         setNotebookOpen((open) => !open);
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
+        e.preventDefault();
+        setNotebookOpen(false);
+        setMethodologyOpen((open) => !open);
       } else if (e.key === "Escape") {
         setNotebookOpen(false);
+        setMethodologyOpen(false);
       }
     }
     window.addEventListener("keydown", handler);
@@ -248,7 +257,12 @@ export default function Game() {
   return (
     <>
       {content}
-      {screen !== "boot" && <NotebookToggle onClick={() => setNotebookOpen(true)} />}
+      {screen !== "boot" && (
+        <div className="fixed top-4 right-4 z-40 flex gap-2">
+          <MethodologyToggle onClick={() => { setNotebookOpen(false); setMethodologyOpen(true); }} />
+          <NotebookToggle onClick={() => { setMethodologyOpen(false); setNotebookOpen(true); }} />
+        </div>
+      )}
       <Notebook
         open={notebookOpen}
         notebook={notebook}
@@ -256,6 +270,7 @@ export default function Game() {
         onTextChange={setNotebookText}
         onClear={clearNotebook}
       />
+      <Methodology open={methodologyOpen} onClose={() => setMethodologyOpen(false)} />
     </>
   );
 }

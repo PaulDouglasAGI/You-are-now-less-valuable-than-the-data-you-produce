@@ -117,3 +117,79 @@ export interface NotebookData {
   entries: NotebookEntry[];
   text: string;
 }
+
+export type MethodologyTagColor = "green" | "blue" | "red" | "yellow";
+
+export interface MethodologyTag {
+  label: string;
+  color: MethodologyTagColor;
+}
+
+export interface MethodologyCommandBlock {
+  label: string;
+  /** each entry is one rendered line; a leading "#" marks a dimmed comment line, {{TOKEN}} marks a highlighted variable span */
+  lines: string[];
+}
+
+export type MethodologyNoteTone = "info" | "warning" | "danger";
+
+export interface MethodologyNote {
+  tone: MethodologyNoteTone;
+  title: string;
+  body: string;
+}
+
+export interface MethodologySubsection {
+  heading: string;
+  steps?: string[];
+  commandBlocks?: MethodologyCommandBlock[];
+}
+
+export interface MethodologyCard {
+  id: string;
+  /** source-style numbering, e.g. "01.1", "05.0" — purely cosmetic */
+  number: string;
+  title: string;
+  tags: MethodologyTag[];
+  steps?: string[];
+  commandBlocks?: MethodologyCommandBlock[];
+  notes?: MethodologyNote[];
+  subsections?: MethodologySubsection[];
+  /** red left-border treatment for the handful of "read this first" strategy cards */
+  critical?: boolean;
+}
+
+export interface MethodologyPhase {
+  id: string;
+  /** short nav label, e.g. "01 · RECON" */
+  navLabel: string;
+  title: string;
+  group: "core" | "advanced";
+  cards: MethodologyCard[];
+}
+
+export interface MindsetCard {
+  heading: string;
+  items: string[];
+}
+
+export interface ExamPointRow {
+  id: string;
+  name: string;
+  maxPoints: number;
+  partial?: { label: string; points: number };
+  full: { label: string; points: number };
+}
+
+export interface MethodologyData {
+  phases: MethodologyPhase[];
+  examDay: {
+    caveat: string;
+    durationHours: number;
+    pointsToPass: number;
+    pointsTotal: number;
+    reportWindowHours: number;
+    pointRows: ExamPointRow[];
+    mindset: MindsetCard[];
+  };
+}
