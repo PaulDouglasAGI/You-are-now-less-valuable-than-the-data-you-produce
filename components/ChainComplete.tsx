@@ -15,7 +15,10 @@ export default function ChainComplete({
   const meta = difficultyMeta[chain.difficulty];
   return (
     <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
-      <div className="relative max-w-3xl w-full border border-[color:var(--color-cyan)]/50 bg-[color:var(--color-panel)]/70 p-8 md:p-10 fade-in text-center">
+      <div
+        className="relative max-w-3xl w-full hud-panel p-8 md:p-10 fade-in glitch-flicker-once text-center"
+        style={{ ["--hp-color" as string]: `color-mix(in srgb, ${meta.color} 50%, transparent)` }}
+      >
         <CornerFrame color={meta.color} />
         <span className="block text-[11px] tracking-[0.3em]" style={{ color: meta.color }}>
           {meta.label} OPERATION COMPLETE
@@ -23,7 +26,8 @@ export default function ChainComplete({
         <GlitchText
           as="h1"
           text={chain.title}
-          className="block font-statement text-4xl md:text-6xl font-black uppercase text-[color:var(--color-cyan)] text-glow mt-2"
+          variant="chromatic"
+          className="block font-statement text-4xl md:text-6xl font-black uppercase text-[color:var(--color-cyan)] mt-2"
         />
         <p className="mt-1 text-xs tracking-widest text-[color:var(--color-text-dim)]">{chain.codename}</p>
 

@@ -3,6 +3,7 @@
 import type { ChainDef } from "@/lib/game/types";
 import { difficultyMeta } from "@/lib/game/chains";
 import UsMap, { type NodeStatus } from "./UsMap";
+import CornerFrame from "./CornerFrame";
 
 export default function OperationMap({
   chain,
@@ -44,7 +45,8 @@ export default function OperationMap({
       </div>
 
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-5xl">
+        <div className="relative w-full max-w-5xl hud-panel p-4 md:p-6">
+          <CornerFrame />
           <UsMap nodes={chain.nodes} statusFor={statusFor} onSelect={onSelectNode} />
         </div>
       </div>

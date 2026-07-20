@@ -26,16 +26,22 @@ export default function NodeBriefing({
         </div>
 
         <div>
-          <span className="block text-[11px] tracking-[0.3em] text-[color:var(--color-cyan-dim)]">TARGET LOCKED</span>
-          <GlitchText
-            as="h1"
-            text={node.org}
-            className="block font-display text-2xl md:text-4xl font-bold text-[color:var(--color-cyan)] text-glow mt-1"
-          />
-          <p className="text-sm text-[color:var(--color-text-dim)] mt-1">
+          <span className="block text-[11px] tracking-[0.3em] text-[color:var(--color-cyan-dim)] scan-in">
+            TARGET LOCKED
+          </span>
+          <div className="scan-in" style={{ animationDelay: "90ms" }}>
+            <GlitchText
+              as="h1"
+              text={node.org}
+              className="block font-display text-2xl md:text-4xl font-bold text-[color:var(--color-cyan)] text-glow mt-1"
+            />
+          </div>
+          <p className="text-sm text-[color:var(--color-text-dim)] mt-1 scan-in" style={{ animationDelay: "180ms" }}>
             {node.city}, {node.state} — IP {node.ip}
           </p>
-          <p className="text-sm text-[color:var(--color-text)] mt-2 italic">{node.tagline}</p>
+          <p className="text-sm text-[color:var(--color-text)] mt-2 italic scan-in" style={{ animationDelay: "270ms" }}>
+            {node.tagline}
+          </p>
 
           <div className="mt-6 space-y-1.5 text-sm text-[color:var(--color-text)] leading-relaxed">
             {node.briefing.map((line, i) =>

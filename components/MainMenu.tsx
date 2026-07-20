@@ -52,8 +52,8 @@ export default function MainMenu({
             <button
               key={d}
               onClick={() => onSelect(d)}
-              className="group relative text-left hud-panel p-6 flex flex-col gap-4 hover:border-[color:var(--color-cyan)] hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 transition-all duration-200 fade-in"
-              style={{ boxShadow: complete ? `0 0 24px -6px ${meta.color}` : undefined, animationDelay: `${i * 90}ms` }}
+              className="group relative text-left hud-panel p-6 flex flex-col gap-4 hover:border-[color:var(--color-cyan)] hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 transition-all duration-200 stagger-in"
+              style={{ boxShadow: complete ? `0 0 24px -6px ${meta.color}` : undefined, ["--stagger-i" as string]: i }}
             >
               <CornerFrame />
               <div className="flex items-center justify-between">

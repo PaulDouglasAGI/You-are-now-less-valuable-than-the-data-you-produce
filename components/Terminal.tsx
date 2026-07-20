@@ -32,6 +32,11 @@ export default function Terminal({
   const [pastInputs, setPastInputs] = useState<string[]>([]);
   const [historyIdx, setHistoryIdx] = useState<number | null>(null);
   const [justSecured, setJustSecured] = useState(false);
+  // index at which the most recent submit()'s output starts — everything from here on is
+  // "new" and gets the line-reveal animation; everything before it has already settled.
+  // Set directly inside the submit() event handler (not an effect), so this is a plain,
+  // idiomatic derived-state value rather than a ref read during render.
+  const [revealFrom, setRevealFrom] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const onNoteRef = useRef(onNote);
@@ -55,6 +60,7 @@ export default function Terminal({
     if (justSecured) return;
     const trimmed = input;
     const result = resolveCommand(node, runState, trimmed);
+    setRevealFrom(runState.history.length);
     setRunState((prev) => ({
       ...result.nextState,
       history: [...prev.history, ...result.lines],
@@ -178,13 +184,20 @@ export default function Terminal({
         </div>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 text-[13px] md:text-sm leading-relaxed">
-          {runState.history.map((line, i) => (
-            <div key={i} className={`${TONE_CLASS[line.kind]} whitespace-pre-wrap break-words`}>
-              {line.text}
-            </div>
-          ))}
+          {runState.history.map((line, i) => {
+            const isNew = i >= revealFrom;
+            return (
+              <div
+                key={i}
+                className={`${TONE_CLASS[line.kind]} whitespace-pre-wrap break-words ${isNew ? "term-line-in" : ""}`}
+                style={isNew ? { animationDelay: `${Math.min(i - revealFrom, 6) * 18}ms` } : undefined}
+              >
+                {line.text}
+              </div>
+            );
+          })}
           {justSecured && (
-            <div className="text-[color:var(--color-green)] mt-3 fade-in font-display tracking-widest">
+            <div className="text-[color:var(--color-green)] mt-3 fade-in glitch-flicker-once font-display tracking-widest">
               [ target secured — closing session... ]
             </div>
           )}
@@ -201,9 +214,8 @@ export default function Terminal({
             autoFocus
             spellCheck={false}
             autoComplete="off"
-            className="flex-1 bg-transparent outline-none text-[color:var(--color-text)] disabled:opacity-50"
+            className="term-input flex-1 bg-transparent outline-none text-[color:var(--color-text)] disabled:opacity-50"
           />
-          <span className="caret" />
         </div>
       </div>
     </div>

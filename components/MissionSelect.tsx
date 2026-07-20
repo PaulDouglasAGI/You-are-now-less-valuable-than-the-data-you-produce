@@ -57,12 +57,12 @@ export default function MissionSelect({
                 key={mission.id}
                 onClick={() => !locked && onSelect(mission.id)}
                 disabled={locked}
-                className={`group relative text-left hud-panel p-5 flex items-center gap-5 transition-all duration-200 fade-in ${
+                className={`group relative text-left hud-panel p-5 flex items-center gap-5 transition-all duration-200 stagger-in ${
                   locked
                     ? "opacity-50 cursor-not-allowed"
                     : "cursor-pointer hover:border-[color:var(--color-cyan)] hover:-translate-y-0.5 active:scale-[0.99] active:translate-y-0"
                 }`}
-                style={{ animationDelay: `${i * 70}ms` }}
+                style={{ ["--stagger-i" as string]: i }}
               >
                 <CornerFrame color={secured ? "var(--color-green)" : undefined} />
                 <div

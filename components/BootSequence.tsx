@@ -15,6 +15,13 @@ const LINES = [
 
 type Stage = "burst" | "line" | "authorizing" | "title";
 
+const AUTH_STEPS = [
+  "TRACING UPLINK...",
+  "NEGOTIATING HANDSHAKE...",
+  "VERIFYING OPERATOR CREDENTIALS...",
+  "AUTHORIZING ACCESS...",
+];
+
 function wait(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
@@ -103,7 +110,15 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
       {stage === "authorizing" && (
         <div className="flex flex-col items-center gap-4 fade-in relative z-10">
           <RadialHud progress={authProgress} label="ESTABLISHING UPLINK" size={140} />
-          <p className="text-xs tracking-[0.3em] text-[color:var(--color-cyan-dim)]">AUTHORIZING ACCESS...</p>
+          <div className="flex flex-col items-center gap-1">
+            {AUTH_STEPS.slice(0, Math.min(AUTH_STEPS.length - 1, Math.floor(authProgress * AUTH_STEPS.length)) + 1).map(
+              (s, i) => (
+                <p key={i} className="text-xs tracking-[0.3em] text-[color:var(--color-cyan-dim)] scan-in">
+                  {s}
+                </p>
+              ),
+            )}
+          </div>
         </div>
       )}
 
@@ -112,7 +127,8 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
           <GlitchText
             as="h1"
             text="BREACHLINE"
-            className="font-display text-6xl md:text-8xl font-bold tracking-[0.2em] text-[color:var(--color-cyan)] text-glow"
+            variant="chromatic"
+            className="font-display text-6xl md:text-8xl font-bold tracking-[0.2em] text-[color:var(--color-cyan)]"
           />
           <p className="max-w-xl text-sm md:text-base text-[color:var(--color-text-dim)] tracking-wide">
             a terminal-driven hacking trainer. real methodology, fictional targets.

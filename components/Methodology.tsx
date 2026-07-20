@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type {
   MethodologyCard,
   MethodologyCommandBlock,
@@ -190,15 +190,20 @@ export default function Methodology({ open, onClose }: { open: boolean; onClose:
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [examPoints, setExamPoints] = useState<Record<string, number>>({});
 
-  const activePhase = useMemo(() => methodology.phases.find((p) => p.id === activeTab) ?? null, [activeTab]);
-  const isExamDay = activeTab === "examday";
-
   // the panel stays mounted (returns null when closed rather than unmounting) so its
   // useState doesn't naturally reset on its own — the point tracker is meant to be a
-  // scratch calculator, not real progress, so explicitly clear it whenever the panel closes
-  useEffect(() => {
+  // scratch calculator, not real progress, so clear it whenever `open` transitions to
+  // false. This is React's documented "adjust state when a prop changes" pattern
+  // (a conditional setState during render, not inside an effect) rather than an effect,
+  // since an unconditional setState in an effect body is flagged as an anti-pattern.
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (!open) setExamPoints({});
-  }, [open]);
+  }
+
+  const activePhase = useMemo(() => methodology.phases.find((p) => p.id === activeTab) ?? null, [activeTab]);
+  const isExamDay = activeTab === "examday";
 
   if (!open) return null;
 

@@ -43,7 +43,7 @@ export default function FieldReport({ save, onBack }: { save: SaveData; onBack: 
           <p className="text-sm text-[color:var(--color-text-dim)] tracking-widest mt-1">{score.percent}% CAREER SCORE</p>
         </div>
 
-        <div className="mt-6 hud-panel p-6 fade-in" style={{ animationDelay: "70ms" }}>
+        <div className="mt-6 hud-panel p-6 stagger-in" style={{ ["--stagger-i" as string]: 1 }}>
           <h2 className="font-display text-sm tracking-[0.25em] text-[color:var(--color-cyan)] mb-4">
             SKILL BREAKDOWN
           </h2>
@@ -70,7 +70,7 @@ export default function FieldReport({ save, onBack }: { save: SaveData; onBack: 
           </div>
         </div>
 
-        <div className="mt-6 hud-panel p-6 fade-in" style={{ animationDelay: "140ms" }}>
+        <div className="mt-6 hud-panel p-6 stagger-in" style={{ ["--stagger-i" as string]: 2 }}>
           <h2 className="font-display text-sm tracking-[0.25em] text-[color:var(--color-cyan)] mb-4">
             MISSION LOG
           </h2>
