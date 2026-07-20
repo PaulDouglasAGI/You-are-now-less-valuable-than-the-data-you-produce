@@ -38,6 +38,6 @@ export const difficultyMeta: Record<Difficulty, { label: string; color: string; 
   ghost: {
     label: "GHOST",
     color: "var(--color-violet)",
-    blurb: "No clean signal. Recon has real noise, obvious payloads get blocked, and the syntax has to be exact — no `help` or `hint` here is ever going to hand you the working command. Levels 3-4 add memory corruption and a full Active Directory kill chain; level 5 hands you an unverified scanner report and a host that isn't yours to touch. This is the only tier that actually tests unguided discovery and professional judgment.",
+    blurb: "No clean signal. Recon has real noise, obvious payloads get blocked, and the syntax has to be exact — no `help` or `hint` here is ever going to hand you the working command. Levels 3-4 add memory corruption and a full Active Directory kill chain; level 5 hands you an unverified scanner report and a host that isn't yours to touch. Levels 6-8 go deeper into binary exploitation — a ROP chain against a non-executable stack, a format-string read/write primitive, and a heap use-after-free. Level 9 runs a second, distinct Active Directory chain built entirely on ACL abuse and DCSync. Levels 10-11 leave memory corruption behind for cryptographic and API-layer bugs — a JWT algorithm-confusion forgery and a GraphQL schema that told you more than the client app ever did. This is the only tier that actually tests unguided discovery and professional judgment.",
   },
 };
