@@ -569,6 +569,20 @@ export function resolveCommand(node: NodeDef, state: NodeRunState, rawInput: str
 
   const allObjectivesComplete = node.objectives.every((o) => nextState.completedObjectives.includes(o.id));
 
+  // one-time nudge: the closing remediation step is game bookkeeping, not a technical puzzle —
+  // real-world tool knowledge won't surface "secure system" as its syntax, so the moment it's the
+  // only objective left, say so explicitly instead of leaving the player to guess or dig for a hint.
+  if (!allObjectivesComplete && justCompletedObjective) {
+    const remaining = node.objectives.filter((o) => !nextState.completedObjectives.includes(o.id));
+    const justUnlockedRemediation =
+      remaining.length === 1 &&
+      remaining[0].tactic === "Remediation" &&
+      (remaining[0].requires ?? []).every((id) => nextState.completedObjectives.includes(id));
+    if (justUnlockedRemediation) {
+      lines.push({ kind: "system", text: "[system] every finding confirmed — close this out: `secure system`" });
+    }
+  }
+
   return { lines, nextState, justCompletedObjective, allObjectivesComplete, note: outcome.note };
 }
 
