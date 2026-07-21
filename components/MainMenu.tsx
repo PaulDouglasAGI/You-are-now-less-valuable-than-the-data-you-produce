@@ -26,7 +26,7 @@ export default function MainMenu({
   const campaignProgress = progressFor("campaign");
   const campaignComplete = campaignProgress.secured === campaignProgress.total && campaignProgress.total > 0;
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center px-6 py-10 gap-10">
+    <div className="h-screen w-screen flex flex-col items-center overflow-y-auto px-6 py-10 gap-10">
       <div className="text-center">
         <GlitchText
           as="h1"

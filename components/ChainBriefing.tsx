@@ -16,7 +16,7 @@ export default function ChainBriefing({
 }) {
   const meta = difficultyMeta[chain.difficulty];
   return (
-    <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
+    <div className="h-screen w-screen flex flex-col items-center overflow-y-auto px-6 py-10">
       <div className="relative max-w-3xl w-full hud-panel p-8 md:p-10 fade-in">
         <CornerFrame />
         <div className="flex items-center justify-between mb-2">

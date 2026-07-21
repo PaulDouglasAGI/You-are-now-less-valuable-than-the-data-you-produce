@@ -17,7 +17,7 @@ export default function NodeBriefing({
   onBack: () => void;
 }) {
   return (
-    <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
+    <div className="h-screen w-screen flex flex-col items-center overflow-y-auto px-6 py-10">
       <div className="relative max-w-4xl w-full grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-center hud-panel p-8 md:p-10 fade-in">
         <CornerFrame />
         <div className="flex flex-col items-center gap-3">

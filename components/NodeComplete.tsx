@@ -17,7 +17,7 @@ export default function NodeComplete({
   debriefLines?: string[];
 }) {
   return (
-    <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
+    <div className="h-screen w-screen flex flex-col items-center overflow-y-auto px-6 py-10">
       <div
         className="relative max-w-2xl w-full hud-panel p-8 md:p-10 fade-in glitch-flicker-once text-center"
         style={{ ["--hp-color" as string]: "color-mix(in srgb, var(--color-green) 50%, transparent)" }}
