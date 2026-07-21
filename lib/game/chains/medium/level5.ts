@@ -32,7 +32,7 @@ export const mediumLevel5: ChainDef = {
       org: "Redwing Print & Mail",
       city: "Red Wing",
       state: "MN",
-      coords: { x: 44, y: 19 },
+      coords: { x: 53.5, y: 12.5 },
       ip: IP,
       tagline: "Direct-mail print house — customer letter-template editor",
       briefing: [

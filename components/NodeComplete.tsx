@@ -8,10 +8,13 @@ export default function NodeComplete({
   node,
   isLastNode,
   onContinue,
+  debriefLines,
 }: {
   node: NodeDef;
   isLastNode: boolean;
   onContinue: () => void;
+  /** campaign-only: resolved debrief variant, overriding node.debrief when the run's ending flag matched one */
+  debriefLines?: string[];
 }) {
   return (
     <div className="h-screen w-screen flex items-center justify-center px-6 py-10">
@@ -28,7 +31,7 @@ export default function NodeComplete({
         />
         <div className="mt-6 space-y-2 text-sm text-left text-[color:var(--color-text)] leading-relaxed border-t border-[color:var(--color-line)] pt-6">
           <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">FINDINGS</span>
-          {node.debrief.map((line, i) => (
+          {(debriefLines ?? node.debrief).map((line, i) => (
             <p key={i}>{line}</p>
           ))}
         </div>

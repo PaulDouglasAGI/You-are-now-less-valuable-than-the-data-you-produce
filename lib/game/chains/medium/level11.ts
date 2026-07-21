@@ -72,7 +72,7 @@ export const mediumLevel11: ChainDef = {
       org: "Wrenfield Retail Group",
       city: "Wrenfield",
       state: "OH",
-      coords: { x: 60, y: 27 },
+      coords: { x: 71.4, y: 23.9 },
       ip: IP,
       tagline: "Online storefront — gift-card and coupon platform",
       briefing: [

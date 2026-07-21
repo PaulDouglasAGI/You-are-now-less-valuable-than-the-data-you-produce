@@ -47,7 +47,7 @@ export const hardChain: ChainDef = {
       org: "Atlas Cloud Partners",
       city: "Fort Renner",
       state: "NE",
-      coords: { x: 44, y: 27 },
+      coords: { x: 43.8, y: 22.5 },
       ip: IP_ATLAS,
       tagline: "Enterprise hosting & managed infrastructure",
       briefing: [
@@ -246,7 +246,7 @@ export const hardChain: ChainDef = {
       org: "Vantage Rail Logistics",
       city: "Cutler Springs",
       state: "MO",
-      coords: { x: 51, y: 33 },
+      coords: { x: 55.4, y: 31.2 },
       ip: IP_VANTAGE,
       tagline: "Regional rail freight dispatch & scheduling",
       briefing: [
@@ -415,7 +415,7 @@ export const hardChain: ChainDef = {
       org: "Continental Grid Interconnect",
       city: "Ashford Crossing",
       state: "OH",
-      coords: { x: 63, y: 27 },
+      coords: { x: 72.9, y: 23.3 },
       ip: IP_CONTINENTAL,
       tagline: "Regional load-balancing authority",
       briefing: [

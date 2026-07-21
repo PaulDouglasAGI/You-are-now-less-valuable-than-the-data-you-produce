@@ -41,7 +41,7 @@ export const ghostLevel11: ChainDef = {
       org: "Windmere Logistics",
       city: "Windmere",
       state: "OH",
-      coords: { x: 44, y: 46 },
+      coords: { x: 72.9, y: 25 },
       ip: IP,
       tagline: "Regional freight operations platform",
       briefing: [`IP: ${IP}`, `API: ${GQL}`, "No further information provided."],

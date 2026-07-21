@@ -36,7 +36,7 @@ export const ghostLevel4: ChainDef = {
       org: "Ashgrove Manufacturing Corp",
       city: "Ashgrove",
       state: "PA",
-      coords: { x: 78, y: 24 },
+      coords: { x: 79.6, y: 23.1 },
       ip: IP,
       tagline: "Industrial manufacturing — Active Directory domain",
       briefing: [`IP: ${IP}`, `DOMAIN: ${DOMAIN}`, "No further information provided."],

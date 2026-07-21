@@ -20,6 +20,11 @@ export default function MainMenu({
   save: SaveData;
 }) {
   const score = computeCareerScore(save);
+  const tierOrder = difficultyOrder.filter((d) => d !== "campaign");
+  const campaignMissions = missionsByDifficulty.campaign;
+  const campaignMeta = difficultyMeta.campaign;
+  const campaignProgress = progressFor("campaign");
+  const campaignComplete = campaignProgress.secured === campaignProgress.total && campaignProgress.total > 0;
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-center px-6 py-10 gap-10">
       <div className="text-center">
@@ -42,8 +47,49 @@ export default function MainMenu({
         </button>
       </div>
 
+      <button
+        onClick={() => onSelect("campaign")}
+        className="group relative text-left hud-panel p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-4 md:gap-8 w-full max-w-6xl hover:border-[color:var(--color-teal)] hover:-translate-y-0.5 active:scale-[0.99] active:translate-y-0 transition-all duration-200 fade-in"
+        style={{
+          ["--hp-color" as string]: campaignMeta.color,
+          boxShadow: campaignComplete ? `0 0 28px -6px ${campaignMeta.color}` : `0 0 18px -8px ${campaignMeta.color}`,
+        }}
+      >
+        <CornerFrame color={campaignMeta.color} />
+        <div className="flex-1">
+          <div className="flex items-center gap-3">
+            <span className="font-display font-bold tracking-[0.25em] text-xs" style={{ color: campaignMeta.color }}>
+              CAMPAIGN
+            </span>
+            <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">
+              {campaignMissions.length} EPISODES · UNBANK_
+            </span>
+            {campaignComplete && (
+              <span className="text-[10px] tracking-widest text-[color:var(--color-green)]">SECURED</span>
+            )}
+          </div>
+          <GlitchText
+            as="h2"
+            text={campaignMeta.label}
+            className="block font-statement text-3xl md:text-4xl font-black uppercase mt-1 text-[color:var(--color-teal)] text-glow"
+          />
+          <p className="text-sm text-[color:var(--color-text-dim)] leading-relaxed mt-2 max-w-3xl">{campaignMeta.blurb}</p>
+        </div>
+        <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-2 shrink-0">
+          <span className="text-xs text-[color:var(--color-text-dim)] tracking-widest">
+            {campaignProgress.secured}/{campaignProgress.total} secured
+          </span>
+          <span
+            className="border px-5 py-2 font-display tracking-[0.3em] text-xs group-hover:bg-[color:var(--color-teal)] group-hover:text-black transition-all duration-150"
+            style={{ borderColor: campaignMeta.color, color: campaignMeta.color }}
+          >
+            SELECT
+          </span>
+        </div>
+      </button>
+
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-full max-w-6xl">
-        {difficultyOrder.map((d, i) => {
+        {tierOrder.map((d, i) => {
           const missions = missionsByDifficulty[d];
           const meta = difficultyMeta[d];
           const p = progressFor(d);

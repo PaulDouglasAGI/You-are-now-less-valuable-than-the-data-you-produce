@@ -1,4 +1,4 @@
-export type Difficulty = "easy" | "medium" | "hard" | "ghost";
+export type Difficulty = "easy" | "medium" | "hard" | "ghost" | "campaign";
 
 export type TerminalLine =
   | { kind: "input"; text: string }
@@ -64,6 +64,8 @@ export interface NodeDef {
   debrief: string[];
   /** if set, any command referencing a host outside the engagement's rules of engagement is flagged as a scope violation instead of being resolved normally — fires regardless of tool, doesn't block progress, costs score */
   outOfScope?: { match: (input: string) => boolean; response: string[] };
+  /** campaign-only: alternate debrief text keyed by whichever ending flag got set on this run; falls back to `debrief` when unset or when no key matches */
+  debriefVariants?: Record<string, string[]>;
 }
 
 export interface ChainDef {
@@ -105,6 +107,18 @@ export interface ChainProgress {
 
 /** keyed by mission id (ChainDef.id), not by difficulty — each mission tracks its own progress */
 export type SaveData = Partial<Record<string, ChainProgress>>;
+
+/** campaign-only narrative interstitial, shown between episodes on the "transmission" screen */
+export interface TransmissionDef {
+  /** mission id this transmission plays after (or "campaign-start" for the cold open before episode 1) */
+  after: string;
+  /** "chatlog" for the recurring IRC-style unbank channel; "dossier" for the finale's leaked-document epilogue */
+  format: "chatlog" | "dossier";
+  channel?: string;
+  lines: { handle: string; text: string; timestamp?: string }[];
+  /** finale-only: alternate closing lines keyed by whichever ending flag got set, checked before falling back to `lines` */
+  variantLines?: Record<string, { handle: string; text: string; timestamp?: string }[]>;
+}
 
 export interface NotebookEntry {
   id: string;

@@ -33,7 +33,7 @@ export const ghostLevel3: ChainDef = {
       org: "Solstice Embedded Systems",
       city: "Solstice",
       state: "WA",
-      coords: { x: 16, y: 16 },
+      coords: { x: 15.3, y: 7.6 },
       ip: IP,
       tagline: "Embedded diagnostics vendor",
       briefing: [`IP: ${IP}`, "No further information provided."],

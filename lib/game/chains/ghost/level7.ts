@@ -33,7 +33,7 @@ export const ghostLevel7: ChainDef = {
       org: "Ashwell Diagnostics",
       city: "Ashwell",
       state: "WY",
-      coords: { x: 34, y: 24 },
+      coords: { x: 32.3, y: 19.5 },
       ip: IP,
       tagline: "Industrial diagnostics vendor",
       briefing: [`IP: ${IP}`, "No further information provided."],

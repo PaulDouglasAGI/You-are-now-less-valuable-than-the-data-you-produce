@@ -35,7 +35,7 @@ export const ghostLevel6: ChainDef = {
       org: "Duskfield Technologies",
       city: "Duskfield",
       state: "MT",
-      coords: { x: 30, y: 14 },
+      coords: { x: 30.9, y: 9 },
       ip: IP,
       tagline: "Industrial telemetry vendor",
       briefing: [`IP: ${IP}`, "No further information provided."],

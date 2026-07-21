@@ -34,7 +34,7 @@ export const mediumLevel2: ChainDef = {
       org: "Blue Anchor Credit Union",
       city: "Beaufort",
       state: "NC",
-      coords: { x: 78, y: 34 },
+      coords: { x: 78.6, y: 34.4 },
       ip: IP,
       tagline: "Member-owned credit union — online banking portal",
       briefing: [

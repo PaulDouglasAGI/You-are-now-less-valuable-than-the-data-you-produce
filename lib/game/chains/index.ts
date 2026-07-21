@@ -3,12 +3,14 @@ import { easyMissions } from "./easy";
 import { mediumMissions } from "./medium";
 import { hardMissions } from "./hard";
 import { ghostMissions } from "./ghost";
+import { campaignMissions } from "./campaign";
 
 export const missionsByDifficulty: Record<Difficulty, ChainDef[]> = {
   easy: easyMissions,
   medium: mediumMissions,
   hard: hardMissions,
   ghost: ghostMissions,
+  campaign: campaignMissions,
 };
 
 export const missionsById: Record<string, ChainDef> = Object.fromEntries(
@@ -17,9 +19,14 @@ export const missionsById: Record<string, ChainDef> = Object.fromEntries(
     .map((m) => [m.id, m]),
 );
 
-export const difficultyOrder: Difficulty[] = ["easy", "medium", "hard", "ghost"];
+export const difficultyOrder: Difficulty[] = ["easy", "medium", "hard", "ghost", "campaign"];
 
 export const difficultyMeta: Record<Difficulty, { label: string; color: string; blurb: string }> = {
+  campaign: {
+    label: "THE LEDGER",
+    color: "var(--color-teal)",
+    blurb: "unbank_ vs. Concord Financial Group — \"Discord Financial\" to everyone who's ever had to touch its infrastructure. Six episodes, one serialized operation, dozens of subsidiaries chained through credential reuse, a careless vendor, an unaudited trust graph, an insider's tip, and a platform's own business logic. Open from the start. The finale forks — what you do with the access is not scripted.",
+  },
   easy: {
     label: "EASY",
     color: "var(--color-green)",

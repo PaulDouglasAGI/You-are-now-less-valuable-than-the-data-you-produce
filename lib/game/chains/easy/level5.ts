@@ -36,7 +36,7 @@ export const easyLevel5: ChainDef = {
       org: "Aldermere Township Services",
       city: "Aldermere",
       state: "NH",
-      coords: { x: 72, y: 11 },
+      coords: { x: 88.2, y: 13.4 },
       ip: IP,
       tagline: "Municipal citizen support portal",
       briefing: [

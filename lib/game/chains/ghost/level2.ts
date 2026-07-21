@@ -33,7 +33,7 @@ export const ghostLevel2: ChainDef = {
       org: "Thornfield Municipal Library System",
       city: "Thornfield",
       state: "MA",
-      coords: { x: 85, y: 18 },
+      coords: { x: 87.7, y: 16.5 },
       ip: IP,
       tagline: "Regional library consortium — patron account portal",
       briefing: [`IP: ${IP}`, "No further information provided."],

@@ -37,7 +37,7 @@ export const mediumLevel10: ChainDef = {
       org: "Meridian Cloud Exchange",
       city: "Meridian",
       state: "TX",
-      coords: { x: 63, y: 38 },
+      coords: { x: 44.6, y: 44.4 },
       ip: IP1,
       tagline: "Cloud vendor marketplace platform",
       briefing: [
@@ -186,7 +186,7 @@ export const mediumLevel10: ChainDef = {
       org: "Cobalt Harbor Port Authority",
       city: "Cobalt Harbor",
       state: "LA",
-      coords: { x: 70, y: 44 },
+      coords: { x: 59.6, y: 45.8 },
       ip: IP2,
       tagline: "Regional port authority — container-tracking platform",
       briefing: [

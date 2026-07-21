@@ -8,9 +8,11 @@ import CornerFrame from "./CornerFrame";
 export default function ChainComplete({
   chain,
   onMenu,
+  continueLabel,
 }: {
   chain: ChainDef;
   onMenu: () => void;
+  continueLabel?: string;
 }) {
   const meta = difficultyMeta[chain.difficulty];
   return (
@@ -47,7 +49,7 @@ export default function ChainComplete({
           onClick={onMenu}
           className="mt-8 border border-[color:var(--color-cyan-dim)] px-8 py-3 font-display tracking-[0.3em] text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)] hover:text-black active:scale-[0.97] transition-all duration-150"
         >
-          BACK TO LEVEL SELECT
+          {continueLabel ?? "BACK TO LEVEL SELECT"}
         </button>
       </div>
     </div>

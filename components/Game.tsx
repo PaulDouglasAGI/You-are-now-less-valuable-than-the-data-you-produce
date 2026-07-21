@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Difficulty, NodeRunState, NotebookEntry, SaveData } from "@/lib/game/types";
 import { missionsByDifficulty, missionsById } from "@/lib/game/chains";
+import { transmissionsByAfter, nextCampaignMissionId } from "@/lib/game/chains/campaign";
 import { loadSave, saveProgress, resetSave, loadNotebook, saveNotebook } from "@/lib/game/storage";
 import type { NodeStatus } from "./UsMap";
 import type { MissionStatus } from "./MissionSelect";
@@ -16,6 +17,7 @@ import NodeBriefing from "./NodeBriefing";
 import Terminal from "./Terminal";
 import NodeComplete from "./NodeComplete";
 import ChainComplete from "./ChainComplete";
+import Transmission from "./Transmission";
 import FieldReport from "./FieldReport";
 import Notebook from "./Notebook";
 import NotebookToggle from "./NotebookToggle";
@@ -32,6 +34,7 @@ type Screen =
   | "terminal"
   | "nodeComplete"
   | "chainComplete"
+  | "transmission"
   | "report";
 
 export default function Game() {
@@ -46,6 +49,7 @@ export default function Game() {
   const [chainHintsUsed, setChainHintsUsed] = useState(0);
   const [chainScopeViolations, setChainScopeViolations] = useState(0);
   const [chainJustCompleted, setChainJustCompleted] = useState(false);
+  const [transmissionAfter, setTransmissionAfter] = useState<string | null>(null);
 
   const [notebook, setNotebook] = useState(() => loadNotebook());
   const [notebookOpen, setNotebookOpen] = useState(false);
@@ -132,12 +136,27 @@ export default function Game() {
 
   function handleSelectMission(id: string) {
     setMissionId(id);
+    const isFirstCampaignEpisode = difficulty === "campaign" && missionsByDifficulty.campaign[0]?.id === id;
+    if (isFirstCampaignEpisode && !save[id] && transmissionsByAfter["campaign-start"]) {
+      setTransmissionAfter("campaign-start");
+      setScreen("transmission");
+      return;
+    }
     setScreen("briefing");
   }
 
   function handleBegin() {
     if (!missionId) return;
-    setChainFlags(save[missionId]?.flags ?? []);
+    let initialFlags = save[missionId]?.flags ?? [];
+    if (difficulty === "campaign") {
+      // earlier episodes are always completed first (mission select gates on it), so their
+      // discovered flags are available in save — carry them forward into this episode's run
+      const priorFlags = missionsByDifficulty.campaign
+        .filter((m) => m.id !== missionId)
+        .flatMap((m) => save[m.id]?.flags ?? []);
+      initialFlags = Array.from(new Set([...priorFlags, ...initialFlags]));
+    }
+    setChainFlags(initialFlags);
     setChainHintsUsed(save[missionId]?.hintsUsed ?? 0);
     setChainScopeViolations(save[missionId]?.scopeViolations ?? 0);
     setScreen("map");
@@ -176,6 +195,31 @@ export default function Game() {
 
   function handleNodeCompleteContinue() {
     setScreen(chainJustCompleted ? "chainComplete" : "map");
+  }
+
+  function handleChainCompleteContinue() {
+    if (difficulty === "campaign" && missionId && transmissionsByAfter[missionId]) {
+      setTransmissionAfter(missionId);
+      setScreen("transmission");
+      return;
+    }
+    handleBackToMissionSelect();
+  }
+
+  function handleTransmissionContinue() {
+    if (transmissionAfter === "campaign-start") {
+      setTransmissionAfter(null);
+      setScreen("briefing");
+      return;
+    }
+    const next = transmissionAfter ? nextCampaignMissionId(transmissionAfter) : null;
+    setTransmissionAfter(null);
+    if (next) {
+      setMissionId(next);
+      setScreen("briefing");
+    } else {
+      handleBackToMissionSelect();
+    }
   }
 
   function handleBackToMissionSelect() {
@@ -220,6 +264,18 @@ export default function Game() {
         onBack={handleBackToMenu}
       />
     );
+  } else if (screen === "transmission" && transmissionAfter && transmissionsByAfter[transmissionAfter]) {
+    const isEpilogue = nextCampaignMissionId(transmissionAfter) === null && transmissionAfter !== "campaign-start";
+    content = (
+      <Transmission
+        transmission={transmissionsByAfter[transmissionAfter]}
+        flags={chainFlags}
+        onContinue={handleTransmissionContinue}
+        continueLabel={
+          transmissionAfter === "campaign-start" ? "BEGIN EPISODE 1" : isEpilogue ? "BACK TO LEVEL SELECT" : "CONTINUE"
+        }
+      />
+    );
   } else if (!chain) {
     content = null;
   } else if (screen === "briefing") {
@@ -249,9 +305,22 @@ export default function Game() {
     );
   } else if (screen === "nodeComplete" && activeNode) {
     const isLastNode = chain.nodes[chain.nodes.length - 1].id === activeNode.id;
-    content = <NodeComplete node={activeNode} isLastNode={isLastNode} onContinue={handleNodeCompleteContinue} />;
+    const variantKey = activeNode.debriefVariants
+      ? Object.keys(activeNode.debriefVariants).find((k) => chainFlags.includes(k))
+      : undefined;
+    const debriefLines = variantKey ? activeNode.debriefVariants?.[variantKey] : undefined;
+    content = (
+      <NodeComplete node={activeNode} isLastNode={isLastNode} onContinue={handleNodeCompleteContinue} debriefLines={debriefLines} />
+    );
   } else if (screen === "chainComplete") {
-    content = <ChainComplete chain={chain} onMenu={handleBackToMissionSelect} />;
+    const hasFollowUpTransmission = difficulty === "campaign" && !!transmissionsByAfter[chain.id];
+    content = (
+      <ChainComplete
+        chain={chain}
+        onMenu={handleChainCompleteContinue}
+        continueLabel={hasFollowUpTransmission ? "CONTINUE" : undefined}
+      />
+    );
   }
 
   return (

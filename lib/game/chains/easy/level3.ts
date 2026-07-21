@@ -36,7 +36,7 @@ export const easyLevel3: ChainDef = {
       org: "Fernbrook Little League",
       city: "Fernbrook",
       state: "IN",
-      coords: { x: 58, y: 33 },
+      coords: { x: 65.5, y: 26.7 },
       ip: IP,
       tagline: "Youth sports league — schedules, rosters, parent notifications",
       briefing: [

@@ -33,7 +33,7 @@ export const mediumLevel7: ChainDef = {
       org: "Cascadia Freight Exchange",
       city: "Cascade Locks",
       state: "OR",
-      coords: { x: 15, y: 20 },
+      coords: { x: 14.9, y: 12.9 },
       ip: IP,
       tagline: "Regional freight brokerage — containerized microservices",
       briefing: [

@@ -38,7 +38,7 @@ export const easyLevel1: ChainDef = {
       org: "Harbor Light Food Pantry",
       city: "Millbrook",
       state: "VT",
-      coords: { x: 76, y: 14 },
+      coords: { x: 87, y: 14.6 },
       ip: IP,
       tagline: "Community food bank — volunteer & donor management portal",
       briefing: [

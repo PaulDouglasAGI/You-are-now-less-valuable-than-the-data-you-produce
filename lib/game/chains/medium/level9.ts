@@ -37,7 +37,7 @@ export const mediumLevel9: ChainDef = {
       org: "NorthPeak Cloud Hosting",
       city: "Rapid Falls",
       state: "SD",
-      coords: { x: 42, y: 20 },
+      coords: { x: 43.1, y: 16.1 },
       ip: IP1,
       tagline: "Regional VPS + object storage provider",
       briefing: [
@@ -214,7 +214,7 @@ export const mediumLevel9: ChainDef = {
       org: "Swift Transit Logistics",
       city: "Danville Junction",
       state: "IL",
-      coords: { x: 57, y: 30 },
+      coords: { x: 61.5, y: 25.7 },
       ip: IP2,
       tagline: "Regional freight dispatch & last-mile routing",
       briefing: [

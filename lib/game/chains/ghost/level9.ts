@@ -39,7 +39,7 @@ export const ghostLevel9: ChainDef = {
       org: "Thackeray Financial Group",
       city: "Thackeray",
       state: "OK",
-      coords: { x: 52, y: 32 },
+      coords: { x: 48.3, y: 37.1 },
       ip: IP,
       tagline: "Regional financial services — Active Directory domain",
       briefing: [`IP: ${IP}`, `DOMAIN: ${DOMAIN}`, "No further information provided."],

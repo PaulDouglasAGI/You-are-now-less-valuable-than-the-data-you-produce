@@ -40,7 +40,7 @@ export const easyLevel4: ChainDef = {
       org: "Meridian Grid Co-op",
       city: "Cinder Hollow",
       state: "KS",
-      coords: { x: 48, y: 33 },
+      coords: { x: 48.3, y: 30.2 },
       ip: IP,
       tagline: "Rural electric co-op — customer self-service portal",
       briefing: [

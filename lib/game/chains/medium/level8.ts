@@ -34,7 +34,7 @@ export const mediumLevel8: ChainDef = {
       org: "Thistlewood Municipal Utilities",
       city: "Thistlewood",
       state: "ID",
-      coords: { x: 20, y: 26 },
+      coords: { x: 21.6, y: 13.5 },
       ip: IP,
       tagline: "Municipal utility — contracted ops dashboard backend",
       briefing: [

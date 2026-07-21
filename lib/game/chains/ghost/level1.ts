@@ -33,7 +33,7 @@ export const ghostLevel1: ChainDef = {
       org: "Fenwick Analytics Group",
       city: "Fenwick",
       state: "CT",
-      coords: { x: 82, y: 22 },
+      coords: { x: 88.4, y: 20 },
       ip: IP,
       tagline: "Marketing analytics platform",
       briefing: [`IP: ${IP}`, "No further information provided."],

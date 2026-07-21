@@ -35,7 +35,7 @@ export const easyLevel2: ChainDef = {
       org: "Cascade Hollow Animal Rescue",
       city: "Cascade Hollow",
       state: "OR",
-      coords: { x: 8, y: 24 },
+      coords: { x: 13.9, y: 13.9 },
       ip: IP,
       tagline: "Regional animal rescue — adoption listings & donor records",
       briefing: [

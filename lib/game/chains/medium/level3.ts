@@ -32,7 +32,7 @@ export const mediumLevel3: ChainDef = {
       org: "Comstock Veterinary Group",
       city: "Comstock",
       state: "MI",
-      coords: { x: 58, y: 22 },
+      coords: { x: 66.2, y: 17.9 },
       ip: IP,
       tagline: "Regional veterinary clinic chain — client portal",
       briefing: [

@@ -32,7 +32,7 @@ export const mediumLevel1: ChainDef = {
       org: "Prairie Analytics",
       city: "Wichita",
       state: "KS",
-      coords: { x: 46, y: 34 },
+      coords: { x: 47, y: 30.1 },
       ip: IP,
       tagline: "Marketing-attribution dashboards for regional retailers",
       briefing: [

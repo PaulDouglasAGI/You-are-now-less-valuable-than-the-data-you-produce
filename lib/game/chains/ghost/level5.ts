@@ -47,7 +47,7 @@ export const ghostLevel5: ChainDef = {
       org: "Harrowgate Data Systems",
       city: "Harrowgate",
       state: "PA",
-      coords: { x: 74, y: 20 },
+      coords: { x: 80.9, y: 23.2 },
       ip: IP,
       tagline: "Data processing vendor",
       briefing: [`IP: ${IP}`, "Scanner report provided in the engagement briefing. Verify every line of it yourself."],

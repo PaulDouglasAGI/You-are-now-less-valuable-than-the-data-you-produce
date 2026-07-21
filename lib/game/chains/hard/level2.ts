@@ -30,7 +30,7 @@ export const hardLevel2: ChainDef = {
       org: "Target DS01",
       city: "Unknown",
       state: "N/A",
-      coords: { x: 25, y: 40 },
+      coords: { x: 22.4, y: 48.9 },
       ip: IP,
       tagline: "Standalone assessment target",
       briefing: [`IP: ${IP}`, "No further information provided."],

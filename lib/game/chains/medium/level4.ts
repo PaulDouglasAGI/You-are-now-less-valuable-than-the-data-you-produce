@@ -34,7 +34,7 @@ export const mediumLevel4: ChainDef = {
       org: "Fernbrook Wealth Advisors",
       city: "Millrose",
       state: "PA",
-      coords: { x: 76, y: 25 },
+      coords: { x: 80.8, y: 23.4 },
       ip: IP,
       tagline: "Independent investment advisory — client portal API",
       briefing: [

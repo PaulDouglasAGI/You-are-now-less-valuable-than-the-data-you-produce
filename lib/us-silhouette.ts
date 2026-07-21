@@ -1,8 +1,15 @@
-/** stylized, simplified continental-US silhouette — not cartographically precise, built for the HUD aesthetic. viewBox "0 0 100 60". */
+/**
+ * Continental-US silhouette, derived from real geography (not hand-drawn): Census
+ * Bureau TIGER/Line cartographic state boundaries (`us-atlas`'s `states-albers-10m`,
+ * public domain), merged (Alaska/Hawaii excluded — continental only), simplified to
+ * a single ~39-point outer ring (Douglas-Peucker + manual smoothing over the
+ * Great Lakes / Delmarva regions for a clean stylized read rather than literal
+ * coastline detail), and rescaled to fit this same "0 0 100 60" viewBox the app
+ * already uses. See scripts/derive-map.mjs for the derivation.
+ */
 export const US_SILHOUETTE =
-  "M66,4 L69,7 L67.5,9.5 L70,11 L68,13 L70.5,14 L69,15 L71.5,17 L70,18.5 L70.5,20.5 L69.5,22.5 L70.5,23.5 " +
-  "L70,25.5 L71.5,26.5 L71,28.5 L72.5,29 L70,31 L69,33.5 L70.5,36 L69.5,40 L70.5,44 L69,47 L67,45.5 L65.5,43 " +
-  "L64,40 L62,38.5 L59,39 L56,39.5 L52,40 L49,38.5 L46,39.5 L43,41 L40.5,43 L37,41.5 L34,40 L32,38.5 L30,37 " +
-  "L27,36.5 L23,35.5 L19.5,34.5 L17.5,33 L16.5,30 L15,27 L14,23.5 L14.5,20 L14,17 L15,14 L16.5,12 L15.5,10 " +
-  "L17.5,9 L22,8.5 L27,8.5 L33,8 L39,7.8 L44,8 L47,7.5 L46,9.5 L49,11 L52,10 L54.5,9 L56,11.5 L54.5,14 L57,15 " +
-  "L58,17.5 L60,16.5 L61.5,14 L62.5,15 L61.5,18 L64,19 L63,16 L64.5,13 L66,11 L65,8 Z";
+  "M77.6,44.7 L81.5,52.6 L81,56.7 L73.7,47 L65.6,46.2 L62.3,47.9 L63.3,50.2 L52.9,48.9 L48.3,57.2 " +
+  "L45,55.9 L40.9,48.5 L37.1,49.8 L32.1,43.5 L23.6,43.3 L13.4,38.7 L8.4,32.9 L5.9,22.5 L10.3,2.6 " +
+  "L12.4,6 L13.4,2.1 L34.7,6.5 L52.4,6.7 L60.4,9.2 L68.5,11.6 L64.8,22.6 L72.4,22.2 L81.3,16 " +
+  "L82.5,12.5 L88.4,10.5 L89.4,5.3 L91.4,5.3 L94.3,9.7 L89.9,14.3 L91.8,17.7 L86.5,20.3 L89.2,19.6 " +
+  "L84.7,29.4 L85.9,32.1 L85.4,33.8 Z";

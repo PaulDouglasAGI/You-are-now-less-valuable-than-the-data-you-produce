@@ -42,7 +42,7 @@ export const ghostLevel10: ChainDef = {
       org: "Castellan Health Analytics",
       city: "Castellan",
       state: "PA",
-      coords: { x: 62, y: 38 },
+      coords: { x: 80.3, y: 20.9 },
       ip: IP,
       tagline: "Healthcare analytics SaaS platform",
       briefing: [`IP: ${IP}`, `API: ${API}`, "No further information provided."],

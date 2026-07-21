@@ -35,7 +35,7 @@ export const ghostLevel8: ChainDef = {
       org: "Larkspur Systems",
       city: "Larkspur",
       state: "CO",
-      coords: { x: 38, y: 30 },
+      coords: { x: 34.3, y: 28.6 },
       ip: IP,
       tagline: "Profile management service vendor",
       briefing: [`IP: ${IP}`, "No further information provided."],

@@ -34,7 +34,7 @@ export const mediumLevel6: ChainDef = {
       org: "Palisade Records Management",
       city: "Palisade",
       state: "CO",
-      coords: { x: 28, y: 29 },
+      coords: { x: 35.6, y: 29.4 },
       ip: IP,
       tagline: "County document-filing archive — Java-based portal",
       briefing: [
