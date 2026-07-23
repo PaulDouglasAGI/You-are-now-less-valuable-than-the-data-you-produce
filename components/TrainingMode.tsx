@@ -65,8 +65,9 @@ export default function TrainingMode({
       <div className="w-full max-w-5xl">
         <h1 className="font-mono text-3xl md:text-4xl font-bold text-[color:var(--color-thm-accent)]">TOOL PRACTICE</h1>
         <p className="mt-1 text-sm text-[color:var(--color-thm-text-dim)]">
-          The most-used real tools across every mission in this game, ranked by how often they show up. Read the
-          reference, then type the command yourself — no multiple choice.
+          The most-used real tools across every mission in this game, ranked by how often they show up — plus a
+          second set of daily-driver tools working cybersecurity professionals rely on that this game doesn&apos;t
+          script. Read the reference, then type the command yourself — no multiple choice.
         </p>
         <div className="mt-3 max-w-sm">
           <ProgressBar pct={totalDrills > 0 ? (totalDone / totalDrills) * 100 : 0} />

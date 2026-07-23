@@ -1,8 +1,9 @@
 /**
- * Training Mode content — a study guide for the real-world tools this game actually uses.
- * Ranked by usage across every mission's `tool:` field (see lib/game/chains/**). Decoupled
- * from ChainDef/NodeDef/ObjectiveDef on purpose: no map coordinates, no points economy, no
- * mission unlock ordering — just "what does this tool's syntax look like, can you write it."
+ * Training Mode content — a study guide for the real-world tools this game actually uses,
+ * plus a second tier of tools that don't appear in any mission but are daily-driver staples
+ * for working cybersecurity professionals (flagged via `realWorldOnly`). Decoupled from
+ * ChainDef/NodeDef/ObjectiveDef on purpose: no map coordinates, no points economy, no mission
+ * unlock ordering — just "what does this tool's syntax look like, can you write it."
  */
 
 export interface TrainingDrill {
@@ -24,6 +25,8 @@ export interface TrainingTool {
   blurb: string;
   /** set when the game only ever uses one fixed invocation of this tool (e.g. nmap's -sV) */
   canonicalForm?: string;
+  /** true for tools never scripted into a mission — included purely because real practitioners use them daily */
+  realWorldOnly?: boolean;
   referenceBlock: string[];
   drills: TrainingDrill[];
 }
@@ -535,6 +538,293 @@ export const training: TrainingData = {
           accepted: { requires: ["gobuster dir", "-u", "http://<ip>", "-w", "common.txt"] },
           sampleAnswer: "gobuster dir -u http://<ip> -w common.txt",
           explain: "dir mode requests every word in the wordlist as a path and reports which ones return a real response instead of a 404.",
+        },
+      ],
+    },
+    {
+      id: "tcpdump",
+      rank: 18,
+      name: "tcpdump",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb:
+        "Packet capture from the command line — the first tool reached for when something needs to be seen on the wire, whether you're threat hunting or just proving a connection happened.",
+      referenceBlock: [
+        "tcpdump -i eth0                  — capture on eth0, all traffic",
+        "tcpdump -i eth0 host <ip>        — only traffic to/from one host",
+        "tcpdump -i eth0 port 443         — only traffic on one port",
+        "tcpdump -i eth0 -w capture.pcap  — write to a file instead of printing live",
+      ],
+      drills: [
+        {
+          id: "tcpdump-01",
+          scenario: "Capture all traffic on interface eth0 and print it live.",
+          accepted: { requires: ["tcpdump", "-i", "eth0"] },
+          sampleAnswer: "tcpdump -i eth0",
+          explain: "-i selects the interface to listen on — without a filter, this shows every packet crossing it.",
+        },
+        {
+          id: "tcpdump-02",
+          scenario: "Capture only traffic to or from 10.10.10.5 on eth0.",
+          accepted: { requires: ["tcpdump", "-i", "eth0", "host", "10.10.10.5"] },
+          sampleAnswer: "tcpdump -i eth0 host 10.10.10.5",
+          explain: "host <ip> filters the capture down to just that one conversation, cutting through noise on a busy interface.",
+        },
+        {
+          id: "tcpdump-03",
+          scenario: "Write a capture of all HTTPS traffic on eth0 to a file named capture.pcap instead of printing it.",
+          accepted: { requires: ["tcpdump", "-i", "eth0", "port 443", "-w", "capture.pcap"] },
+          sampleAnswer: "tcpdump -i eth0 port 443 -w capture.pcap",
+          explain: "-w writes raw packets to a file you can later open in Wireshark for deeper analysis.",
+        },
+      ],
+    },
+    {
+      id: "hashcat",
+      rank: 19,
+      name: "hashcat",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb:
+        "GPU-accelerated password cracker — once you've dumped hashes (an AD DCSync, a leaked database, a cracked archive), this is what actually recovers the plaintext.",
+      referenceBlock: [
+        "hashcat -m <mode> -a 0 hashes.txt wordlist.txt   — dictionary attack against a hash list",
+        "hashcat -m 1000 hashes.txt wordlist.txt          — mode 1000 = NTLM",
+      ],
+      drills: [
+        {
+          id: "hashcat-01",
+          scenario: "Crack a file of NTLM hashes (hashes.txt) using rockyou.txt as the wordlist.",
+          accepted: { requires: ["hashcat", "-m", "1000", "hashes.txt", "rockyou.txt"] },
+          sampleAnswer: "hashcat -m 1000 hashes.txt rockyou.txt",
+          explain: "-m selects the hash type — 1000 is NTLM. Get this wrong and hashcat will never crack a single hash, no matter how good the wordlist is.",
+        },
+        {
+          id: "hashcat-02",
+          scenario: "Same attack, but explicitly specify a straight dictionary attack (attack mode 0).",
+          accepted: { requires: ["hashcat", "-m", "1000", "-a", "0", "hashes.txt", "rockyou.txt"] },
+          sampleAnswer: "hashcat -m 1000 -a 0 hashes.txt rockyou.txt",
+          explain: "-a 0 is the default straight/dictionary attack mode — worth typing explicitly so you remember it exists alongside -a 3 (brute-force/mask).",
+        },
+      ],
+    },
+    {
+      id: "msfconsole",
+      rank: 20,
+      name: "msfconsole",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb: "The Metasploit Framework's interactive console — search, configure, and fire off exploit modules without writing them from scratch.",
+      referenceBlock: [
+        "msfconsole                     — launch the framework",
+        "search type:exploit <keyword>  — find a module",
+        "use <module/path>              — load a module",
+        "set RHOSTS <ip>                — point it at a target",
+        "run                            — fire it",
+      ],
+      drills: [
+        {
+          id: "msfconsole-01",
+          scenario: "Inside msfconsole, search for exploit modules related to eternalblue.",
+          accepted: { requires: ["search", "eternalblue"] },
+          sampleAnswer: "search type:exploit eternalblue",
+          explain: "search filters the framework's thousands of modules down to a manageable list by keyword.",
+        },
+        {
+          id: "msfconsole-02",
+          scenario: "Load the module exploit/windows/smb/ms17_010_eternalblue.",
+          accepted: { requires: ["use", "exploit/windows/smb/ms17_010_eternalblue"] },
+          sampleAnswer: "use exploit/windows/smb/ms17_010_eternalblue",
+          explain: "use loads a specific module into the current session so its options (RHOSTS, payload, etc.) become configurable.",
+        },
+        {
+          id: "msfconsole-03",
+          scenario: "Point the loaded module's RHOSTS option at target 10.10.10.5.",
+          accepted: { requires: ["set", "rhosts", "10.10.10.5"] },
+          sampleAnswer: "set RHOSTS 10.10.10.5",
+          explain: "set RHOSTS assigns the target IP to the module's remote-host option — run (or exploit) fires it once every option is set.",
+        },
+      ],
+    },
+    {
+      id: "sqlmap",
+      rank: 21,
+      name: "sqlmap",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb: "Automates SQL injection detection and exploitation against a URL parameter — turns a manual, painstaking process into one command.",
+      referenceBlock: [
+        'sqlmap -u "http://<ip>/item?id=1"                      — test a GET parameter for injection',
+        'sqlmap -u "http://<ip>/item?id=1" --dbs                — enumerate databases once injection is confirmed',
+        'sqlmap -u "http://<ip>/item?id=1" --dump -D <db> -T <table>  — dump a specific table',
+      ],
+      drills: [
+        {
+          id: "sqlmap-01",
+          scenario: "Test whether the id parameter on http://<ip>/item?id=1 is SQL-injectable.",
+          accepted: { requires: ["sqlmap", "-u", "item?id=1"] },
+          sampleAnswer: 'sqlmap -u "http://<ip>/item?id=1"',
+          explain: "-u gives sqlmap the exact URL and parameter to probe — it automates the injection payloads you'd otherwise craft by hand.",
+        },
+        {
+          id: "sqlmap-02",
+          scenario: "Injection is confirmed. List the available databases.",
+          accepted: { requires: ["sqlmap", "-u", "item?id=1", "--dbs"] },
+          sampleAnswer: 'sqlmap -u "http://<ip>/item?id=1" --dbs',
+          explain: "--dbs enumerates every database the injected account can see — your map for where to dump next.",
+        },
+        {
+          id: "sqlmap-03",
+          scenario: "Dump the users table from the app database.",
+          accepted: { requires: ["sqlmap", "-u", "item?id=1", "--dump", "-d", "app", "-t", "users"] },
+          sampleAnswer: 'sqlmap -u "http://<ip>/item?id=1" --dump -D app -T users',
+          explain: "-D and -T scope the dump to one database/table instead of pulling everything, which is slow and noisy.",
+        },
+      ],
+    },
+    {
+      id: "openssl",
+      rank: 22,
+      name: "openssl",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb: "The Swiss-army knife for anything TLS/crypto — inspecting a certificate, testing a handshake, or hashing a file all go through openssl.",
+      referenceBlock: [
+        "openssl s_client -connect <ip>:443             — manually inspect a TLS handshake/certificate",
+        "openssl x509 -in cert.pem -text -noout          — read a certificate file's details",
+      ],
+      drills: [
+        {
+          id: "openssl-01",
+          scenario: "Connect to <ip> on port 443 to manually inspect its TLS certificate and handshake.",
+          accepted: { requires: ["openssl", "s_client", "-connect", "<ip>:443"] },
+          sampleAnswer: "openssl s_client -connect <ip>:443",
+          explain: "s_client opens a raw TLS connection and prints the full certificate chain — useful when curl's summary isn't enough detail.",
+        },
+        {
+          id: "openssl-02",
+          scenario: "Read the full details of a certificate file saved as cert.pem.",
+          accepted: { requires: ["openssl", "x509", "-in", "cert.pem", "-text", "-noout"] },
+          sampleAnswer: "openssl x509 -in cert.pem -text -noout",
+          explain: "-text prints the human-readable fields (issuer, validity, SANs); -noout suppresses the raw base64 block you don't need to see.",
+        },
+      ],
+    },
+    {
+      id: "dig",
+      rank: 23,
+      name: "dig",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb: "DNS lookup tool — the standard for enumerating a domain's records during recon, far more scriptable than nslookup.",
+      referenceBlock: ["dig <domain>       — A record lookup", "dig <domain> MX    — mail server records", "dig -x <ip>        — reverse lookup"],
+      drills: [
+        {
+          id: "dig-01",
+          scenario: "Look up the A record for target-corp.com.",
+          accepted: { requires: ["dig", "target-corp.com"] },
+          sampleAnswer: "dig target-corp.com",
+          explain: "A bare dig <domain> defaults to an A record query — the IP address behind the name.",
+        },
+        {
+          id: "dig-02",
+          scenario: "Find the mail servers for target-corp.com.",
+          accepted: { requires: ["dig", "target-corp.com", "mx"] },
+          sampleAnswer: "dig target-corp.com MX",
+          explain: "Appending a record type after the domain changes what dig asks for — MX reveals mail infrastructure, often on a different provider than the main site.",
+        },
+        {
+          id: "dig-03",
+          scenario: "Do a reverse lookup on 203.0.113.10 to find its hostname.",
+          accepted: { requires: ["dig", "-x", "203.0.113.10"] },
+          sampleAnswer: "dig -x 203.0.113.10",
+          explain: "-x flips dig into reverse mode — IP in, hostname out, if a PTR record exists.",
+        },
+      ],
+    },
+    {
+      id: "ss",
+      rank: 24,
+      name: "ss",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb: "Lists active network connections and listening ports on the local box — the first thing to check once you have a shell, to see what's actually reachable.",
+      referenceBlock: ["ss -tulpn   — all TCP/UDP listening ports with the owning process"],
+      drills: [
+        {
+          id: "ss-01",
+          scenario: "List every listening TCP and UDP port on the box you just got a shell on, along with the process using each one.",
+          accepted: { requires: ["ss", "-tulpn"] },
+          sampleAnswer: "ss -tulpn",
+          explain: "-t/-u show TCP/UDP, -l restricts to listening sockets, -p shows the owning process, -n skips slow DNS/service-name resolution.",
+        },
+      ],
+    },
+    {
+      id: "base64",
+      rank: 25,
+      name: "base64",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb: "Encodes and decodes base64 — used constantly to smuggle binary payloads through text-only channels (URLs, JSON fields, command arguments).",
+      referenceBlock: ["base64 <file>              — encode a file to base64 text", "echo '<text>' | base64 -d  — decode a base64 string back to raw text"],
+      drills: [
+        {
+          id: "base64-01",
+          scenario: "Encode a local file named payload.sh to base64 text so it can be pasted into a web form.",
+          accepted: { requires: ["base64", "payload.sh"] },
+          sampleAnswer: "base64 payload.sh",
+          explain: "Plain base64 <file> reads and encodes the file, printing the result to stdout.",
+        },
+        {
+          id: "base64-02",
+          scenario: "You captured a base64 string 'aGVsbG8=' from a request. Decode it back to plaintext.",
+          accepted: { requires: ["echo", "aGVsbG8=", "base64", "-d"] },
+          sampleAnswer: "echo 'aGVsbG8=' | base64 -d",
+          explain: "-d switches base64 into decode mode; piping an echoed string in is the fastest way to decode a short value you copied.",
+        },
+      ],
+    },
+    {
+      id: "enum4linux",
+      rank: 26,
+      name: "enum4linux",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb: "One-stop SMB/Active Directory enumeration — users, groups, shares, and password policy from a single command against a Windows host.",
+      referenceBlock: ["enum4linux -a <ip>   — run every enumeration check available"],
+      drills: [
+        {
+          id: "enum4linux-01",
+          scenario: "Run a full enumeration sweep (users, shares, groups, policy) against a Windows host at <ip>.",
+          accepted: { requires: ["enum4linux", "-a", "<ip>"] },
+          sampleAnswer: "enum4linux -a <ip>",
+          explain: "-a turns on every check at once — the standard first move against any SMB service before narrowing down manually.",
+        },
+      ],
+    },
+    {
+      id: "tar",
+      rank: 27,
+      name: "tar",
+      useCount: 0,
+      realWorldOnly: true,
+      blurb: "Archives (and compresses) files and directories — used to package loot for exfil or to unpack a downloaded tool on a target.",
+      referenceBlock: ["tar -czvf archive.tar.gz <dir>   — compress a directory into one file", "tar -xzvf archive.tar.gz         — extract a .tar.gz archive"],
+      drills: [
+        {
+          id: "tar-01",
+          scenario: "Package the directory /home/victim/loot into a single compressed archive named loot.tar.gz.",
+          accepted: { requires: ["tar", "-czvf", "loot.tar.gz", "/home/victim/loot"] },
+          sampleAnswer: "tar -czvf loot.tar.gz /home/victim/loot",
+          explain: "-c creates, -z gzips, -v is verbose, -f names the output file — that exact flag order is the standard idiom worth memorizing.",
+        },
+        {
+          id: "tar-02",
+          scenario: "Extract a downloaded archive named tool.tar.gz in the current directory.",
+          accepted: { requires: ["tar", "-xzvf", "tool.tar.gz"] },
+          sampleAnswer: "tar -xzvf tool.tar.gz",
+          explain: "-x extracts instead of creating — same -z/-v/-f flags, just swap c for x.",
         },
       ],
     },

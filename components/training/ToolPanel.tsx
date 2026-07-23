@@ -7,7 +7,7 @@ export default function ToolPanel({ tool }: { tool: TrainingTool }) {
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-mono text-xl font-bold text-[color:var(--color-thm-accent)]">{tool.name}</h2>
         <span className="text-[10px] tracking-widest text-[color:var(--color-thm-text-dim)]">
-          RANK #{tool.rank} · {tool.useCount} USES IN-GAME
+          {tool.realWorldOnly ? "REAL-WORLD STAPLE — not scripted in this game" : `RANK #${tool.rank} · ${tool.useCount} USES IN-GAME`}
         </span>
       </div>
       <p className="mt-2 text-sm text-[color:var(--color-thm-text-dim)] leading-relaxed">{tool.blurb}</p>
