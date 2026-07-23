@@ -1,8 +1,9 @@
-import type { SaveData, NotebookData } from "./types";
+import type { SaveData, NotebookData, TrainingProgress } from "./types";
 
 // v3: added hintsUsed for the scoring model (v2 saves lack it, which would break score math)
 const KEY = "breachline.save.v3";
 const NOTEBOOK_KEY = "breachline.notebook.v1";
+const TRAINING_KEY = "breachline.training.v1";
 
 export function loadSave(): SaveData {
   if (typeof window === "undefined") return {};
@@ -55,4 +56,27 @@ export function saveNotebook(data: NotebookData) {
 export function resetNotebook() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(NOTEBOOK_KEY);
+}
+
+/** Training Mode drill mastery — a personal-skill record, separate from mission progress, never cleared by resetSave() */
+export function loadTrainingProgress(): TrainingProgress {
+  if (typeof window === "undefined") return { completedDrillIds: [] };
+  try {
+    const raw = window.localStorage.getItem(TRAINING_KEY);
+    if (!raw) return { completedDrillIds: [] };
+    const parsed = JSON.parse(raw) as Partial<TrainingProgress>;
+    return { completedDrillIds: parsed.completedDrillIds ?? [] };
+  } catch {
+    return { completedDrillIds: [] };
+  }
+}
+
+export function saveTrainingProgress(data: TrainingProgress) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(TRAINING_KEY, JSON.stringify(data));
+}
+
+export function resetTrainingProgress() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(TRAINING_KEY);
 }

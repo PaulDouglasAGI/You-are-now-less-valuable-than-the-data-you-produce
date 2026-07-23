@@ -1,10 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Difficulty, NodeRunState, NotebookEntry, SaveData } from "@/lib/game/types";
+import type { Difficulty, NodeRunState, NotebookEntry, SaveData, TrainingProgress } from "@/lib/game/types";
 import { missionsByDifficulty, missionsById } from "@/lib/game/chains";
 import { transmissionsByAfter, nextCampaignMissionId } from "@/lib/game/chains/campaign";
-import { loadSave, saveProgress, resetSave, loadNotebook, saveNotebook } from "@/lib/game/storage";
+import {
+  loadSave,
+  saveProgress,
+  resetSave,
+  loadNotebook,
+  saveNotebook,
+  loadTrainingProgress,
+  saveTrainingProgress,
+} from "@/lib/game/storage";
 import type { NodeStatus } from "./UsMap";
 import type { MissionStatus } from "./MissionSelect";
 
@@ -23,6 +31,7 @@ import Notebook from "./Notebook";
 import NotebookToggle from "./NotebookToggle";
 import Methodology from "./Methodology";
 import MethodologyToggle from "./MethodologyToggle";
+import TrainingMode from "./TrainingMode";
 
 type Screen =
   | "boot"
@@ -35,7 +44,8 @@ type Screen =
   | "nodeComplete"
   | "chainComplete"
   | "transmission"
-  | "report";
+  | "report"
+  | "training";
 
 export default function Game() {
   const [screen, setScreen] = useState<Screen>("boot");
@@ -54,6 +64,7 @@ export default function Game() {
   const [notebook, setNotebook] = useState(() => loadNotebook());
   const [notebookOpen, setNotebookOpen] = useState(false);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
+  const [trainingProgress, setTrainingProgress] = useState(() => loadTrainingProgress());
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
@@ -239,6 +250,15 @@ export default function Game() {
     setScreen("report");
   }
 
+  function handleOpenTraining() {
+    setScreen("training");
+  }
+
+  function handleTrainingProgressChange(next: TrainingProgress) {
+    setTrainingProgress(next);
+    saveTrainingProgress(next);
+  }
+
   function handleReset() {
     resetSave();
     setSave({});
@@ -250,10 +270,19 @@ export default function Game() {
     content = <BootSequence onDone={() => setScreen("menu")} />;
   } else if (screen === "menu") {
     content = (
-      <MainMenu progressFor={progressFor} onSelect={handleSelectDifficulty} onReset={handleReset} onOpenReport={handleOpenReport} save={save} />
+      <MainMenu
+        progressFor={progressFor}
+        onSelect={handleSelectDifficulty}
+        onReset={handleReset}
+        onOpenReport={handleOpenReport}
+        onOpenTraining={handleOpenTraining}
+        save={save}
+      />
     );
   } else if (screen === "report") {
     content = <FieldReport save={save} onBack={handleBackToMenu} />;
+  } else if (screen === "training") {
+    content = <TrainingMode progress={trainingProgress} onProgressChange={handleTrainingProgressChange} onBack={handleBackToMenu} />;
   } else if (screen === "missionSelect" && difficulty) {
     content = (
       <MissionSelect

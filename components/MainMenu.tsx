@@ -11,12 +11,14 @@ export default function MainMenu({
   onSelect,
   onReset,
   onOpenReport,
+  onOpenTraining,
   save,
 }: {
   progressFor: (d: Difficulty) => { secured: number; total: number };
   onSelect: (d: Difficulty) => void;
   onReset: () => void;
   onOpenReport: () => void;
+  onOpenTraining: () => void;
   save: SaveData;
 }) {
   const score = computeCareerScore(save);
@@ -36,15 +38,24 @@ export default function MainMenu({
         <p className="mt-3 text-[color:var(--color-text-dim)] text-sm tracking-widest">
           SELECT OPERATION DIFFICULTY
         </p>
-        <button
-          onClick={onOpenReport}
-          className="mt-4 inline-flex items-center gap-3 border border-[color:var(--color-cyan-dim)] px-4 py-2 hover:border-[color:var(--color-cyan)] transition-colors"
-        >
-          <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">FIELD REPORT</span>
-          <span className="text-xs font-display font-bold text-[color:var(--color-cyan)]">
-            {score.rank.toUpperCase()} · {score.percent}%
-          </span>
-        </button>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+          <button
+            onClick={onOpenReport}
+            className="inline-flex items-center gap-3 border border-[color:var(--color-cyan-dim)] px-4 py-2 hover:border-[color:var(--color-cyan)] transition-colors"
+          >
+            <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">FIELD REPORT</span>
+            <span className="text-xs font-display font-bold text-[color:var(--color-cyan)]">
+              {score.rank.toUpperCase()} · {score.percent}%
+            </span>
+          </button>
+          <button
+            onClick={onOpenTraining}
+            className="inline-flex items-center gap-3 border border-[#e2384a]/50 px-4 py-2 hover:border-[#e2384a] transition-colors"
+          >
+            <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">TRAINING MODE</span>
+            <span className="text-xs font-display font-bold text-[#e2384a]">TOOL PRACTICE</span>
+          </button>
+        </div>
       </div>
 
       <button

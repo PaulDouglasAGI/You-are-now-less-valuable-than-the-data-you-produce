@@ -132,6 +132,11 @@ export interface NotebookData {
   text: string;
 }
 
+/** Training Mode progress — a flat set of "toolId:drillId" strings, separate from mission SaveData. */
+export interface TrainingProgress {
+  completedDrillIds: string[];
+}
+
 export type MethodologyTagColor = "green" | "blue" | "red" | "yellow";
 
 export interface MethodologyTag {

@@ -397,3 +397,20 @@ body {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(1.4); }
 }
+
+/* ---------- Training Mode (THM-style) — scoped so nothing else can collide with it ---------- */
+
+.training-theme {
+  --color-thm-bg: #0b0d10;
+  --color-thm-panel: #14171c;
+  --color-thm-line: #262b33;
+  --color-thm-accent: #e2384a;
+  --color-thm-accent-dim: #7a2029;
+  --color-thm-success: #2ecc71;
+  --color-thm-text: #eef1f4;
+  --color-thm-text-dim: #8b93a1;
+
+  background: var(--color-thm-bg);
+  color: var(--color-thm-text);
+  font-family: var(--font-mono);
+}
