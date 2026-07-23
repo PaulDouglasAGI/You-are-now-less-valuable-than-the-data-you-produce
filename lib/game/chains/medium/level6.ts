@@ -60,7 +60,7 @@ export const mediumLevel6: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`. A Java stack on an unusual port is worth noting.",
         "Hit the web root and look at the Set-Cookie header closely — a long base64 blob starting with a Java serialization magic prefix is a strong tell it's a serialized object, not a signed token.",
-        "A crafted serialized payload doesn't need to be a valid session object at all — it just needs to trigger code during deserialization. Send one as the 'sessiondata' cookie against the dashboard route and see what executes.",
+        "A crafted serialized payload doesn't need to be a valid session object at all — it just needs to trigger code during deserialization. A Java gadget-chain generator like `ysoserial` builds exactly that; send its output as the 'sessiondata' cookie against the dashboard route: `curl -H \"Cookie: sessiondata=<gadget-chain-payload-running-bash -c 'id'>\" http://<ip>:8080/dashboard`.",
         "You have code execution as the service account. Look for a document index file on this host.",
       ],
       debrief: [

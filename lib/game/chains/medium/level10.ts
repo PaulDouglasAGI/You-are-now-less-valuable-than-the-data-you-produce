@@ -69,7 +69,7 @@ export const mediumLevel10: ChainDef = {
         "Recon first — `nmap -sV <ip>`. An extra port beyond the usual web ports is worth a look.",
         "The CI dashboard on the undocumented port mentions a webhook 'replay' debug feature — worth finding out exactly what it lets you replay, and with what input.",
         "The replay endpoint takes a `cmd=` parameter and runs it inside the build container — try something simple like `id` first.",
-        "From inside the build container, check what cloud role it's running as, and what that role is allowed to assume — an `aws sts assume-role` into a partner account is worth trying if the trust policy looks broad.",
+        "From inside the build container, check what cloud role it's running as, and what that role is allowed to assume — an `aws sts assume-role` into a partner account is worth trying if the trust policy looks broad: `curl \"http://<ip>:8000/webhook/replay?cmd=aws sts assume-role --role-arn arn:aws:iam::cobaltharbor:role/partner-integration --role-session-name pivot\"`.",
       ],
       debrief: [
         "root cause: an internal CI debug dashboard was exposed publicly, and its webhook 'replay' feature",
@@ -210,7 +210,7 @@ export const mediumLevel10: ChainDef = {
       ],
       hints: [
         "Recon first — `nmap -sV <ip>`.",
-        "The assumed-role credentials from Meridian are valid here — authenticate to the container-tracking API with them, using the session token as well as the access key.",
+        "The assumed-role credentials from Meridian are valid here — authenticate to the container-tracking API with them, using the session token as well as the access key: `curl -H \"Authorization: AWS4-HMAC-SHA256 ...\" -H \"X-Amz-Security-Token: <session-token>\" https://<ip>/api/containers`.",
         "Once authenticated, look for a manifests or cargo-data endpoint — that's the real proof of impact.",
       ],
       debrief: [

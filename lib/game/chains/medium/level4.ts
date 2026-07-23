@@ -60,7 +60,7 @@ export const mediumLevel4: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`. Then hit the API root and look closely at the response headers, not just the body.",
         "Send a request with an Origin header that has nothing to do with Fernbrook — something like https://evil.example — and see whether Access-Control-Allow-Origin echoes it back.",
-        `Add the provided session cookie to that same request — ${SESSION_COOKIE} — and check whether Allow-Credentials is set alongside the reflected origin.`,
+        `Add the provided session cookie to that same request and check whether Allow-Credentials is set alongside the reflected origin: \`curl -i -H "Origin: https://evil.example" -H "Cookie: ${SESSION_COOKIE}" https://<ip>/api/account\`.`,
         "If both are true, an arbitrary origin can read authenticated responses. Confirm it by pulling the client's actual account data with that combination.",
       ],
       debrief: [

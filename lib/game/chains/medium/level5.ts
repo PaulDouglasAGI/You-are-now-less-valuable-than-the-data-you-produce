@@ -59,7 +59,7 @@ export const mediumLevel5: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`. Then hit the web root and find the preview form's parameter name.",
         "Try a harmless arithmetic expression in the template field, like `{{7*7}}`. If the preview shows 49 instead of literally '{{7*7}}', the engine is evaluating your input, not just displaying it.",
-        "TemplateForge (the engine this uses) exposes the underlying OS through object introspection. A payload that reaches `os.popen('id')` through the template's object chain will run that command on the server.",
+        "TemplateForge (the engine this uses) exposes the underlying OS through object introspection. Try: `curl \"http://<ip>/preview?tpl={{ ().__class__.__base__.__subclasses__()[...].__init__.__globals__['os'].popen('id').read() }}\"` — that walks the object chain down to `os.popen('id')` and runs it on the server.",
         "You have code execution as the web service account. Look for anything resembling a customer database file on this host.",
       ],
       debrief: [

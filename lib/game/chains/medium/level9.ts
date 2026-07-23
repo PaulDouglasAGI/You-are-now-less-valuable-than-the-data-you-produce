@@ -241,7 +241,7 @@ export const mediumLevel9: ChainDef = {
         "Recon first, as always — `nmap -sV <ip>`.",
         "Authenticate with the leaked key as a Bearer token against the dispatch API's status endpoint.",
         "Try hitting the debug endpoint plainly first — read the error carefully, it tells you exactly what header it wants.",
-        "DispatchTrack Pro's debug endpoint trusts a client-supplied 'X-Internal-Debug: true' header instead of actually checking the network origin. Set it, and pass a `cmd=` parameter.",
+        "DispatchTrack Pro's debug endpoint trusts a client-supplied 'X-Internal-Debug: true' header instead of actually checking the network origin. Set it, and pass a `cmd=` parameter: `curl -H \"Authorization: Bearer <key>\" -H \"X-Internal-Debug: true\" \"https://<ip>/api/dispatch/debug/exec?cmd=whoami\"`.",
         "You've got command execution. Look at what this host is configured to talk to — `cat /etc/dispatch/integrations.yaml` is a good next move.",
         "You've proven a leaked key plus a trust-the-header bug equals command execution. Remediate it.",
       ],

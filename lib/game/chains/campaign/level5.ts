@@ -360,7 +360,7 @@ export const campaignLevel5: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`. A Java stack on an unusual port is worth noting.",
         "Check the import endpoint's expected file format — a long base64 blob starting with the Java serialization magic prefix is a strong tell that uploaded files are deserialized directly, not parsed.",
-        "A crafted serialized payload doesn't need to be a valid batch file at all — it just needs to trigger code during deserialization. Upload one that runs a command.",
+        "A crafted serialized payload doesn't need to be a valid batch file at all — it just needs to trigger code during deserialization. A Java gadget-chain generator like `ysoserial` builds exactly that — upload its output as the batch file: `curl -F \"batchfile=@<ysoserial-payload-running-bash -c 'id'>\" http://<ip>:8080/import`.",
         "You have code execution as the batch service account. Look at what this host is configured to reach — it feeds the reconciliation pipeline directly.",
       ],
       debrief: [

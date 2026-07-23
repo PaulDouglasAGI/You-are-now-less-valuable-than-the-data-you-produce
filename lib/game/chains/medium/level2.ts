@@ -61,7 +61,7 @@ export const mediumLevel2: ChainDef = {
         "Recon first — `nmap -sV <ip>`. Then hit the web root and see what auth flow it describes.",
         "`curl http://<ip>/api/session` with your member credentials returns a session token — read the response carefully, including any header notes about the JWT library.",
         "A JWT is three base64 chunks separated by dots. `base64 -d` the header chunk of the token you were given and see exactly what it says about its own algorithm.",
-        "If the server resolves the algorithm from the token instead of enforcing one server-side, an 'alg: none' token with no signature at all is worth trying against an admin-only route.",
+        "If the server resolves the algorithm from the token instead of enforcing one server-side, an 'alg: none' token with no signature at all is worth trying against an admin-only route: `curl -H \"Authorization: Bearer eyJhbGciOiJub25lIn0.eyJyb2xlIjoiYWRtaW4ifQ.\" https://<ip>/api/admin`.",
       ],
       debrief: [
         "root cause: simple-jwt-auth trusted the 'alg' field inside the token itself rather than pinning to",

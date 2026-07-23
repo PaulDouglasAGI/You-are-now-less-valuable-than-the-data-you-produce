@@ -68,7 +68,7 @@ export const campaignLevel3: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`.",
         "correll-data-svc's trust policy is broad. Try `aws sts assume-role --role-arn arn:aws:iam::palermo:role/vendor-integration --role-session-name pivot`.",
-        "Once you're the assumed role, list what it's itself allowed to assume — `aws iam list-role-policies` or similar reveals the next hop.",
+        "Once you're the assumed role, list what it's itself allowed to assume: `aws iam list-role-policies --role-name vendor-integration` reveals the next hop.",
       ],
       debrief: [
         "root cause: Palermo's vendor-integration role trusted correll-data-svc broadly instead of scoping",
@@ -313,7 +313,7 @@ export const campaignLevel3: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`.",
         "Authenticate with the master account key from Driftwood's store, then list every role this account trusts inbound — `aws iam list-account-trust-relationships` (or the equivalent enumeration for this platform).",
-        "Somewhere in that list is a reference to a scheduled job, not another vendor — that's worth reading closely.",
+        "Somewhere in that list is a reference to a scheduled job, not another vendor — that's worth reading closely: `curl -H \"Authorization: Bearer <master-account-key>\" https://<ip>/api/scheduled-jobs`.",
       ],
       debrief: [
         "root cause: the master cloud account's own credential lived in a shared secrets store four hops",
@@ -452,7 +452,7 @@ export const campaignLevel3: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`.",
         "The master account's trust reaches this host too — authenticate the same way you did at Concord Cloud Services.",
-        "Look for a staging or lower environment credential — production loan-servicing systems almost always have one lying around for testing.",
+        "Look for a staging or lower environment credential — production loan-servicing systems almost always have one lying around for testing: `curl -H \"Authorization: Bearer <master-account-key>\" https://<ip>/api/staging-credentials`.",
       ],
       debrief: [
         "root cause: Ledger Systems Group trusted any request bearing Concord Cloud Services' master",

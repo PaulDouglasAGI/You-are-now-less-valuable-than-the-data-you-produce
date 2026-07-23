@@ -76,7 +76,7 @@ export const hardChain: ChainDef = {
         "Check the web root, then look for a customer/support portal — that's usually where file uploads live.",
         "The upload endpoint only checks Content-Type, not the actual file extension. Upload a `.phtml` shell, then trigger it directly.",
         "Once you have a shell, always check `sudo -l` before you go looking for kernel exploits. Misconfigured sudo rules are far more common in the real world.",
-        "The backup script runs as root but sources an environment file from a world-writable path first. If you control that file's contents, you control what runs as root — try: echo '...' > /tmp/backup.env && sudo /opt/atlas/scripts/backup.sh",
+        "The backup script runs as root but sources an environment file from a world-writable path first. If you control that file's contents, you control what runs as root — try: `echo 'cp /bin/bash /tmp/rootbash; chmod u+s /tmp/rootbash' > /tmp/backup.env && sudo /opt/atlas/scripts/backup.sh`",
         "As root, check what's sitting around in /root — hosting providers that do 'managed ops' for clients often leave client SSH keys lying around exactly there.",
       ],
       debrief: [
@@ -446,7 +446,7 @@ export const hardChain: ChainDef = {
       hints: [
         "Recon the gateway — `nmap -sV <ip>`.",
         "Authenticate to the reporting API using the client_id/client_secret from Vantage Rail's config, as an Authorization header.",
-        "Don't call PUT or DELETE on anything live. Send an OPTIONS request against the setpoints endpoint — it will tell you what methods the credential is allowed to use without you ever invoking them.",
+        "Don't call PUT or DELETE on anything live. Send an OPTIONS request against the setpoints endpoint — it will tell you what methods the credential is allowed to use without you ever invoking them: `curl -X OPTIONS -H \"Authorization: Bearer cgi_rpt_...\" https://<ip>/api/setpoints/midwest-3`.",
         "You've confirmed the scope is broader than it should be. File the fix.",
       ],
       debrief: [

@@ -48,7 +48,7 @@ export const hardLevel4: ChainDef = {
       ],
       hints: [
         "A page parameter that loads different content by filename is worth testing for more than the pages it was designed to show you.",
-        "Source code leaks are credential leaks. And once you're on the box properly, check what unusual capabilities are attached to ordinary binaries — not everything dangerous is a SUID bit.",
+        "Source code leaks are credential leaks. And once you're on the box properly, check what unusual capabilities are attached to ordinary binaries — not everything dangerous is a SUID bit. A binary with `cap_setuid` can set its own UID to 0 on request: `python3.9 -c 'import os; os.setuid(0); os.system(\"/bin/bash\")'`.",
       ],
       debrief: [],
       commands: [

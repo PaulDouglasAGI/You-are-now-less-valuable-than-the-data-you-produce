@@ -45,7 +45,7 @@ export const hardLevel3: ChainDef = {
       ],
       hints: [
         "Not every vulnerable field is obvious from the outside — a form that shells out to a system utility on your behalf is worth testing for exactly that.",
-        "Root doesn't always mean a vulnerable binary — sometimes it means something scheduled to run as root that anyone happens to be able to edit.",
+        "Root doesn't always mean a vulnerable binary — sometimes it means something scheduled to run as root that anyone happens to be able to edit. If you find one, append a privesc payload to it: `echo 'cp /bin/bash /tmp/rootbash; chmod u+s /tmp/rootbash' >> /opt/netdiag/cleanup.sh`.",
       ],
       debrief: [],
       commands: [
