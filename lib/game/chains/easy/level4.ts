@@ -42,6 +42,7 @@ export const easyLevel4: ChainDef = {
       state: "KS",
       coords: { x: 48.3, y: 30.2 },
       ip: IP,
+      randomizableSecrets: ["Cinder2019!"],
       tagline: "Rural electric co-op — customer self-service portal",
       briefing: [
         "TARGET: Meridian Grid Co-op customer portal",

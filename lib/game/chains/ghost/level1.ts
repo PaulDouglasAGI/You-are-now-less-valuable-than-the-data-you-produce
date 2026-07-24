@@ -35,6 +35,7 @@ export const ghostLevel1: ChainDef = {
       state: "CT",
       coords: { x: 88.4, y: 20 },
       ip: IP,
+      randomizableSecrets: ["Fw!analytics-int9"],
       tagline: "Marketing analytics platform",
       briefing: [`IP: ${IP}`, "No further information provided."],
       initialPrompt: "op@breachline:~$",

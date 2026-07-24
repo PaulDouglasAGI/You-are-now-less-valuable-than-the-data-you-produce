@@ -72,6 +72,7 @@ export const campaignLevel5: ChainDef = {
       state: "TX",
       coords: jitteredCoords("TX", "campaign-5:fenmore"),
       ip: IP_FENMORE,
+      randomizableSecrets: [STAGING_CRED],
       tagline: "Loan-servicing platform underlying most of Concord's subsidiary debt",
       briefing: [
         `TARGET: Fenmore Loan Servicing — staging environment — ${IP_FENMORE}`,

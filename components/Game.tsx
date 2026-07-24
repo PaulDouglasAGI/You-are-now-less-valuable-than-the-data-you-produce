@@ -13,6 +13,8 @@ import {
   loadTrainingProgress,
   saveTrainingProgress,
 } from "@/lib/game/storage";
+import { generateRunRandomization } from "@/lib/game/randomize";
+import type { RunRandomization } from "@/lib/game/randomize";
 import type { NodeStatus } from "./UsMap";
 import type { MissionStatus } from "./MissionSelect";
 
@@ -52,6 +54,7 @@ export default function Game() {
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [missionId, setMissionId] = useState<string | null>(null);
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
+  const [nodeRandomization, setNodeRandomization] = useState<RunRandomization | null>(null);
   // safe as a lazy initializer: the save-dependent UI (MainMenu) only ever renders after
   // the boot screen, well past hydration, so there's no server/client mismatch to worry about
   const [save, setSave] = useState<SaveData>(() => loadSave());
@@ -174,6 +177,8 @@ export default function Game() {
   }
 
   function handleSelectNode(nodeId: string) {
+    const node = chain?.nodes.find((n) => n.id === nodeId);
+    setNodeRandomization(node ? generateRunRandomization(node) : null);
     setActiveNodeId(nodeId);
     setScreen("nodeBriefing");
   }
@@ -313,20 +318,22 @@ export default function Game() {
     content = (
       <OperationMap chain={chain} statusFor={statusFor} onSelectNode={handleSelectNode} onBack={handleBackToMissionSelect} />
     );
-  } else if (screen === "nodeBriefing" && activeNode) {
+  } else if (screen === "nodeBriefing" && activeNode && nodeRandomization) {
     content = (
       <NodeBriefing
         node={activeNode}
         secured={securedIds.includes(activeNode.id)}
+        randomization={nodeRandomization}
         onConnect={() => setScreen("terminal")}
         onBack={() => setScreen("map")}
       />
     );
-  } else if (screen === "terminal" && activeNode) {
+  } else if (screen === "terminal" && activeNode && nodeRandomization) {
     content = (
       <Terminal
         node={activeNode}
         carryFlags={chainFlags}
+        randomization={nodeRandomization}
         onSecured={handleSecured}
         onExit={() => setScreen("map")}
         onNote={addNote}

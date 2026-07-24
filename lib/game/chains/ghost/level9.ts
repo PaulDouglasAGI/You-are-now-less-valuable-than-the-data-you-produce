@@ -36,6 +36,7 @@ export const ghostLevel9: ChainDef = {
   nodes: [
     {
       id: "thackeray",
+      randomizableSecrets: ["Winter2025!", "N3wP@ssw0rd!"],
       org: "Thackeray Financial Group",
       city: "Thackeray",
       state: "OK",

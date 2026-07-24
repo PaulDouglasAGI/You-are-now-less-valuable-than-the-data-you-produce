@@ -53,6 +53,10 @@ export interface NodeDef {
   /** position on the stylized map, in percent of the map viewBox */
   coords: { x: number; y: number };
   ip: string;
+  /** exact canonical secret literal(s) already present in this file's commands/briefing/hints,
+   *  opted into per-run randomization. Omit entirely for nodes with no credential step — IP
+   *  randomization still applies to those for free. */
+  randomizableSecrets?: string[];
   tagline: string;
   briefing: string[];
   initialPrompt: string;

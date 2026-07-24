@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { NodeDef, NodeRunState, TerminalLine } from "@/lib/game/types";
 import { initNodeRunState, resolveCommand } from "@/lib/game/engine";
+import { applyRandomization, reverseRandomization } from "@/lib/game/randomize";
+import type { RunRandomization } from "@/lib/game/randomize";
 import CornerFrame from "./CornerFrame";
 
 const TONE_CLASS: Record<TerminalLine["kind"], string> = {
@@ -17,17 +19,22 @@ const TONE_CLASS: Record<TerminalLine["kind"], string> = {
 export default function Terminal({
   node,
   carryFlags,
+  randomization,
   onSecured,
   onExit,
   onNote,
 }: {
   node: NodeDef;
   carryFlags: string[];
+  randomization: RunRandomization;
   onSecured: (finalState: NodeRunState) => void;
   onExit: () => void;
   onNote: (text: string, source: string) => void;
 }) {
-  const [runState, setRunState] = useState<NodeRunState>(() => initNodeRunState(node, carryFlags));
+  const [runState, setRunState] = useState<NodeRunState>(() => {
+    const base = initNodeRunState(node, carryFlags);
+    return { ...base, history: base.history.map((l) => ({ ...l, text: applyRandomization(l.text, randomization) })) };
+  });
   const [input, setInput] = useState("");
   const [pastInputs, setPastInputs] = useState<string[]>([]);
   const [historyIdx, setHistoryIdx] = useState<number | null>(null);
@@ -53,26 +60,31 @@ export default function Terminal({
   }, []);
 
   useEffect(() => {
-    onNoteRef.current(`${node.org} — ${node.ip}`, node.org);
+    onNoteRef.current(`${node.org} — ${applyRandomization(node.ip, randomization)}`, node.org);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [node.org, node.ip]);
 
   function submit() {
     if (justSecured) return;
-    const trimmed = input;
-    const result = resolveCommand(node, runState, trimmed);
+    const raw = input;
+    const canonicalInput = reverseRandomization(raw, randomization);
+    const result = resolveCommand(node, runState, canonicalInput);
+    const translatedLines = result.lines.map((l, i) =>
+      i === 0 ? { ...l, text: `${runState.prompt} ${raw.trim()}` } : { ...l, text: applyRandomization(l.text, randomization) },
+    );
     setRevealFrom(runState.history.length);
     setRunState((prev) => ({
       ...result.nextState,
-      history: [...prev.history, ...result.lines],
+      history: [...prev.history, ...translatedLines],
     }));
-    if (trimmed.trim().length > 0) {
-      setPastInputs((p) => [...p, trimmed]);
+    if (raw.trim().length > 0) {
+      setPastInputs((p) => [...p, raw]);
     }
     setHistoryIdx(null);
     setInput("");
 
     if (result.note) {
-      onNoteRef.current(result.note, node.org);
+      onNoteRef.current(applyRandomization(result.note, randomization), node.org);
     }
 
     if (result.allObjectivesComplete && !runState.secured) {
@@ -124,7 +136,7 @@ export default function Terminal({
             </button>
           </div>
           <p className="text-[11px] text-[color:var(--color-text-dim)] mt-1">
-            {node.ip} · {runState.prompt}
+            {applyRandomization(node.ip, randomization)} · {runState.prompt}
           </p>
           <div className="mt-3 h-1.5 bg-[color:var(--color-bg-raised)] overflow-hidden">
             <div
@@ -179,7 +191,7 @@ export default function Terminal({
           <span className="w-2.5 h-2.5 rounded-full bg-[color:var(--color-amber)]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[color:var(--color-green)]" />
           <span className="ml-3 text-[11px] text-[color:var(--color-text-dim)] tracking-widest">
-            session — {node.ip}
+            session — {applyRandomization(node.ip, randomization)}
           </span>
         </div>
 

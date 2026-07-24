@@ -33,6 +33,7 @@ export const hardLevel4: ChainDef = {
       state: "N/A",
       coords: { x: 52.6, y: 56.7 },
       ip: IP,
+      randomizableSecrets: ["Riverbend#22"],
       tagline: "Standalone assessment target",
       briefing: [`IP: ${IP}`, "No further information provided."],
       initialPrompt: "op@breachline:~$",

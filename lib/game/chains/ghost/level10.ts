@@ -44,6 +44,7 @@ export const ghostLevel10: ChainDef = {
       state: "PA",
       coords: { x: 80.3, y: 20.9 },
       ip: IP,
+      randomizableSecrets: ["Autumn2025!"],
       tagline: "Healthcare analytics SaaS platform",
       briefing: [`IP: ${IP}`, `API: ${API}`, "No further information provided."],
       initialPrompt: "op@breachline:~$",

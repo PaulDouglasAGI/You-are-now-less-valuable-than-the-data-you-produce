@@ -34,6 +34,7 @@ export const mediumLevel1: ChainDef = {
       state: "KS",
       coords: { x: 47, y: 30.1 },
       ip: IP,
+      randomizableSecrets: ["prairie-analytics-ec2-role"],
       tagline: "Marketing-attribution dashboards for regional retailers",
       briefing: [
         "TARGET: Prairie Analytics reporting platform",

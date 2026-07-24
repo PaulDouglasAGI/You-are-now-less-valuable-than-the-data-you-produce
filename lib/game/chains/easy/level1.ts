@@ -40,6 +40,7 @@ export const easyLevel1: ChainDef = {
       state: "VT",
       coords: { x: 87, y: 14.6 },
       ip: IP,
+      randomizableSecrets: ["pantry123"],
       tagline: "Community food bank — volunteer & donor management portal",
       briefing: [
         "TARGET: Harbor Light Food Pantry donor/volunteer portal",

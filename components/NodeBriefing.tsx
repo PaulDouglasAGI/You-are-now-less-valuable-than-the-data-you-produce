@@ -1,6 +1,8 @@
 "use client";
 
 import type { NodeDef } from "@/lib/game/types";
+import { applyRandomization } from "@/lib/game/randomize";
+import type { RunRandomization } from "@/lib/game/randomize";
 import RadialHud from "./RadialHud";
 import GlitchText from "./GlitchText";
 import CornerFrame from "./CornerFrame";
@@ -8,11 +10,13 @@ import CornerFrame from "./CornerFrame";
 export default function NodeBriefing({
   node,
   secured,
+  randomization,
   onConnect,
   onBack,
 }: {
   node: NodeDef;
   secured: boolean;
+  randomization: RunRandomization;
   onConnect: () => void;
   onBack: () => void;
 }) {
@@ -37,7 +41,7 @@ export default function NodeBriefing({
             />
           </div>
           <p className="text-sm text-[color:var(--color-text-dim)] mt-1 scan-in" style={{ animationDelay: "180ms" }}>
-            {node.city}, {node.state} — IP {node.ip}
+            {node.city}, {node.state} — IP {applyRandomization(node.ip, randomization)}
           </p>
           <p className="text-sm text-[color:var(--color-text)] mt-2 italic scan-in" style={{ animationDelay: "270ms" }}>
             {node.tagline}
@@ -45,7 +49,7 @@ export default function NodeBriefing({
 
           <div className="mt-6 space-y-1.5 text-sm text-[color:var(--color-text)] leading-relaxed">
             {node.briefing.map((line, i) =>
-              line === "" ? <div key={i} className="h-2" /> : <p key={i}>{line}</p>
+              line === "" ? <div key={i} className="h-2" /> : <p key={i}>{applyRandomization(line, randomization)}</p>
             )}
           </div>
 

@@ -248,6 +248,7 @@ export const hardChain: ChainDef = {
       state: "MO",
       coords: { x: 55.4, y: 31.2 },
       ip: IP_VANTAGE,
+      randomizableSecrets: ["cgi_rpt_3d91ffa02b6c"],
       tagline: "Regional rail freight dispatch & scheduling",
       briefing: [
         "TARGET: Vantage Rail Logistics — internal network, reached via a harvested jumpbox key",
