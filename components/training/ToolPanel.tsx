@@ -12,6 +12,11 @@ export default function ToolPanel({ tool }: { tool: TrainingTool }) {
       </div>
       <p className="mt-2 text-sm text-[color:var(--color-thm-text-dim)] leading-relaxed">{tool.blurb}</p>
 
+      <div className="mt-4">
+        <p className="text-[10px] tracking-widest text-[color:var(--color-thm-accent)] mb-1.5">HOW IT WORKS</p>
+        <p className="text-sm text-[color:var(--color-thm-text)] leading-relaxed">{tool.howItWorks}</p>
+      </div>
+
       {tool.canonicalForm && (
         <div className="mt-4 border-l-2 border-[color:var(--color-thm-accent)] pl-3 py-1">
           <p className="text-[10px] tracking-widest text-[color:var(--color-thm-accent)] mb-1">CANONICAL FORM</p>
@@ -23,6 +28,27 @@ export default function ToolPanel({ tool }: { tool: TrainingTool }) {
         <p className="text-[10px] tracking-widest text-[color:var(--color-thm-text-dim)] mb-1.5">REFERENCE</p>
         <CodeBlock code={tool.referenceBlock.join("\n")} />
       </div>
+
+      {tool.flagGlossary.length > 0 && (
+        <div className="mt-4">
+          <p className="text-[10px] tracking-widest text-[color:var(--color-thm-text-dim)] mb-1.5">FLAG GLOSSARY</p>
+          <div className="border border-[color:var(--color-thm-line)] divide-y divide-[color:var(--color-thm-line)]">
+            {tool.flagGlossary.map((f) => (
+              <div key={f.flag} className="flex flex-col sm:flex-row gap-1 sm:gap-3 px-3 py-2 text-xs">
+                <code className="flex-shrink-0 sm:w-40 text-[color:var(--color-thm-accent)]">{f.flag}</code>
+                <span className="text-[color:var(--color-thm-text-dim)] leading-relaxed">{f.meaning}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {tool.useCases.length > 0 && (
+        <div className="mt-4">
+          <p className="text-[10px] tracking-widest text-[color:var(--color-thm-text-dim)] mb-1.5">WHAT ELSE YOU CAN DO</p>
+          <CodeBlock code={tool.useCases.join("\n")} />
+        </div>
+      )}
     </div>
   );
 }
