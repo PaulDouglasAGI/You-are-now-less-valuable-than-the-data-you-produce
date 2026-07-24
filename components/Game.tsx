@@ -12,9 +12,14 @@ import {
   saveNotebook,
   loadTrainingProgress,
   saveTrainingProgress,
+  loadExamAttempt,
+  saveExamAttempt,
+  resetExamAttempt,
 } from "@/lib/game/storage";
 import { generateRunRandomization } from "@/lib/game/randomize";
 import type { RunRandomization } from "@/lib/game/randomize";
+import { buildExamSnapshot, scoreExamAttempt } from "@/lib/game/scoring";
+import { methodology } from "@/lib/game/methodology";
 import type { NodeStatus } from "./UsMap";
 import type { MissionStatus } from "./MissionSelect";
 
@@ -34,6 +39,8 @@ import NotebookToggle from "./NotebookToggle";
 import Methodology from "./Methodology";
 import MethodologyToggle from "./MethodologyToggle";
 import TrainingMode from "./TrainingMode";
+import ExamMode from "./ExamMode";
+import ExamHud from "./ExamHud";
 
 type Screen =
   | "boot"
@@ -47,7 +54,8 @@ type Screen =
   | "chainComplete"
   | "transmission"
   | "report"
-  | "training";
+  | "training"
+  | "examMode";
 
 export default function Game() {
   const [screen, setScreen] = useState<Screen>("boot");
@@ -68,6 +76,7 @@ export default function Game() {
   const [notebookOpen, setNotebookOpen] = useState(false);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
   const [trainingProgress, setTrainingProgress] = useState(() => loadTrainingProgress());
+  const [examAttempt, setExamAttempt] = useState(() => loadExamAttempt());
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
@@ -149,6 +158,10 @@ export default function Game() {
   }
 
   function handleSelectMission(id: string) {
+    if (examAttempt?.result) {
+      setScreen("examMode");
+      return;
+    }
     setMissionId(id);
     const isFirstCampaignEpisode = difficulty === "campaign" && missionsByDifficulty.campaign[0]?.id === id;
     if (isFirstCampaignEpisode && !save[id] && transmissionsByAfter["campaign-start"]) {
@@ -264,6 +277,49 @@ export default function Game() {
     saveTrainingProgress(next);
   }
 
+  function handleOpenExam() {
+    setScreen("examMode");
+  }
+
+  function handleStartExam() {
+    const attempt = {
+      startedAt: Date.now(),
+      endsAt: Date.now() + methodology.examDay.durationHours * 3600_000,
+      startSnapshot: buildExamSnapshot(save),
+    };
+    saveExamAttempt(attempt);
+    setExamAttempt(attempt);
+  }
+
+  function handleGradeExam() {
+    setExamAttempt((prev) => {
+      if (!prev || prev.result) return prev;
+      const graded = { ...prev, result: scoreExamAttempt(prev, save) };
+      saveExamAttempt(graded);
+      return graded;
+    });
+  }
+
+  function handleRestartExam() {
+    resetExamAttempt();
+    setExamAttempt(null);
+    setScreen("examMode");
+  }
+
+  // authoritative expiry check, independent of ExamHud's own display-only interval — fires the
+  // grade the instant time runs out, including immediately on load if it expired while the tab
+  // was closed (the clock is wall-clock, it doesn't pause for you)
+  useEffect(() => {
+    if (!examAttempt || examAttempt.result) return;
+    function check() {
+      if (examAttempt && Date.now() >= examAttempt.endsAt) handleGradeExam();
+    }
+    check();
+    const id = setInterval(check, 1000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [examAttempt, save]);
+
   function handleReset() {
     resetSave();
     setSave({});
@@ -281,6 +337,7 @@ export default function Game() {
         onReset={handleReset}
         onOpenReport={handleOpenReport}
         onOpenTraining={handleOpenTraining}
+        onOpenExam={handleOpenExam}
         save={save}
       />
     );
@@ -288,6 +345,20 @@ export default function Game() {
     content = <FieldReport save={save} onBack={handleBackToMenu} />;
   } else if (screen === "training") {
     content = <TrainingMode progress={trainingProgress} onProgressChange={handleTrainingProgressChange} onBack={handleBackToMenu} />;
+  } else if (screen === "examMode") {
+    content = (
+      <ExamMode
+        examAttempt={examAttempt}
+        onStart={handleStartExam}
+        onEnterMissions={() => {
+          setDifficulty("hard");
+          setScreen("missionSelect");
+        }}
+        onEndNow={handleGradeExam}
+        onRestart={handleRestartExam}
+        onBack={handleBackToMenu}
+      />
+    );
   } else if (screen === "missionSelect" && difficulty) {
     content = (
       <MissionSelect
@@ -367,6 +438,9 @@ export default function Game() {
           <MethodologyToggle onClick={() => { setNotebookOpen(false); setMethodologyOpen(true); }} />
           <NotebookToggle onClick={() => { setMethodologyOpen(false); setNotebookOpen(true); }} />
         </div>
+      )}
+      {screen !== "boot" && examAttempt && !examAttempt.result && screen !== "examMode" && (
+        <ExamHud endsAt={examAttempt.endsAt} onOpen={() => setScreen("examMode")} />
       )}
       <Notebook
         open={notebookOpen}

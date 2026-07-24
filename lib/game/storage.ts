@@ -1,9 +1,10 @@
-import type { SaveData, NotebookData, TrainingProgress } from "./types";
+import type { SaveData, NotebookData, TrainingProgress, ExamAttempt } from "./types";
 
 // v3: added hintsUsed for the scoring model (v2 saves lack it, which would break score math)
 const KEY = "breachline.save.v3";
 const NOTEBOOK_KEY = "breachline.notebook.v1";
 const TRAINING_KEY = "breachline.training.v1";
+const EXAM_KEY = "breachline.examday.v1";
 
 export function loadSave(): SaveData {
   if (typeof window === "undefined") return {};
@@ -79,4 +80,25 @@ export function saveTrainingProgress(data: TrainingProgress) {
 export function resetTrainingProgress() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(TRAINING_KEY);
+}
+
+/** Timed Exam Day attempt — its own record, independent of mission SaveData, never cleared by resetSave() */
+export function loadExamAttempt(): ExamAttempt | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(EXAM_KEY);
+    return raw ? (JSON.parse(raw) as ExamAttempt) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveExamAttempt(attempt: ExamAttempt) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(EXAM_KEY, JSON.stringify(attempt));
+}
+
+export function resetExamAttempt() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(EXAM_KEY);
 }

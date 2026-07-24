@@ -158,6 +158,7 @@ export const hardLevel4: ChainDef = {
           run: () => ({
             completesObjective: "user",
             tone: "success",
+            setsFlags: ["hard4_user"],
             note: "RB03 — local.txt: e4d909c290d0fb1ca068ffaddf22cbd0",
             output: ["e4d909c290d0fb1ca068ffaddf22cbd0"],
           }),

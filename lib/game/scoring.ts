@@ -1,5 +1,6 @@
-import type { ChainDef, ChainProgress, SaveData } from "./types";
+import type { ChainDef, ChainProgress, SaveData, ExamAttempt } from "./types";
 import { missionsById } from "./chains";
+import { methodology } from "./methodology";
 
 export const HINT_PENALTY = 0.15;
 export const SCOPE_VIOLATION_PENALTY = 0.15;
@@ -107,5 +108,54 @@ export function computeCareerScore(save: SaveData): CareerScore {
     rank: rankFor(percent),
     tacticBreakdown: Array.from(tacticMap.values()).sort((a, b) => b.possible - a.possible),
     perMission,
+  };
+}
+
+const EXAM_MISSION_IDS = ["hard-1", "hard-2", "hard-3", "hard-4"] as const;
+
+/** Snapshot of the curated exam-tier missions' progress, taken the moment an exam starts — grading
+ *  diffs against this so progress from before the exam never retroactively counts. */
+export function buildExamSnapshot(save: SaveData): ExamAttempt["startSnapshot"] {
+  return Object.fromEntries(
+    EXAM_MISSION_IDS.map((id) => [id, { securedNodeIds: save[id]?.securedNodeIds ?? [], flags: save[id]?.flags ?? [] }]),
+  );
+}
+
+/** Grades a real Exam Day attempt against the OSCP-shaped rubric in methodology.examDay:
+ *  hard-1 (3 chained nodes) maps to the "AD chain" row; hard-2/3/4 each map to one standalone row,
+ *  10pts for reaching user (a distinct flag set by that mission's cat-local step) and 20 for fully
+ *  securing the box. Only progress made strictly after the exam's startSnapshot counts. */
+export function scoreExamAttempt(attempt: ExamAttempt, save: SaveData): NonNullable<ExamAttempt["result"]> {
+  const rows = methodology.examDay.pointRows;
+  const adRow = rows.find((r) => r.id === "ad")!;
+  const adMission = missionsById["hard-1"];
+  const adBefore = attempt.startSnapshot["hard-1"]?.securedNodeIds ?? [];
+  const adNow = save["hard-1"]?.securedNodeIds ?? [];
+  const adNewly = adNow.filter((id) => !adBefore.includes(id));
+  const adPoints = adNewly.length >= adMission.nodes.length ? adRow.full.points : adNewly.length > 0 ? (adRow.partial?.points ?? 0) : 0;
+
+  function standalone(rowId: string, missionId: string, userFlag: string): number {
+    const row = rows.find((r) => r.id === rowId)!;
+    const snap = attempt.startSnapshot[missionId];
+    const securedBefore = (snap?.securedNodeIds ?? []).length > 0;
+    const securedNow = (save[missionId]?.securedNodeIds ?? []).length > 0;
+    if (securedNow && !securedBefore) return row.full.points;
+    const hadUser = (snap?.flags ?? []).includes(userFlag);
+    const hasUser = (save[missionId]?.flags ?? []).includes(userFlag);
+    if (hasUser && !hadUser) return row.partial?.points ?? 0;
+    return 0;
+  }
+
+  const st1 = standalone("st1", "hard-2", "hard2_user");
+  const st2 = standalone("st2", "hard-3", "hard3_user");
+  const st3 = standalone("st3", "hard-4", "hard4_user");
+  const pointsEarned = adPoints + st1 + st2 + st3;
+
+  return {
+    endedAt: Date.now(),
+    pointsEarned,
+    pointsTotal: methodology.examDay.pointsTotal,
+    passed: pointsEarned >= methodology.examDay.pointsToPass,
+    rowScores: { ad: adPoints, st1, st2, st3 },
   };
 }

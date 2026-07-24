@@ -136,6 +136,22 @@ export interface NotebookData {
   text: string;
 }
 
+/** A single timed Exam Day run — wall-clock start/end, a snapshot of mission progress taken at
+ *  the moment the exam started (so pre-existing progress doesn't retroactively count), and the
+ *  graded result once the clock runs out or the player submits early. */
+export interface ExamAttempt {
+  startedAt: number;
+  endsAt: number;
+  startSnapshot: Partial<Record<string, { securedNodeIds: string[]; flags: string[] }>>;
+  result?: {
+    endedAt: number;
+    pointsEarned: number;
+    pointsTotal: number;
+    passed: boolean;
+    rowScores: Record<string, number>;
+  };
+}
+
 /** Training Mode progress — a flat set of "toolId:drillId" strings, separate from mission SaveData. */
 export interface TrainingProgress {
   completedDrillIds: string[];
