@@ -37,6 +37,29 @@ export const match = {
   },
 };
 
+/** extracts every integer-valued token from input: 0x-prefixed hex runs and bare decimal runs,
+ *  each matched greedily so a longer number can never satisfy a shorter expected one (e.g. "172"
+ *  does not satisfy an expected "72" the way a loose .includes("72") check would). Tokens must sit
+ *  on a word boundary (not preceded/followed by a letter or digit) so a number embedded in an
+ *  identifier — e.g. the "64" inside pwntools' `p64(...)` — is never mistaken for a real value. */
+function extractIntegerTokens(input: string): number[] {
+  const tokens = input.match(/(?<![a-z0-9])0x[0-9a-f]+(?![a-z0-9])|(?<![a-z0-9])\d+(?![a-z0-9])/gi) ?? [];
+  return tokens.map((t) => (t.toLowerCase().startsWith("0x") ? parseInt(t, 16) : parseInt(t, 10)));
+}
+
+/** exact-value match for an expected hex address — pass without the "0x" prefix (e.g. "401196").
+ *  Matches either a hex literal ("0x401196") or an equal-valued bare-decimal token in the input,
+ *  so a binexp payload has to contain the actual right value, not just a matching substring. */
+export function matchesExactAddress(input: string, expectedHex: string): boolean {
+  const expected = parseInt(expectedHex, 16);
+  return extractIntegerTokens(input).includes(expected);
+}
+
+/** exact-value match for an expected decimal offset/count (e.g. a padding length or port number). */
+export function matchesExactOffset(input: string, expectedDecimal: number): boolean {
+  return extractIntegerTokens(input).includes(expectedDecimal);
+}
+
 /**
  * Declarative command builder for real CLI-tool invocations (curl, nmap, ssh, cat, ...).
  *

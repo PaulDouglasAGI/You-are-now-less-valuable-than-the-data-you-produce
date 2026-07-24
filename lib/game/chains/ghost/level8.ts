@@ -1,5 +1,5 @@
 import type { ChainDef } from "../../types";
-import { match, strictCmd, normalize } from "../../engine";
+import { match, strictCmd, normalize, matchesExactAddress, matchesExactOffset } from "../../engine";
 
 const IP = "192.0.2.80";
 
@@ -208,7 +208,8 @@ export const ghostLevel8: ChainDef = {
               n.includes("5050") &&
               n.includes("delete 1") &&
               n.includes("create 2") &&
-              n.includes("401310") &&
+              matchesExactOffset(n, 24) &&
+              matchesExactAddress(n, "401310") &&
               n.includes("render 1")
             );
           },

