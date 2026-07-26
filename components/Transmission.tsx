@@ -33,7 +33,7 @@ export default function Transmission({
         <GlitchText
           as="h1"
           text={isDossier ? "RECOVERED DOCUMENT" : transmission.channel ?? "#unbank"}
-          className="block font-display text-xl md:text-3xl font-bold text-[color:var(--color-teal)] text-glow mt-1 scan-in"
+          className="block font-display text-xl md:text-3xl font-bold text-[color:var(--color-teal)] mt-1 scan-in"
         />
 
         <div

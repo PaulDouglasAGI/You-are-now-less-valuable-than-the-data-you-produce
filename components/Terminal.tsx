@@ -209,7 +209,7 @@ export default function Terminal({
             );
           })}
           {justSecured && (
-            <div className="text-[color:var(--color-green)] mt-3 fade-in glitch-flicker-once font-display tracking-widest">
+            <div className="text-[color:var(--color-green)] mt-3 fade-in font-display tracking-widest">
               [ target secured — closing session... ]
             </div>
           )}

@@ -7,19 +7,19 @@
   --font-display: var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
   --font-statement: var(--font-bigshoulders), var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
 
-  --color-bg: #05080a;
-  --color-bg-raised: #0b1114;
-  --color-panel: #0d1417;
-  --color-line: #163038;
-  --color-cyan: #29f1e3;
-  --color-cyan-dim: #0f8f89;
-  --color-teal: #1fb8c4;
-  --color-amber: #ffb020;
-  --color-red: #ff3b4e;
-  --color-green: #35ff9c;
-  --color-violet: #b34aff;
-  --color-text: #d7f5f3;
-  --color-text-dim: #6f9a97;
+  --color-bg: #0b0d10;
+  --color-bg-raised: #14171c;
+  --color-panel: #14171c;
+  --color-line: #262b33;
+  --color-cyan: #e2384a;
+  --color-cyan-dim: #7a2029;
+  --color-teal: #b5424f;
+  --color-amber: #e0a030;
+  --color-red: #ff5533;
+  --color-green: #2ecc71;
+  --color-violet: #a855c9;
+  --color-text: #eef1f4;
+  --color-text-dim: #8b93a1;
 }
 
 html,
@@ -45,110 +45,15 @@ body {
   color: #000;
 }
 
-/* ---------- background layers ---------- */
-
-.bg-grid {
-  background-image:
-    linear-gradient(to right, rgba(41, 241, 227, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(41, 241, 227, 0.06) 1px, transparent 1px);
-  background-size: 36px 36px;
-}
-
-.bg-scanlines::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 60;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.18) 3px,
-    rgba(0, 0, 0, 0) 4px
-  );
-  mix-blend-mode: overlay;
-  opacity: 0.5;
-}
-
-.bg-vignette::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 59;
-  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.65) 100%);
-}
-
-.bg-noise::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 58;
-  opacity: 0.045;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  background-size: 180px 180px;
-}
-
 /* ---------- HUD chrome ---------- */
 
 .hud-panel {
   position: relative;
   background: var(--color-panel);
-  background: color-mix(in srgb, var(--color-panel) 78%, transparent);
   border: 1px solid var(--hp-color, var(--color-line));
-  backdrop-filter: blur(2px);
 }
 
-.corner-frame {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.corner-frame::before,
-.corner-frame::after,
-.corner-frame > .cf-bl,
-.corner-frame > .cf-br {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border-color: var(--cf-color, var(--color-cyan));
-  opacity: 0.85;
-}
-
-.corner-frame::before {
-  top: -1px;
-  left: -1px;
-  border-top: 2px solid;
-  border-left: 2px solid;
-}
-
-.corner-frame::after {
-  top: -1px;
-  right: -1px;
-  border-top: 2px solid;
-  border-right: 2px solid;
-}
-
-.corner-frame > .cf-bl {
-  bottom: -1px;
-  left: -1px;
-  border-bottom: 2px solid;
-  border-left: 2px solid;
-}
-
-.corner-frame > .cf-br {
-  bottom: -1px;
-  right: -1px;
-  border-bottom: 2px solid;
-  border-right: 2px solid;
-}
-
-/* ---------- map callout tags (CtOS-style leader-line labels) ---------- */
+/* ---------- map callout tags ---------- */
 
 .map-tag {
   font-family: var(--font-display);
@@ -163,109 +68,7 @@ body {
   clip-path: polygon(6px 0, 100% 0, 100% 100%, 0 100%, 0 6px);
 }
 
-/* ---------- radar sweep ---------- */
-
-.radar-sweep {
-  animation: radar-spin 4s linear infinite;
-  transform-origin: center;
-}
-
-@keyframes radar-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.ping-ring {
-  animation: ping-ring 3.6s ease-out infinite;
-  transform-origin: center;
-}
-
-@keyframes ping-ring {
-  0% { r: 1; opacity: 0.55; }
-  100% { r: 38; opacity: 0; }
-}
-
-/* ---------- flicker (instability accent) ---------- */
-
-.flicker {
-  animation: flicker 5s linear infinite;
-}
-
-@keyframes flicker {
-  0%, 92%, 100% { opacity: 1; }
-  93% { opacity: 0.4; }
-  94% { opacity: 1; }
-  95% { opacity: 0.3; }
-  96% { opacity: 1; }
-}
-
-/* ---------- noise burst (boot-sequence transition slam) ---------- */
-
-.noise-burst {
-  position: fixed;
-  inset: 0;
-  z-index: 70;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/><feColorMatrix type='matrix' values='0 0 0 0 0.16  0 0 0 0 0.95  0 0 0 0 0.9  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  animation: noise-burst-anim 0.35s steps(2, end) forwards;
-}
-
-@keyframes noise-burst-anim {
-  0% { opacity: 0.9; }
-  100% { opacity: 0; }
-}
-
-/* ---------- text effects ---------- */
-
-.text-glow {
-  text-shadow: 0 0 6px currentColor, 0 0 18px currentColor;
-}
-
-.glitch {
-  position: relative;
-  display: inline-block;
-}
-
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  overflow: hidden;
-  clip-path: inset(0 0 0 0);
-}
-
-.glitch::before {
-  color: #ff3b4e;
-  animation: glitch-a 3.4s infinite linear alternate-reverse;
-  opacity: 0.7;
-}
-
-.glitch::after {
-  color: #29f1e3;
-  animation: glitch-b 2.6s infinite linear alternate-reverse;
-  opacity: 0.7;
-}
-
-@keyframes glitch-a {
-  0% { clip-path: inset(2% 0 88% 0); transform: translate(-1px, 0); }
-  20% { clip-path: inset(60% 0 5% 0); transform: translate(1px, 0); }
-  40% { clip-path: inset(30% 0 45% 0); transform: translate(-1px, 0); }
-  60% { clip-path: inset(80% 0 2% 0); transform: translate(1px, 0); }
-  80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 0); }
-  100% { clip-path: inset(45% 0 30% 0); transform: translate(1px, 0); }
-}
-
-@keyframes glitch-b {
-  0% { clip-path: inset(70% 0 10% 0); transform: translate(1px, 0); }
-  20% { clip-path: inset(15% 0 60% 0); transform: translate(-1px, 0); }
-  40% { clip-path: inset(50% 0 20% 0); transform: translate(1px, 0); }
-  60% { clip-path: inset(5% 0 85% 0); transform: translate(-1px, 0); }
-  80% { clip-path: inset(65% 0 15% 0); transform: translate(1px, 0); }
-  100% { clip-path: inset(25% 0 55% 0); transform: translate(-1px, 0); }
-}
+/* ---------- text ---------- */
 
 .term-input {
   caret-color: var(--color-cyan);
@@ -290,80 +93,12 @@ body {
 }
 
 .scan-in {
-  position: relative;
-  animation: scanInReveal 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: scanInReveal 0.32s ease-out both;
 }
 
 @keyframes scanInReveal {
-  0%   { opacity: 0; transform: translateY(4px); filter: blur(2px); clip-path: inset(0 100% 0 0); }
-  55%  { opacity: 1; filter: blur(0); clip-path: inset(0 0 0 0); }
-  100% { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); }
-}
-
-.scan-in::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(41, 241, 227, 0.5), transparent);
-  animation: scanSweep 0.42s ease-out both;
-}
-
-@keyframes scanSweep {
-  0% { transform: translateX(-100%); opacity: 1; }
-  70% { opacity: 0.6; }
-  100% { transform: translateX(100%); opacity: 0; }
-}
-
-.chromatic-text {
-  position: relative;
-  display: inline-block;
-}
-
-.chromatic-text::before,
-.chromatic-text::after {
-  content: attr(data-text);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  opacity: 0.7;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.chromatic-text::before {
-  color: var(--color-red);
-  animation: chromaDriftRed 4s ease-in-out infinite;
-}
-
-.chromatic-text::after {
-  color: var(--color-cyan);
-  animation: chromaDriftCyan 4s ease-in-out infinite;
-}
-
-@keyframes chromaDriftRed {
-  0%, 100% { transform: translate(-3px, 0); }
-  50% { transform: translate(-1.5px, 0); }
-}
-
-@keyframes chromaDriftCyan {
-  0%, 100% { transform: translate(3px, 0); }
-  50% { transform: translate(1.5px, 0); }
-}
-
-.glitch-flicker-once {
-  animation: glitchFlickerOnce 0.5s steps(1, end) 1;
-}
-
-@keyframes glitchFlickerOnce {
-  0% { opacity: 1; }
-  8% { opacity: 0.3; transform: translate(-2px, 1px); }
-  16% { opacity: 1; transform: translate(0, 0); }
-  24% { opacity: 0.5; transform: translate(2px, -1px); }
-  32%, 48% { opacity: 1; transform: translate(0, 0); }
-  60% { opacity: 0.4; transform: translate(-1px, 0); }
-  68%, 100% { opacity: 1; transform: translate(0, 0); }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .slide-in-right {
@@ -380,15 +115,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.scan-ring {
-  animation: spin 6s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 .pulse-dot {
   animation: pulse 1.8s ease-in-out infinite;
 }
@@ -398,7 +124,7 @@ body {
   50% { opacity: 0.4; transform: scale(1.4); }
 }
 
-/* ---------- Training Mode (THM-style) — scoped so nothing else can collide with it ---------- */
+/* ---------- Training Mode (THM-style) — same palette as :root, kept for its own scoping ---------- */
 
 .training-theme {
   --color-thm-bg: #0b0d10;

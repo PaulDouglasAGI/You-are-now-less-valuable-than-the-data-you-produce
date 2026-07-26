@@ -5,8 +5,6 @@ import { US_SILHOUETTE } from "@/lib/us-silhouette";
 
 export type NodeStatus = "locked" | "unlocked" | "secured";
 
-const CENTER = { x: 43, y: 25 };
-
 function statusColor(status: NodeStatus) {
   return status === "secured" ? "var(--color-green)" : status === "unlocked" ? "var(--color-cyan)" : "var(--color-text-dim)";
 }
@@ -32,26 +30,12 @@ export default function UsMap({
       <svg viewBox="0 0 100 60" className="absolute inset-0 w-full h-full overflow-visible">
         <defs>
           <pattern id="mapgrid" width="2" height="2" patternUnits="userSpaceOnUse">
-            <path d="M 2 0 L 0 0 0 2" fill="none" stroke="rgba(41,241,227,0.08)" strokeWidth="0.1" />
+            <path d="M 2 0 L 0 0 0 2" fill="none" stroke="var(--color-line)" strokeWidth="0.1" opacity="0.6" />
           </pattern>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="0.6" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
         </defs>
 
-        {/* radar ping, centered roughly over the continental landmass */}
-        <g opacity="0.5" pointerEvents="none">
-          <circle cx={CENTER.x} cy={CENTER.y} r="1" fill="none" stroke="var(--color-cyan)" strokeWidth="0.25" className="ping-ring" style={{ animationDelay: "0s" }} />
-          <circle cx={CENTER.x} cy={CENTER.y} r="1" fill="none" stroke="var(--color-cyan)" strokeWidth="0.25" className="ping-ring" style={{ animationDelay: "1.2s" }} />
-          <circle cx={CENTER.x} cy={CENTER.y} r="1" fill="none" stroke="var(--color-cyan)" strokeWidth="0.25" className="ping-ring" style={{ animationDelay: "2.4s" }} />
-        </g>
-
         <path d={US_SILHOUETTE} fill="url(#mapgrid)" stroke="var(--color-cyan-dim)" strokeWidth="0.25" opacity="0.85" />
-        <path d={US_SILHOUETTE} fill="rgba(41,241,227,0.04)" />
+        <path d={US_SILHOUETTE} fill="rgba(226,56,74,0.04)" />
 
         {/* chain connective lines between nodes in order */}
         {ordered.slice(1).map((node, i) => {
@@ -114,7 +98,7 @@ export default function UsMap({
                       ? `${tagX},${tagY} ${tagX + nameW - cut},${tagY} ${tagX + nameW},${tagY + cut} ${tagX + nameW},${tagY + nameSize + 2.6} ${tagX},${tagY + nameSize + 2.6}`
                       : `${tagX + cut},${tagY} ${tagX + nameW},${tagY} ${tagX + nameW},${tagY + nameSize + 2.6} ${tagX},${tagY + nameSize + 2.6} ${tagX},${tagY + cut}`
                   }
-                  fill="rgba(5,8,10,0.82)"
+                  fill="rgba(11,13,16,0.82)"
                   stroke={color}
                   strokeWidth="0.15"
                 />
@@ -130,7 +114,7 @@ export default function UsMap({
                 {status === "unlocked" && (
                   <circle r="2.2" fill="none" stroke={color} strokeWidth="0.15" className="pulse-dot" opacity="0.7" pointerEvents="none" />
                 )}
-                <circle r="0.9" fill={status === "locked" ? "var(--color-bg-raised)" : color} stroke={color} strokeWidth="0.25" filter="url(#glow)" pointerEvents="none" />
+                <circle r="0.9" fill={status === "locked" ? "var(--color-bg-raised)" : color} stroke={color} strokeWidth="0.25" pointerEvents="none" />
                 {/* generous invisible hit target around the dot itself */}
                 <circle r="3.2" fill="transparent" />
               </g>

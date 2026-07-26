@@ -35,7 +35,7 @@ export default function MainMenu({
         <GlitchText
           as="h1"
           text="BREACHLINE"
-          className="font-statement text-5xl md:text-7xl font-black uppercase tracking-[0.08em] text-[color:var(--color-cyan)] text-glow"
+          className="font-statement text-5xl md:text-7xl font-black uppercase tracking-[0.08em] text-[color:var(--color-cyan)]"
         />
         <p className="mt-3 text-[color:var(--color-text-dim)] text-sm tracking-widest">
           SELECT OPERATION DIFFICULTY
@@ -91,7 +91,7 @@ export default function MainMenu({
           <GlitchText
             as="h2"
             text={campaignMeta.label}
-            className="block font-statement text-3xl md:text-4xl font-black uppercase mt-1 text-[color:var(--color-teal)] text-glow"
+            className="block font-statement text-3xl md:text-4xl font-black uppercase mt-1 text-[color:var(--color-teal)]"
           />
           <p className="text-sm text-[color:var(--color-text-dim)] leading-relaxed mt-2 max-w-3xl">{campaignMeta.blurb}</p>
         </div>

@@ -1,9 +1,6 @@
-/** Sci-fi HUD corner brackets, absolutely positioned over a `relative` parent. */
-export default function CornerFrame({ color }: { color?: string }) {
-  return (
-    <div className="corner-frame" style={color ? { ["--cf-color" as string]: color } : undefined}>
-      <span className="cf-bl" />
-      <span className="cf-br" />
-    </div>
-  );
+/** No-op: the flat theme uses plain panel borders instead of corner-bracket chrome. Kept as a
+ *  component so call sites don't need to change. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function CornerFrame(props: { color?: string }) {
+  return null;
 }

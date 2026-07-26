@@ -30,7 +30,6 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
   const [stage, setStage] = useState<Stage>("burst");
   const [lineIdx, setLineIdx] = useState(0);
   const [lineOpacity, setLineOpacity] = useState(0);
-  const [burstKey, setBurstKey] = useState(0);
   const [authProgress, setAuthProgress] = useState(0);
   const abortedRef = useRef(false);
 
@@ -41,7 +40,6 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
         if (aborted.current) return;
         setLineIdx(i);
         setStage("burst");
-        setBurstKey((k) => k + 1);
         await wait(260);
         if (aborted.current) return;
         setStage("line");
@@ -53,7 +51,6 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
       }
       if (aborted.current) return;
       setStage("authorizing");
-      setBurstKey((k) => k + 1);
 
       const start = Date.now();
       const duration = 1800;
@@ -84,8 +81,6 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-center px-6 text-center select-none relative overflow-hidden">
-      {burstKey > 0 && stage !== "title" && <div key={burstKey} className="noise-burst" />}
-
       {(stage === "authorizing" || stage === "title") && (
         <svg
           viewBox="0 0 100 60"

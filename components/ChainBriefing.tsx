@@ -25,7 +25,7 @@ export default function ChainBriefing({
           </span>
           <span className="text-xs text-[color:var(--color-text-dim)] tracking-widest">{chain.codename}</span>
         </div>
-        <GlitchText as="h1" text={chain.title} className="font-statement text-4xl md:text-5xl font-black uppercase text-[color:var(--color-cyan)] text-glow" />
+        <GlitchText as="h1" text={chain.title} className="font-statement text-4xl md:text-5xl font-black uppercase text-[color:var(--color-cyan)]" />
 
         <div className="mt-6 space-y-3 text-sm md:text-base leading-relaxed text-[color:var(--color-text)]">
           {chain.briefing.map((line, i) =>

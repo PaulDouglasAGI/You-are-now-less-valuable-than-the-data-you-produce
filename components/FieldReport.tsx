@@ -35,7 +35,7 @@ export default function FieldReport({ save, onBack }: { save: SaveData; onBack: 
           <GlitchText
             as="h1"
             text={score.rank.toUpperCase()}
-            className="block font-statement text-4xl md:text-6xl font-black uppercase mt-1 text-glow"
+            className="block font-statement text-4xl md:text-6xl font-black uppercase mt-1"
           />
           <p className="mt-2 font-display text-2xl font-bold" style={{ color }}>
             {score.totalPoints} / {score.maxPoints} PTS

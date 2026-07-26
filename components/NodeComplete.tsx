@@ -19,7 +19,7 @@ export default function NodeComplete({
   return (
     <div className="h-screen w-screen flex flex-col items-center overflow-y-auto px-6 py-10">
       <div
-        className="relative max-w-2xl w-full hud-panel p-8 md:p-10 fade-in glitch-flicker-once text-center"
+        className="relative max-w-2xl w-full hud-panel p-8 md:p-10 fade-in text-center"
         style={{ ["--hp-color" as string]: "color-mix(in srgb, var(--color-green) 50%, transparent)" }}
       >
         <CornerFrame color="var(--color-green)" />
@@ -27,7 +27,7 @@ export default function NodeComplete({
         <GlitchText
           as="h1"
           text={node.org}
-          className="block font-statement text-3xl md:text-5xl font-black uppercase text-[color:var(--color-green)] text-glow mt-2"
+          className="block font-statement text-3xl md:text-5xl font-black uppercase text-[color:var(--color-green)] mt-2"
         />
         <div className="mt-6 space-y-2 text-sm text-left text-[color:var(--color-text)] leading-relaxed border-t border-[color:var(--color-line)] pt-6">
           <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">FINDINGS</span>

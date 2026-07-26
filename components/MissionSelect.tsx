@@ -40,7 +40,7 @@ export default function MissionSelect({
           <GlitchText
             as="h1"
             text="SELECT LEVEL"
-            className="block font-statement text-4xl md:text-5xl font-black uppercase text-[color:var(--color-cyan)] text-glow mt-1"
+            className="block font-statement text-4xl md:text-5xl font-black uppercase text-[color:var(--color-cyan)] mt-1"
           />
           <p className="text-xs text-[color:var(--color-text-dim)] tracking-widest mt-2">
             {securedCount}/{missions.length} SECURED

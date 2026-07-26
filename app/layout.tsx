@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${jbmono.variable} ${chakra.variable} ${bigShoulders.variable} bg-grid bg-scanlines bg-vignette bg-noise antialiased`}
+        className={`${jbmono.variable} ${chakra.variable} ${bigShoulders.variable} antialiased`}
       >
         {children}
       </body>

@@ -37,7 +37,7 @@ export default function NodeBriefing({
             <GlitchText
               as="h1"
               text={node.org}
-              className="block font-display text-2xl md:text-4xl font-bold text-[color:var(--color-cyan)] text-glow mt-1"
+              className="block font-display text-2xl md:text-4xl font-bold text-[color:var(--color-cyan)] mt-1"
             />
           </div>
           <p className="text-sm text-[color:var(--color-text-dim)] mt-1 scan-in" style={{ animationDelay: "180ms" }}>

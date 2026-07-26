@@ -48,7 +48,7 @@ export default function ExamMode({
             <GlitchText
               as="h1"
               text="EXAM DAY"
-              className="block font-statement text-4xl md:text-6xl font-black uppercase mt-1 text-[color:var(--color-amber)] text-glow"
+              className="block font-statement text-4xl md:text-6xl font-black uppercase mt-1 text-[color:var(--color-amber)]"
             />
             <p className="mt-4 text-sm text-[color:var(--color-text-dim)] leading-relaxed">{examDay.caveat}</p>
 
@@ -127,7 +127,7 @@ export default function ExamMode({
             <GlitchText
               as="h1"
               text={examAttempt.result.passed ? "PASS" : "FAIL"}
-              className="block font-statement text-5xl md:text-7xl font-black uppercase mt-1 text-glow"
+              className="block font-statement text-5xl md:text-7xl font-black uppercase mt-1"
               variant="chromatic"
               style={{ color: examAttempt.result.passed ? "var(--color-green)" : "var(--color-red)" }}
             />
@@ -183,7 +183,7 @@ function ExamCountdown({ endsAt }: { endsAt: number }) {
     <GlitchText
       as="h1"
       text={formatRemaining(endsAt - now)}
-      className="block font-statement text-5xl md:text-7xl font-black mt-2 text-[color:var(--color-amber)] text-glow"
+      className="block font-statement text-5xl md:text-7xl font-black mt-2 text-[color:var(--color-amber)]"
     />
   );
 }
