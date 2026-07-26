@@ -7,6 +7,7 @@ import ToolSidebar from "./training/ToolSidebar";
 import ToolPanel from "./training/ToolPanel";
 import DrillCard from "./training/DrillCard";
 import ProgressBar from "./training/ProgressBar";
+import LabSetup from "./LabSetup";
 
 export default function TrainingMode({
   progress,
@@ -18,6 +19,7 @@ export default function TrainingMode({
   onBack: () => void;
 }) {
   const [selectedId, setSelectedId] = useState(training.tools[0].id);
+  const [showLabSetup, setShowLabSetup] = useState(false);
   const selectedTool = training.tools.find((t) => t.id === selectedId) ?? training.tools[0];
 
   const completedSet = useMemo(() => new Set(progress.completedDrillIds), [progress.completedDrillIds]);
@@ -45,6 +47,10 @@ export default function TrainingMode({
     }
   }
 
+  if (showLabSetup) {
+    return <LabSetup onBack={() => setShowLabSetup(false)} />;
+  }
+
   return (
     <div className="training-theme h-screen w-screen flex flex-col items-center overflow-y-auto px-6 py-8 gap-6">
       <div className="w-full max-w-5xl flex items-center justify-between">
@@ -59,6 +65,12 @@ export default function TrainingMode({
           <span className="text-xs text-[color:var(--color-thm-text)]">
             {totalDone}/{totalDrills} drills complete
           </span>
+          <button
+            onClick={() => setShowLabSetup(true)}
+            className="block text-[10px] tracking-widest text-[color:var(--color-thm-text-dim)] hover:text-[color:var(--color-thm-accent)] transition-colors mt-1"
+          >
+            LAB SETUP GUIDE →
+          </button>
         </div>
       </div>
 

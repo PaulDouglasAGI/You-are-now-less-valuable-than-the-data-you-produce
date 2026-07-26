@@ -496,12 +496,18 @@ export function resolveCommand(node: NodeDef, state: NodeRunState, rawInput: str
     lines.push({ kind: "output", text: "available commands:" });
     for (const c of reachable) lines.push({ kind: "output", text: `  ${c.help}` });
     lines.push({ kind: "output", text: "  hint            — get a nudge if you're stuck" });
-    lines.push({ kind: "output", text: "  objectives       — show mission checklist" });
+    if (!node.hideObjectives) {
+      lines.push({ kind: "output", text: "  objectives       — show mission checklist" });
+    }
     lines.push({ kind: "output", text: "  clear            — clear the screen" });
     return { lines, nextState: state, allObjectivesComplete: false };
   }
 
   if (n === "objectives" || n === "obj") {
+    if (node.hideObjectives) {
+      lines.push({ kind: "output", text: "no checklist provided for this engagement — that's the point. plan your own methodology." });
+      return { lines, nextState: state, allObjectivesComplete: false };
+    }
     lines.push({ kind: "output", text: `-- ${node.org} :: objectives --` });
     for (const o of node.objectives) {
       const done = state.completedObjectives.includes(o.id);
@@ -515,6 +521,10 @@ export function resolveCommand(node: NodeDef, state: NodeRunState, rawInput: str
   }
 
   if (n === "hint") {
+    if (node.hideObjectives || node.hints.length === 0) {
+      lines.push({ kind: "warn", text: "hint: no hints available for this engagement — this one's fully unguided." });
+      return { lines, nextState: state, allObjectivesComplete: false };
+    }
     const idx = Math.min(state.hintsUsed, node.hints.length - 1);
     const hintText = node.hints[idx] ?? "no further hints available — trust your recon.";
     lines.push({ kind: "warn", text: `hint: ${hintText}` });
@@ -588,6 +598,7 @@ export function resolveCommand(node: NodeDef, state: NodeRunState, rawInput: str
     discoveredFlags: Array.from(newFlags),
     completedObjectives: Array.from(newObjectives),
     prompt: outcome.promptAfter ?? state.prompt,
+    scopeViolations: outcome.incursScopeViolation ? state.scopeViolations + 1 : state.scopeViolations,
   };
 
   const allObjectivesComplete = node.objectives.every((o) => nextState.completedObjectives.includes(o.id));

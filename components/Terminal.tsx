@@ -138,39 +138,58 @@ export default function Terminal({
           <p className="text-[11px] text-[color:var(--color-text-dim)] mt-1">
             {applyRandomization(node.ip, randomization)} · {runState.prompt}
           </p>
-          <div className="mt-3 h-1.5 bg-[color:var(--color-bg-raised)] overflow-hidden">
-            <div
-              className="h-full bg-[color:var(--color-cyan)] transition-all duration-500"
-              style={{ width: `${(doneCount / total) * 100}%` }}
-            />
-          </div>
-          <span className="text-[10px] text-[color:var(--color-text-dim)]">
-            {doneCount}/{total} objectives
-          </span>
+          {!node.hideObjectives && (
+            <>
+              <div className="mt-3 h-1.5 bg-[color:var(--color-bg-raised)] overflow-hidden">
+                <div
+                  className="h-full bg-[color:var(--color-cyan)] transition-all duration-500"
+                  style={{ width: `${(doneCount / total) * 100}%` }}
+                />
+              </div>
+              <span className="text-[10px] text-[color:var(--color-text-dim)]">
+                {doneCount}/{total} objectives
+              </span>
+            </>
+          )}
         </div>
 
         <div className="hud-panel p-3 flex-1 overflow-y-auto">
-          <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">OBJECTIVES</span>
-          <ul className="mt-2 space-y-2 text-xs">
-            {node.objectives.map((o) => {
-              const done = runState.completedObjectives.includes(o.id);
-              return (
-                <li key={o.id} className={done ? "text-[color:var(--color-green)]" : "text-[color:var(--color-text-dim)]"}>
-                  {done ? "[x] " : "[ ] "}
-                  {o.label}
-                  <div className="text-[10px] text-[color:var(--color-cyan-dim)] ml-4">{o.tactic}</div>
-                </li>
-              );
-            })}
-          </ul>
+          <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">
+            {node.hideObjectives ? "NO GUIDANCE PROVIDED" : "OBJECTIVES"}
+          </span>
+          {node.hideObjectives ? (
+            <p className="mt-2 text-xs text-[color:var(--color-text-dim)] leading-relaxed">
+              This engagement has no objective checklist and no hints. You determine the methodology,
+              in whatever order it actually applies — the same way a real assessment works.
+            </p>
+          ) : (
+            <ul className="mt-2 space-y-2 text-xs">
+              {node.objectives.map((o) => {
+                const done = runState.completedObjectives.includes(o.id);
+                return (
+                  <li key={o.id} className={done ? "text-[color:var(--color-green)]" : "text-[color:var(--color-text-dim)]"}>
+                    {done ? "[x] " : "[ ] "}
+                    {o.label}
+                    <div className="text-[10px] text-[color:var(--color-cyan-dim)] ml-4">{o.tactic}</div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
 
         <div className="hud-panel p-3 text-[11px] text-[color:var(--color-text-dim)] leading-relaxed">
           <span className="text-[10px] tracking-widest">SHELL</span>
           <p className="mt-1">
-            type <span className="text-[color:var(--color-cyan)]">help</span> for available commands,{" "}
-            <span className="text-[color:var(--color-cyan)]">hint</span> if you&apos;re stuck,{" "}
-            <span className="text-[color:var(--color-cyan)]">objectives</span> to see the checklist.
+            type <span className="text-[color:var(--color-cyan)]">help</span> for available commands
+            {node.hideObjectives
+              ? "."
+              : (
+                <>
+                  , <span className="text-[color:var(--color-cyan)]">hint</span> if you&apos;re stuck,{" "}
+                  <span className="text-[color:var(--color-cyan)]">objectives</span> to see the checklist.
+                </>
+              )}
           </p>
           <p className="mt-1">
             hints used: {runState.hintsUsed}/{node.hints.length}

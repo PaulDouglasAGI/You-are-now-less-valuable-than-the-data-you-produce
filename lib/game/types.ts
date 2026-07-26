@@ -18,6 +18,11 @@ export interface CommandOutcome {
   promptAfter?: string;
   /** if set, a one-line finding worth carrying forward — logged to the player's notebook (creds, keys, endpoints, IDs) */
   note?: string;
+  /** if true, this choice counts against the same "professional conduct" score as node.outOfScope —
+   *  for judgment-call moments where a command isn't out-of-network-scope but is still the
+   *  unprofessional option among two that both otherwise "work" (e.g. over-collecting evidence,
+   *  skipping authorization before a risky pivot) */
+  incursScopeViolation?: boolean;
 }
 
 export interface CommandDef {
@@ -70,6 +75,11 @@ export interface NodeDef {
   outOfScope?: { match: (input: string) => boolean; response: string[] };
   /** campaign-only: alternate debrief text keyed by whichever ending flag got set on this run; falls back to `debrief` when unset or when no key matches */
   debriefVariants?: Record<string, string[]>;
+  /** zero-guardrails design: hides the objective checklist in the terminal sidebar entirely — the
+   *  player has to structure their own methodology from memory instead of following a provided
+   *  list. `objectives` and `hints` still exist normally underneath for engine bookkeeping/scoring;
+   *  only the player-facing display is suppressed. */
+  hideObjectives?: boolean;
 }
 
 export interface ChainDef {

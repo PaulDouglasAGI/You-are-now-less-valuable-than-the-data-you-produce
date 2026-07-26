@@ -55,15 +55,22 @@ export default function NodeBriefing({
 
           <div className="mt-6 border border-[color:var(--color-line)] p-3">
             <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">
-              MISSION OBJECTIVES ({node.objectives.length})
+              {node.hideObjectives ? "MISSION OBJECTIVES" : `MISSION OBJECTIVES (${node.objectives.length})`}
             </span>
-            <ul className="mt-2 space-y-1 text-xs text-[color:var(--color-text-dim)]">
-              {node.objectives.map((o) => (
-                <li key={o.id}>
-                  · {o.label} <span className="text-[color:var(--color-cyan-dim)]">[{o.tactic}]</span>
-                </li>
-              ))}
-            </ul>
+            {node.hideObjectives ? (
+              <p className="mt-2 text-xs text-[color:var(--color-text-dim)] leading-relaxed">
+                No checklist. No hints. Compromise the target and prove it — the methodology is yours
+                to structure.
+              </p>
+            ) : (
+              <ul className="mt-2 space-y-1 text-xs text-[color:var(--color-text-dim)]">
+                {node.objectives.map((o) => (
+                  <li key={o.id}>
+                    · {o.label} <span className="text-[color:var(--color-cyan-dim)]">[{o.tactic}]</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className="mt-8 flex gap-4">
