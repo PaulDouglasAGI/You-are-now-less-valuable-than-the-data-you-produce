@@ -1,10 +1,11 @@
-import type { SaveData, NotebookData, TrainingProgress, ExamAttempt } from "./types";
+import type { SaveData, NotebookData, TrainingProgress, ExamAttempt, QuizProgress } from "./types";
 
 // v3: added hintsUsed for the scoring model (v2 saves lack it, which would break score math)
 const KEY = "breachline.save.v3";
 const NOTEBOOK_KEY = "breachline.notebook.v1";
 const TRAINING_KEY = "breachline.training.v1";
 const EXAM_KEY = "breachline.examday.v1";
+const QUIZ_KEY = "breachline.quiz.v1";
 
 export function loadSave(): SaveData {
   if (typeof window === "undefined") return {};
@@ -101,4 +102,27 @@ export function saveExamAttempt(attempt: ExamAttempt) {
 export function resetExamAttempt() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(EXAM_KEY);
+}
+
+/** Quiz Mode's rank/score record — its own history, independent of mission SaveData, never cleared by resetSave() */
+export function loadQuizProgress(): QuizProgress {
+  if (typeof window === "undefined") return { bestScores: {}, clearedTiers: [] };
+  try {
+    const raw = window.localStorage.getItem(QUIZ_KEY);
+    if (!raw) return { bestScores: {}, clearedTiers: [] };
+    const parsed = JSON.parse(raw) as Partial<QuizProgress>;
+    return { bestScores: parsed.bestScores ?? {}, clearedTiers: parsed.clearedTiers ?? [] };
+  } catch {
+    return { bestScores: {}, clearedTiers: [] };
+  }
+}
+
+export function saveQuizProgress(data: QuizProgress) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(QUIZ_KEY, JSON.stringify(data));
+}
+
+export function resetQuizProgress() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(QUIZ_KEY);
 }

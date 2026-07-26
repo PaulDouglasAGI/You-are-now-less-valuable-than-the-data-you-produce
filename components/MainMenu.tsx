@@ -13,6 +13,7 @@ export default function MainMenu({
   onOpenReport,
   onOpenTraining,
   onOpenExam,
+  onOpenQuiz,
   save,
 }: {
   progressFor: (d: Difficulty) => { secured: number; total: number };
@@ -21,6 +22,7 @@ export default function MainMenu({
   onOpenReport: () => void;
   onOpenTraining: () => void;
   onOpenExam: () => void;
+  onOpenQuiz: () => void;
   save: SaveData;
 }) {
   const score = computeCareerScore(save);
@@ -63,6 +65,13 @@ export default function MainMenu({
           >
             <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">EXAM DAY</span>
             <span className="text-xs font-display font-bold text-[color:var(--color-amber)]">TIMED ASSESSMENT</span>
+          </button>
+          <button
+            onClick={onOpenQuiz}
+            className="inline-flex items-center gap-3 border border-[color:var(--color-violet)]/50 px-4 py-2 hover:border-[color:var(--color-violet)] transition-colors"
+          >
+            <span className="text-[10px] tracking-widest text-[color:var(--color-text-dim)]">QUIZ MODE</span>
+            <span className="text-xs font-display font-bold text-[color:var(--color-violet)]">KNOWLEDGE CHECK</span>
           </button>
         </div>
       </div>

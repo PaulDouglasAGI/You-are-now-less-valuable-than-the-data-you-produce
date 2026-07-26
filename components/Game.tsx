@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Difficulty, NodeRunState, NotebookEntry, SaveData, TrainingProgress } from "@/lib/game/types";
+import type { Difficulty, NodeRunState, NotebookEntry, SaveData, TrainingProgress, QuizProgress } from "@/lib/game/types";
 import { missionsByDifficulty, missionsById } from "@/lib/game/chains";
 import { transmissionsByAfter, nextCampaignMissionId } from "@/lib/game/chains/campaign";
 import {
@@ -15,6 +15,8 @@ import {
   loadExamAttempt,
   saveExamAttempt,
   resetExamAttempt,
+  loadQuizProgress,
+  saveQuizProgress,
 } from "@/lib/game/storage";
 import { generateRunRandomization } from "@/lib/game/randomize";
 import type { RunRandomization } from "@/lib/game/randomize";
@@ -41,6 +43,7 @@ import MethodologyToggle from "./MethodologyToggle";
 import TrainingMode from "./TrainingMode";
 import ExamMode from "./ExamMode";
 import ExamHud from "./ExamHud";
+import QuizMode from "./QuizMode";
 
 type Screen =
   | "boot"
@@ -55,7 +58,8 @@ type Screen =
   | "transmission"
   | "report"
   | "training"
-  | "examMode";
+  | "examMode"
+  | "quiz";
 
 export default function Game() {
   const [screen, setScreen] = useState<Screen>("boot");
@@ -77,6 +81,7 @@ export default function Game() {
   const [methodologyOpen, setMethodologyOpen] = useState(false);
   const [trainingProgress, setTrainingProgress] = useState(() => loadTrainingProgress());
   const [examAttempt, setExamAttempt] = useState(() => loadExamAttempt());
+  const [quizProgress, setQuizProgress] = useState(() => loadQuizProgress());
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
@@ -277,6 +282,15 @@ export default function Game() {
     saveTrainingProgress(next);
   }
 
+  function handleOpenQuiz() {
+    setScreen("quiz");
+  }
+
+  function handleQuizProgressChange(next: QuizProgress) {
+    setQuizProgress(next);
+    saveQuizProgress(next);
+  }
+
   function handleOpenExam() {
     setScreen("examMode");
   }
@@ -338,6 +352,7 @@ export default function Game() {
         onOpenReport={handleOpenReport}
         onOpenTraining={handleOpenTraining}
         onOpenExam={handleOpenExam}
+        onOpenQuiz={handleOpenQuiz}
         save={save}
       />
     );
@@ -345,6 +360,8 @@ export default function Game() {
     content = <FieldReport save={save} onBack={handleBackToMenu} />;
   } else if (screen === "training") {
     content = <TrainingMode progress={trainingProgress} onProgressChange={handleTrainingProgressChange} onBack={handleBackToMenu} />;
+  } else if (screen === "quiz") {
+    content = <QuizMode progress={quizProgress} onProgressChange={handleQuizProgressChange} onBack={handleBackToMenu} />;
   } else if (screen === "examMode") {
     content = (
       <ExamMode

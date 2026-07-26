@@ -157,6 +157,40 @@ export interface TrainingProgress {
   completedDrillIds: string[];
 }
 
+/** Quiz Mode's difficulty ladder — doubles as the rank a player has earned. */
+export type QuizTier = "easy" | "medium" | "hard" | "elite" | "world-class";
+
+/** Recall-knowledge domains a working pentester/analyst is expected to have cold — deliberately
+ *  distinct from Training Mode (tool syntax) and missions (applied technique in a scenario). */
+export type QuizCategory =
+  | "networking"
+  | "linux"
+  | "windows-ad"
+  | "web"
+  | "binexp"
+  | "crypto"
+  | "cloud"
+  | "methodology"
+  | "defense";
+
+export interface QuizQuestion {
+  id: string;
+  category: QuizCategory;
+  tier: QuizTier;
+  prompt: string;
+  choices: string[];
+  correctIndex: number;
+  /** shown after answering regardless of correctness — the actual teaching moment */
+  explanation: string;
+}
+
+/** Quiz Mode progress — best score per "tier:category" cell (category "all" = the mixed quiz for
+ *  that tier), plus the tiers cleared at >=70% on their mixed quiz, which is the rank ladder. */
+export interface QuizProgress {
+  bestScores: Record<string, { correct: number; total: number; at: number }>;
+  clearedTiers: QuizTier[];
+}
+
 export type MethodologyTagColor = "green" | "blue" | "red" | "yellow";
 
 export interface MethodologyTag {
